@@ -55,6 +55,7 @@ function showSiteList(itemList) {
           didSelect: function(sender, indexPath, data) {
             const mIndex = indexPath.row;
             const selectSite = siteList[mIndex];
+            $ui.title=selectSite.title
             getSiteInfo(selectSite.id);
           }
         }
@@ -101,6 +102,7 @@ function checkSiteInfo(siteInfoData, siteId) {
         const thisItem = siteItemList[a];
         itemTitleList.push(thisItem.Title);
       }
+      //$ui.title=sit
       showSiteItemList(itemTitleList);
     }
   } else {
