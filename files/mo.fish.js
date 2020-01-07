@@ -1,8 +1,10 @@
 var siteList = [];
 var siteItemList = [];
+const listViewId="main-list";
 const cacheId = {
   siteList: "SITE_LIST",
-  siteInfo: "SITE_INFO_"
+  siteInfo: "SITE_INFO_",
+  lastCacheTime:"LAST_CACHE_TIME"
 };
 function init() {
   const siteListCache = getCache(cacheId.siteList);
@@ -48,7 +50,8 @@ function showSiteList(itemList) {
       {
         type: "list",
         props: {
-          data: itemList
+          data: itemList,
+          id: listViewId
         },
         layout: $layout.fill,
         events: {
@@ -112,12 +115,13 @@ function checkSiteInfo(siteInfoData, siteId) {
 }
 // 渲染站点内容列表
 function showSiteItemList(siteItemTitleList) {
-  $ui.render({
+  const mPage={
     views: [
       {
         type: "list",
         props: {
-          data: siteItemTitleList
+          data: siteItemTitleList,
+          id: listViewId
         },
         layout: $layout.fill,
         events: {
@@ -130,17 +134,34 @@ function showSiteItemList(siteItemTitleList) {
         }
       }
     ]
-  });
+  };
+  $ui.push(mPage);
 }
 // 读取缓存
-function setCache(cacheId, cacheContent) {
-  $cache.set(cacheId, cacheContent);
+function setCache(thisCacheId, cacheContent) {
+  $cache.set(thisCacheId, cacheContent);
+  $cache.set(cacheId.lastCacheTime, getNowUnixTime());
 }
 // 保存缓存
-function getCache(cacheId) {
-  const mCache = $cache.get(cacheId);
+function getCache(thisCacheId) {
+  const lastCacheTime=$cache.get(cacheId.lastCacheTime);
+  const mCache = $cache.get(thisCacheId);
   console.log(mCache);
-  return mCache;
+  if(mCache!==undefined){
+    if(lastCacheTime!==undefined&&getNowUnixTime()-lastCacheTime<3600){
+      return mCache
+    }
+  }
+  return undefined;
 }
+function getNowUnixTime(){
+  const dateTime = Date.now();
+  const timestamp = Math.floor(dateTime / 1000);
+  return timestamp
+}
+// Ui渲染
+/*function uiRender(){
+
+}*/
 // 开始初始化
 init();
