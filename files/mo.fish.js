@@ -1,21 +1,23 @@
 var siteList = [];
 var siteItemList = [];
-const listViewId="main-list";
+const isCache = false;
+const listViewId = "main-list";
 const cacheId = {
   siteList: "SITE_LIST",
   siteInfo: "SITE_INFO_",
-  lastCacheTime:"LAST_CACHE_TIME"
+  lastCacheTime: "LAST_CACHE_TIME"
 };
 function init() {
   const siteListCache = getCache(cacheId.siteList);
-  if (siteListCache == undefined) {
+  if (siteListCache == undefined || !isCache) {
     const urlSiteList = "https://www.tophub.fun:8080/GetType";
-    $console.log("siteList使用在线数据");
     $http.get({
       url: urlSiteList,
       handler: function(resp) {
         const mData = resp.data;
+        $console.log("siteList使用在线数据");
         setCache(cacheId.siteList, mData);
+        checkSiteList(mData);
       }
     });
   } else {
@@ -36,6 +38,7 @@ function checkSiteList(siteListData) {
         const thisItem = siteList[a];
         itemTitleList.push(thisItem.title);
       }
+      $console.log(itemTitleList);
       showSiteList(itemTitleList);
     }
   } else {
@@ -58,7 +61,7 @@ function showSiteList(itemList) {
           didSelect: function(sender, indexPath, data) {
             const mIndex = indexPath.row;
             const selectSite = siteList[mIndex];
-            $ui.title=selectSite.title
+            $ui.title = selectSite.title;
             getSiteInfo(selectSite.id);
           }
         }
@@ -72,7 +75,7 @@ function getSiteInfo(siteId) {
   siteItemList = [];
   const cacheSiteId = cacheId.siteInfo + siteId;
   const siteInfoCache = getCache(cacheSiteId);
-  if (siteInfoCache == undefined) {
+  if (siteInfoCache == undefined || !isCache) {
     const urlSiteInfo =
       "https://www.tophub.fun:8080/GetAllInfoGzip?id=" + siteId.toString();
     $http.get({
@@ -115,7 +118,7 @@ function checkSiteInfo(siteInfoData, siteId) {
 }
 // 渲染站点内容列表
 function showSiteItemList(siteItemTitleList) {
-  const mPage={
+  const mPage = {
     views: [
       {
         type: "list",
@@ -129,7 +132,9 @@ function showSiteItemList(siteItemTitleList) {
             const mIndex = indexPath.row;
             const selectItem = siteItemList[mIndex];
             const itemUrl = selectItem.Url;
-            $app.openURL(itemUrl);
+            //$app.openURL(itemUrl);
+            // 改用内置网页浏览器
+            openWebView(itemUrl);
           }
         }
       }
@@ -139,25 +144,46 @@ function showSiteItemList(siteItemTitleList) {
 }
 // 读取缓存
 function setCache(thisCacheId, cacheContent) {
-  $cache.set(thisCacheId, cacheContent);
-  $cache.set(cacheId.lastCacheTime, getNowUnixTime());
+  if (isCache) {
+    $cache.set(thisCacheId, cacheContent);
+    $cache.set(cacheId.lastCacheTime, getNowUnixTime());
+  }
 }
 // 保存缓存
 function getCache(thisCacheId) {
-  const lastCacheTime=$cache.get(cacheId.lastCacheTime);
-  const mCache = $cache.get(thisCacheId);
-  console.log(mCache);
-  if(mCache!==undefined){
-    if(lastCacheTime!==undefined&&getNowUnixTime()-lastCacheTime<3600){
-      return mCache
+  if (isCache) {
+    const lastCacheTime = $cache.get(cacheId.lastCacheTime);
+    const mCache = $cache.get(thisCacheId);
+    console.log(mCache);
+    if (mCache !== undefined) {
+      if (
+        lastCacheTime !== undefined &&
+        getNowUnixTime() - lastCacheTime < 3600
+      ) {
+        return mCache;
+      }
     }
   }
   return undefined;
 }
-function getNowUnixTime(){
+function getNowUnixTime() {
   const dateTime = Date.now();
   const timestamp = Math.floor(dateTime / 1000);
-  return timestamp
+  return timestamp;
+}
+// Web view
+function openWebView(url) {
+  $ui.push({
+    views: [
+      {
+        type: "web",
+        props: {
+          url: url
+        },
+        layout: $layout.fill
+      }
+    ]
+  });
 }
 // Ui渲染
 /*function uiRender(){
