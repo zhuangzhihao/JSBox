@@ -163,17 +163,13 @@ function showProInfo(_idx) {
   var messageText =
     "确诊 " +
     _jsonData.confirmedCount.toString() +
-    " 例\n" +
-    "疑似 " +
+    " 例\n疑似 " +
     _jsonData.suspectedCount +
-    " 例\n" +
-    "死亡 " +
+    " 例\n死亡 " +
     _jsonData.deadCount +
-    " 例\n" +
-    "治愈 " +
+    " 例\n治愈 " +
     _jsonData.curedCount +
-    " 例\n" +
-    "最后更新时间：" +
+    " 例\n最后更新时间：" +
     Date(_jsonData.modifyTime);
   $ui.alert({
     title: _jsonData.provinceShortName,
