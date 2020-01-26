@@ -6,6 +6,10 @@ var _mainDataJson = [];
 var _timeLineData = [];
 var _timeLineTitleData = [];
 
+function json2string(_sourceJson) {
+    return Json.stringify(_sourceJson);
+}
+
 function initMainMenu() {
     isLoading = true;
     $ui.loading("正在加载在线数据");
