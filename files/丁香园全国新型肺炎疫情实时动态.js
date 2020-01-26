@@ -9,7 +9,9 @@ var _timeLineTitleData = [];
 function json2string(_sourceJson) {
     return Json.stringify(_sourceJson);
 }
-
+function getRealUrl(_sourceUrl) {
+    return _sourceUrl.split(" ​ ")[0];
+}
 function initMainMenu() {
     isLoading = true;
     $ui.loading("正在加载在线数据");
@@ -19,31 +21,33 @@ function initMainMenu() {
             id: "listView_index",
             title: "全国新型肺炎疫情实时动态"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _menuList
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    if (isLoading) {
-                        $ui.error("请等待加载数据");
-                    } else {
-                        const _idx = indexPath.row;
-                        if (_idx == 0) {
-                            showHeaderData(_headerDataJson);
-                        } else if (_idx == 1) {
-                            showMainData(_mainTitleDataJson);
-                        } else if (_idx == 2) {
-                            showTimeLineData(_timeLineTitleData);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _menuList
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        if (isLoading) {
+                            $ui.error("请等待加载数据");
                         } else {
-                            $ui.error("错误选项");
+                            const _idx = indexPath.row;
+                            if (_idx == 0) {
+                                showHeaderData(_headerDataJson);
+                            } else if (_idx == 1) {
+                                showMainData(_mainTitleDataJson);
+                            } else if (_idx == 2) {
+                                showTimeLineData(_timeLineTitleData);
+                            } else {
+                                $ui.error("错误选项");
+                            }
                         }
                     }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -51,7 +55,7 @@ function getData() {
     const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
     $http.get({
         url: urlAllType,
-        handler: function (_resp) {
+        handler: function(_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
             processData(mData);
@@ -78,7 +82,6 @@ function getHeaderData(_element) {
         selector: _dataId,
         handler: (element, _idx) => {
             var _html = element.string;
-            console.log(_html);
             const jsonLeft = "try { window.getStatisticsService = ";
             const jsonRight = "}catch(e){}";
             _html = _html.replace(jsonLeft, "");
@@ -91,7 +94,6 @@ function getHeaderData(_element) {
 
 function processHeaderData(_jsonData) {
     const _json = JSON.parse(_jsonData);
-    $console.log(_json);
     return _json;
 }
 
@@ -121,7 +123,6 @@ function getMainData(_element) {
         selector: _dataId,
         handler: (element, _idx) => {
             var _html = element.string;
-            console.log(_html);
             const jsonLeft = "try { window.getListByCountryTypeService1 = ";
             const jsonRight = "}catch(e){}";
             _html = _html.replace(jsonLeft, "");
@@ -133,14 +134,12 @@ function getMainData(_element) {
 
 function processMainData(_html) {
     var proList = [];
-    $console.log(_html);
     const _json = JSON.parse(_html);
     _mainDataJson = _json;
     for (x in _json) {
         const _item = _json[x];
         proList.push(_item.provinceShortName);
     }
-    $console.log(proList);
     return proList;
 }
 
@@ -149,28 +148,27 @@ function showMainData(_listData) {
         props: {
             title: "各省数据"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _listData
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showProInfo(_idx);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _listData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showProInfo(_idx);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
 function showProInfo(_idx) {
     const _jsonData = _mainDataJson[_idx];
-    $console.log(_jsonData);
-    const updateTime = Math.round(
-        (new Date() - _jsonData.modifyTime) /
-        1000);
+    const updateTime = Math.round((new Date() - _jsonData.modifyTime) / 1000);
     var messageText =
         "确诊 " +
         _jsonData.confirmedCount.toString() +
@@ -181,7 +179,8 @@ function showProInfo(_idx) {
         " 例\n治愈 " +
         _jsonData.curedCount +
         " 例\n最后更新时间：" +
-        updateTime + " 秒前";
+        updateTime +
+        " 秒前";
     $ui.alert({
         title: _jsonData.provinceShortName,
         message: messageText
@@ -220,49 +219,99 @@ function getTimeLine(_element) {
         selector: _dataId,
         handler: (element, _idx) => {
             var _html = element.string;
-            console.log(_html);
             const jsonLeft = "try { window.getTimelineService = ";
             const jsonRight = "}catch(e){}";
             _html = _html.replace(jsonLeft, "");
             _html = _html.replace(jsonRight, "");
             _timeLineTitleData = processTimeLineData(_html);
-            $console.log(_timeLineData);
         }
     });
 }
 
 function processTimeLineData(_html) {
     var timeLineList = [];
-    $console.log(_html);
     const _json = JSON.parse(_html);
     _timeLineData = _json;
     for (x in _json) {
         const _item = _json[x];
         timeLineList.push(_item.title);
     }
-    $console.log(timeLineList);
     return timeLineList;
 }
-
 
 function showTimeLineData(_listData) {
     $ui.push({
         props: {
             title: "时间线"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _listData
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    //showDetailedData(_idx);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _listData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showTimeLineDetailedData(_idx);
+                    }
                 }
             }
-        }]
+        ]
+    });
+}
+function showTimeLineDetailedData(_idx) {
+    const thisItem = _timeLineData[_idx];
+    $console.log(thisItem);
+    const _title = thisItem.title;
+    const _message = thisItem.summary;
+    const _updateDate = thisItem.pubDateStr;
+    const _url = getRealUrl(thisItem.sourceUrl);
+    $console.log(_url);
+    $ui.alert({
+        title: _updateDate,
+        message: _message,
+        actions: [
+            {
+                title: "打开链接",
+                disabled: false, // Optional
+                handler: function() {
+                    $ui.preview({
+                        title: _title,
+                        url: _url
+                    });
+                }
+            },
+            {
+                title: "更新时间:" + _updateDate
+            },
+            {
+                title: "信息来源:" + thisItem.infoSource
+            },
+            {
+                title: "发生地点:" + thisItem.provinceName
+            },
+            {
+                title: "分享链接",
+                handler: function() {
+                    $share.sheet({
+                        items: _url,
+                        handler: function(success) {
+                            if (success) {
+                                $ui.toast("分享成功");
+                            } else {
+                                $ui.error("分享失败");
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                title: "关闭",
+                handler: function() {}
+            }
+        ]
     });
 }
 // 开始运行
