@@ -38,13 +38,13 @@ function initMainMenu() {
                             const _idx = indexPath.row;
                             switch (_idx) {
                                 case 0:
-                                    showHeaderData(_headerDataJson);
+                                    showHeaderData();
                                     break;
                                 case 1:
-                                    showMainData(_mainTitleDataJson);
+                                    showMainData();
                                     break;
                                 case 2:
-                                    showTimeLineData(_timeLineTitleData);
+                                    showTimeLineData();
                                     break;
                                 case 3:
                                     showRumorData();
@@ -103,26 +103,25 @@ function getHeaderData(_element) {
 }
 
 function processHeaderData(_jsonData) {
-    const _json = JSON.parse(_jsonData);
-    return _json;
+    return JSON.parse(_jsonData);
 }
 
-function showHeaderData(_dataJson) {
+function showHeaderData() {
     var messageText =
-        _dataJson.countRemark +
+        _headerDataJson.countRemark +
         "\n传染源:" +
-        _dataJson.infectSource +
+        _headerDataJson.infectSource +
         "\n传播途径:" +
-        _dataJson.passWay +
+        _headerDataJson.passWay +
         "\n" +
-        _dataJson.remark1 +
+        _headerDataJson.remark1 +
         "\n" +
-        _dataJson.remark2 +
+        _headerDataJson.remark2 +
         "\n(" +
-        _dataJson.generalRemark +
+        _headerDataJson.generalRemark +
         ")";
     $ui.alert({
-        title: _dataJson.virus,
+        title: _headerDataJson.virus,
         message: messageText
     });
 }
@@ -153,7 +152,7 @@ function processMainData(_html) {
     return proList;
 }
 
-function showMainData(_listData) {
+function showMainData() {
     $ui.push({
         props: {
             title: "各省数据"
@@ -162,7 +161,7 @@ function showMainData(_listData) {
             {
                 type: "list",
                 props: {
-                    data: _listData
+                    data: _mainTitleDataJson
                 },
                 layout: $layout.fill,
                 events: {
@@ -249,7 +248,7 @@ function processTimeLineData(_html) {
     return timeLineList;
 }
 
-function showTimeLineData(_listData) {
+function showTimeLineData() {
     $ui.push({
         props: {
             title: "时间线"
@@ -258,7 +257,7 @@ function showTimeLineData(_listData) {
             {
                 type: "list",
                 props: {
-                    data: _listData
+                    data: _timeLineTitleData
                 },
                 layout: $layout.fill,
                 events: {
