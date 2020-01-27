@@ -1,10 +1,12 @@
 var isLoading = true;
-const _menuList = ["简单数据", "详细数据", "时间线"];
+const _menuList = ["简单数据", "详细数据", "时间线", "谣言"];
 var _headerDataJson = {};
 var _mainTitleDataJson = [];
 var _mainDataJson = [];
 var _timeLineData = [];
 var _timeLineTitleData = [];
+var _rumorData = [];
+var _rumorTitleData = [];
 
 function json2string(_sourceJson) {
     return Json.stringify(_sourceJson);
@@ -29,19 +31,26 @@ function initMainMenu() {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function(_sender, indexPath, _data) {
+                    didSelect: function (_sender, indexPath, _data) {
                         if (isLoading) {
                             $ui.error("请等待加载数据");
                         } else {
                             const _idx = indexPath.row;
-                            if (_idx == 0) {
-                                showHeaderData(_headerDataJson);
-                            } else if (_idx == 1) {
-                                showMainData(_mainTitleDataJson);
-                            } else if (_idx == 2) {
-                                showTimeLineData(_timeLineTitleData);
-                            } else {
-                                $ui.error("错误选项");
+                            switch (_idx) {
+                                case 0:
+                                    showHeaderData(_headerDataJson);
+                                    break;
+                                case 1:
+                                    showMainData(_mainTitleDataJson);
+                                    break;
+                                case 2:
+                                    showTimeLineData(_timeLineTitleData);
+                                    break;
+                                case 3:
+                                    showRumorData();
+                                    break;
+                                default:
+                                    $ui.error("错误选项");
                             }
                         }
                     }
@@ -55,7 +64,7 @@ function getData() {
     const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
     $http.get({
         url: urlAllType,
-        handler: function(_resp) {
+        handler: function (_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
             processData(mData);
@@ -72,6 +81,7 @@ function processData(_sourceData) {
     getMainData(_element);
     getHeaderData(_element);
     getTimeLine(_element);
+    getRumor(_element);
     $ui.loading(false);
     isLoading = false;
 }
@@ -156,7 +166,7 @@ function showMainData(_listData) {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function(_sender, indexPath, _data) {
+                    didSelect: function (_sender, indexPath, _data) {
                         const _idx = indexPath.row;
                         showProInfo(_idx);
                     }
@@ -252,7 +262,7 @@ function showTimeLineData(_listData) {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function(_sender, indexPath, _data) {
+                    didSelect: function (_sender, indexPath, _data) {
                         const _idx = indexPath.row;
                         showTimeLineDetailedData(_idx);
                     }
@@ -263,12 +273,10 @@ function showTimeLineData(_listData) {
 }
 function showTimeLineDetailedData(_idx) {
     const thisItem = _timeLineData[_idx];
-    $console.log(thisItem);
     const _title = thisItem.title;
     const _message = thisItem.summary;
     const _updateDate = thisItem.pubDateStr;
     const _url = getRealUrl(thisItem.sourceUrl);
-    $console.log(_url);
     $ui.alert({
         title: _updateDate,
         message: _message,
@@ -276,7 +284,7 @@ function showTimeLineDetailedData(_idx) {
             {
                 title: "打开链接",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -294,10 +302,10 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "分享链接",
-                handler: function() {
+                handler: function () {
                     $share.sheet({
                         items: _url,
-                        handler: function(success) {
+                        handler: function (success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -309,7 +317,102 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function() {}
+                handler: function () { }
+            }
+        ]
+    });
+}
+// 谣言
+function getRumor(_element) {
+    const _dataId = "script#getIndexRumorList";
+    _element.enumerate({
+        selector: _dataId,
+        handler: (element, _idx) => {
+            var _html = element.string;
+            const jsonLeft = "try { window.getIndexRumorList = ";
+            const jsonRight = "}catch(e){}";
+            _html = _html.replace(jsonLeft, "");
+            _html = _html.replace(jsonRight, "");
+            _rumorTitleData = processRumorData(_html);
+        }
+    });
+}
+
+function processRumorData(_html) {
+    var rumorList = [];
+    _rumorData = JSON.parse(_html);
+    for (x in _rumorData) {
+        rumorList.push(_rumorData[x].title);
+    }
+    return rumorList;
+}
+
+function showRumorData() {
+    $ui.push({
+        props: {
+            title: "谣言"
+        },
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _rumorTitleData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function (_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showRumorDetailedData(_idx);
+                    }
+                }
+            }
+        ]
+    });
+}
+function showRumorDetailedData(_idx) {
+    const thisItem = _rumorData[_idx];
+    const _title = thisItem.title;
+    const _url = getRealUrl(thisItem.sourceUrl);
+    var isNotUrl = false;
+    if (_url == "") {
+        isNotUrl = true;
+    }
+    $ui.alert({
+        title: _title,
+        message: thisItem.body,
+        actions: [
+            {
+                title: "打开链接",
+                disabled: isNotUrl, // Optional
+                handler: function () {
+                    $ui.preview({
+                        title: _title,
+                        url: _url
+                    });
+                }
+            },
+            {
+                title: thisItem.mainSummary
+            },
+            {
+                title: "分享链接",
+                disabled: isNotUrl, // Optional
+                handler: function () {
+                    $share.sheet({
+                        items: _url,
+                        handler: function (success) {
+                            if (success) {
+                                $ui.toast("分享成功");
+                            } else {
+                                $ui.error("分享失败");
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                title: "关闭",
+                handler: function () { }
             }
         ]
     });
