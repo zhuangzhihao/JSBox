@@ -9,7 +9,7 @@ var _rumorData = [];
 var _rumorTitleData = [];
 
 function json2string(_sourceJson) {
-    return Json.stringify(_sourceJson);
+    return JSON.stringify(_sourceJson);
 }
 function getRealUrl(_sourceUrl) {
     return _sourceUrl.split(" ​ ")[0];
