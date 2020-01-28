@@ -108,7 +108,10 @@ function processHeaderData(_jsonData) {
 
 function showHeaderData() {
     var messageText =
-        _headerDataJson.countRemark +
+        "确诊 " + _headerDataJson.confirmedCount + " 例   疑似 " +
+        _headerDataJson.suspectedCount + " 例\n死亡 " +
+        _headerDataJson.deadCount + " 例   治愈 " +
+        _headerDataJson.curedCount + " 例" +
         "\n传染源:" +
         _headerDataJson.infectSource +
         "\n传播途径:" +
