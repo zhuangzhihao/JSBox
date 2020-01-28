@@ -7,6 +7,12 @@ var _timeLineData = [];
 var _timeLineTitleData = [];
 var _rumorData = [];
 var _rumorTitleData = [];
+var _areaStatData = [];
+var _areaStatProData = [];
+var _imgList = {
+    "dailyPic": "",
+    "imgUrl": ""
+}
 
 function json2string(_sourceJson) {
     return JSON.stringify(_sourceJson);
@@ -59,7 +65,6 @@ function initMainMenu() {
         ]
     });
 }
-
 function getData() {
     const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
     $http.get({
@@ -71,7 +76,6 @@ function getData() {
         }
     });
 }
-
 function processData(_sourceData) {
     const doc = $xml.parse({
         string: _sourceData,
@@ -85,6 +89,7 @@ function processData(_sourceData) {
     $ui.loading(false);
     isLoading = false;
 }
+
 // 简单数据
 function getHeaderData(_element) {
     const _dataId = "script#getStatisticsService";
@@ -96,16 +101,15 @@ function getHeaderData(_element) {
             const jsonRight = "}catch(e){}";
             _html = _html.replace(jsonLeft, "");
             _html = _html.replace(jsonRight, "");
-            const _jsonData = processHeaderData(_html);
-            _headerDataJson = _jsonData;
+            _headerDataJson = processHeaderData(_html);
+            _imgList.imgUrl = _headerDataJson.imgUrl;
+            _imgList.dailyPic = _headerDataJson.dailyPic;
         }
     });
 }
-
 function processHeaderData(_jsonData) {
     return JSON.parse(_jsonData);
 }
-
 function showHeaderData() {
     var messageText =
         "确诊 " + _headerDataJson.confirmedCount + " 例   疑似 " +
@@ -125,9 +129,45 @@ function showHeaderData() {
         ")";
     $ui.alert({
         title: _headerDataJson.virus,
-        message: messageText
+        message: messageText,
+        actions: [
+            {
+                title: "分享内容",
+                disabled: false, // Optional
+                handler: function () {
+                    $share.sheet([messageText]);
+                }
+            },
+            {
+                title: "疫情地图",
+                disabled: false, // Optional
+                handler: function () {
+                    $ui.preview({
+                        title: "疫情地图",
+                        url: _imgList.imgUrl
+                    });
+                }
+            },
+            {
+                title: "全国疫情形势图",
+                disabled: false, // Optional
+                handler: function () {
+                    $ui.preview({
+                        title: "全国疫情形势图",
+                        url: _imgList.dailyPic
+                    });
+                }
+            },
+            {
+                title: "关闭",
+                disabled: false, // Optional
+                handler: function () {
+                }
+            },
+        ]
     });
 }
+
 // 详细数据
 function getMainData(_element) {
     const _dataId = "script#getListByCountryTypeService1";
@@ -143,7 +183,6 @@ function getMainData(_element) {
         }
     });
 }
-
 function processMainData(_html) {
     var proList = [];
     const _json = JSON.parse(_html);
@@ -154,7 +193,6 @@ function processMainData(_html) {
     }
     return proList;
 }
-
 function showMainData() {
     $ui.push({
         props: {
@@ -177,7 +215,6 @@ function showMainData() {
         ]
     });
 }
-
 function showProInfo(_idx) {
     const _jsonData = _mainDataJson[_idx];
     const updateTime = Math.round((new Date() - _jsonData.modifyTime) / 1000);
@@ -239,7 +276,6 @@ function getTimeLine(_element) {
         }
     });
 }
-
 function processTimeLineData(_html) {
     var timeLineList = [];
     const _json = JSON.parse(_html);
@@ -250,7 +286,6 @@ function processTimeLineData(_html) {
     }
     return timeLineList;
 }
-
 function showTimeLineData() {
     $ui.push({
         props: {
@@ -324,6 +359,7 @@ function showTimeLineDetailedData(_idx) {
         ]
     });
 }
+
 // 谣言
 function getRumor(_element) {
     const _dataId = "script#getIndexRumorList";
@@ -348,7 +384,6 @@ function processRumorData(_html) {
     }
     return rumorList;
 }
-
 function showRumorData() {
     $ui.push({
         props: {
@@ -372,6 +407,99 @@ function showRumorData() {
     });
 }
 function showRumorDetailedData(_idx) {
+    const thisItem = _rumorData[_idx];
+    const _title = thisItem.title;
+    const _url = getRealUrl(thisItem.sourceUrl);
+    var isNotUrl = false;
+    if (_url == "") {
+        isNotUrl = true;
+    }
+    $ui.alert({
+        title: _title,
+        message: thisItem.body,
+        actions: [
+            {
+                title: "打开链接",
+                disabled: isNotUrl, // Optional
+                handler: function () {
+                    $ui.preview({
+                        title: _title,
+                        url: _url
+                    });
+                }
+            },
+            {
+                title: thisItem.mainSummary
+            },
+            {
+                title: "分享链接",
+                disabled: isNotUrl, // Optional
+                handler: function () {
+                    $share.sheet({
+                        items: _url,
+                        handler: function (success) {
+                            if (success) {
+                                $ui.toast("分享成功");
+                            } else {
+                                $ui.error("分享失败");
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                title: "关闭",
+                handler: function () { }
+            }
+        ]
+    });
+}
+// 地区排序
+function getAreaStat() {
+    const _dataId = "script#getAreaStat";
+    _element.enumerate({
+        selector: _dataId,
+        handler: (element, _idx) => {
+            var _html = element.string;
+            const jsonLeft = "try { window.getAreaStat = ";
+            const jsonRight = "}catch(e){}";
+            _html = _html.replace(jsonLeft, "");
+            _html = _html.replace(jsonRight, "");
+            _areaStatProData = processRumorData(_html);
+        }
+    });
+}
+function processAreaStatData(_html) {
+    var _list = [];
+    _areaStatData = JSON.parse(_html);
+    for (x in _areaStatData) {
+        _list.push(_areaStatData[x].title);
+    }
+    return _list;
+}
+function showAreaStatData() {
+    $ui.push({
+        props: {
+            title: "地区排序"
+        },
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _rumorTitleData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function (_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showAreaStatCityData(_idx);
+                    }
+                }
+            }
+        ]
+    });
+}
+function showAreaStatCityData(_idx) {
     const thisItem = _rumorData[_idx];
     const _title = thisItem.title;
     const _url = getRealUrl(thisItem.sourceUrl);
