@@ -1,5 +1,5 @@
 var isLoading = true;
-const _menuList = ["简单数据", "详细数据", "时间线", "谣言"];
+const _menuList = ["简单数据", "详细数据", "时间线", "谣言", "地区排序"];
 var _headerDataJson = {};
 var _mainTitleDataJson = [];
 var _mainDataJson = [];
@@ -10,9 +10,9 @@ var _rumorTitleData = [];
 var _areaStatData = [];
 var _areaStatProData = [];
 var _imgList = {
-    "dailyPic": "",
-    "imgUrl": ""
-}
+    dailyPic: "",
+    imgUrl: ""
+};
 
 function json2string(_sourceJson) {
     return JSON.stringify(_sourceJson);
@@ -37,7 +37,7 @@ function initMainMenu() {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function (_sender, indexPath, _data) {
+                    didSelect: function(_sender, indexPath, _data) {
                         if (isLoading) {
                             $ui.error("请等待加载数据");
                         } else {
@@ -55,6 +55,9 @@ function initMainMenu() {
                                 case 3:
                                     showRumorData();
                                     break;
+                                case 4:
+                                    showAreaStatData();
+                                    break;
                                 default:
                                     $ui.error("错误选项");
                             }
@@ -69,7 +72,7 @@ function getData() {
     const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
     $http.get({
         url: urlAllType,
-        handler: function (_resp) {
+        handler: function(_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
             processData(mData);
@@ -86,6 +89,7 @@ function processData(_sourceData) {
     getHeaderData(_element);
     getTimeLine(_element);
     getRumor(_element);
+    getAreaStat(_element);
     $ui.loading(false);
     isLoading = false;
 }
@@ -112,10 +116,15 @@ function processHeaderData(_jsonData) {
 }
 function showHeaderData() {
     var messageText =
-        "确诊 " + _headerDataJson.confirmedCount + " 例   疑似 " +
-        _headerDataJson.suspectedCount + " 例\n死亡 " +
-        _headerDataJson.deadCount + " 例   治愈 " +
-        _headerDataJson.curedCount + " 例" +
+        "确诊 " +
+        _headerDataJson.confirmedCount +
+        " 例   疑似 " +
+        _headerDataJson.suspectedCount +
+        " 例\n死亡 " +
+        _headerDataJson.deadCount +
+        " 例   治愈 " +
+        _headerDataJson.curedCount +
+        " 例" +
         "\n传染源:" +
         _headerDataJson.infectSource +
         "\n传播途径:" +
@@ -134,14 +143,14 @@ function showHeaderData() {
             {
                 title: "分享内容",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $share.sheet([messageText]);
                 }
             },
             {
                 title: "疫情地图",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: "疫情地图",
                         url: _imgList.imgUrl
@@ -151,7 +160,7 @@ function showHeaderData() {
             {
                 title: "全国疫情形势图",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: "全国疫情形势图",
                         url: _imgList.dailyPic
@@ -161,9 +170,8 @@ function showHeaderData() {
             {
                 title: "关闭",
                 disabled: false, // Optional
-                handler: function () {
-                }
-            },
+                handler: function() {}
+            }
         ]
     });
 }
@@ -206,7 +214,7 @@ function showMainData() {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function (_sender, indexPath, _data) {
+                    didSelect: function(_sender, indexPath, _data) {
                         const _idx = indexPath.row;
                         showProInfo(_idx);
                     }
@@ -299,7 +307,7 @@ function showTimeLineData() {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function (_sender, indexPath, _data) {
+                    didSelect: function(_sender, indexPath, _data) {
                         const _idx = indexPath.row;
                         showTimeLineDetailedData(_idx);
                     }
@@ -321,7 +329,7 @@ function showTimeLineDetailedData(_idx) {
             {
                 title: "打开链接",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -339,10 +347,10 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "分享链接",
-                handler: function () {
+                handler: function() {
                     $share.sheet({
                         items: _url,
-                        handler: function (success) {
+                        handler: function(success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -354,7 +362,7 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function () { }
+                handler: function() {}
             }
         ]
     });
@@ -397,7 +405,7 @@ function showRumorData() {
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function (_sender, indexPath, _data) {
+                    didSelect: function(_sender, indexPath, _data) {
                         const _idx = indexPath.row;
                         showRumorDetailedData(_idx);
                     }
@@ -421,7 +429,7 @@ function showRumorDetailedData(_idx) {
             {
                 title: "打开链接",
                 disabled: isNotUrl, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -434,10 +442,10 @@ function showRumorDetailedData(_idx) {
             {
                 title: "分享链接",
                 disabled: isNotUrl, // Optional
-                handler: function () {
+                handler: function() {
                     $share.sheet({
                         items: _url,
-                        handler: function (success) {
+                        handler: function(success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -449,13 +457,13 @@ function showRumorDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function () { }
+                handler: function() {}
             }
         ]
     });
 }
 // 地区排序
-function getAreaStat() {
+function getAreaStat(_element) {
     const _dataId = "script#getAreaStat";
     _element.enumerate({
         selector: _dataId,
@@ -465,7 +473,7 @@ function getAreaStat() {
             const jsonRight = "}catch(e){}";
             _html = _html.replace(jsonLeft, "");
             _html = _html.replace(jsonRight, "");
-            _areaStatProData = processRumorData(_html);
+            _areaStatProData = processAreaStatData(_html);
         }
     });
 }
@@ -473,7 +481,7 @@ function processAreaStatData(_html) {
     var _list = [];
     _areaStatData = JSON.parse(_html);
     for (x in _areaStatData) {
-        _list.push(_areaStatData[x].title);
+        _list.push(_areaStatData[x].provinceName);
     }
     return _list;
 }
@@ -486,63 +494,60 @@ function showAreaStatData() {
             {
                 type: "list",
                 props: {
-                    data: _rumorTitleData
+                    data: _areaStatProData
                 },
                 layout: $layout.fill,
                 events: {
-                    didSelect: function (_sender, indexPath, _data) {
+                    didSelect: function(_sender, indexPath, _data) {
                         const _idx = indexPath.row;
-                        showAreaStatCityData(_idx);
+                        showAreaStatCityData(_areaStatData[_idx]);
                     }
                 }
             }
         ]
     });
 }
-function showAreaStatCityData(_idx) {
-    const thisItem = _rumorData[_idx];
-    const _title = thisItem.title;
-    const _url = getRealUrl(thisItem.sourceUrl);
-    var isNotUrl = false;
-    if (_url == "") {
-        isNotUrl = true;
+function processAreaStatCityData(_json) {
+    var _list = [];
+    for (x in _json) {
+        _list.push(_json[x].cityName);
     }
-    $ui.alert({
-        title: _title,
-        message: thisItem.body,
-        actions: [
+    return _list;
+}
+function showAreaStatCityData(_thisPro) {
+    $console.log(_thisPro);
+    const _cityList = _thisPro.cities;
+    const _cityTitleList = processAreaStatCityData(_cityList);
+    $ui.push({
+        props: {
+            title: _thisPro.provinceName
+        },
+        views: [
             {
-                title: "打开链接",
-                disabled: isNotUrl, // Optional
-                handler: function () {
-                    $ui.preview({
-                        title: _title,
-                        url: _url
-                    });
+                type: "list",
+                props: {
+                    data: _cityTitleList
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        const thisItem = _cityList[_idx];
+                        $console.log(thisItem);
+                        $ui.alert({
+                            title: thisItem.cityName,
+                            message:
+                                "确诊人数：" +
+                                thisItem.confirmedCount +
+                                "\n疑似人数：" +
+                                thisItem.suspectedCount +
+                                "\n治愈人数：" +
+                                thisItem.curedCount +
+                                "\n死亡人数：" +
+                                thisItem.deadCount
+                        });
+                    }
                 }
-            },
-            {
-                title: thisItem.mainSummary
-            },
-            {
-                title: "分享链接",
-                disabled: isNotUrl, // Optional
-                handler: function () {
-                    $share.sheet({
-                        items: _url,
-                        handler: function (success) {
-                            if (success) {
-                                $ui.toast("分享成功");
-                            } else {
-                                $ui.error("分享失败");
-                            }
-                        }
-                    });
-                }
-            },
-            {
-                title: "关闭",
-                handler: function () { }
             }
         ]
     });
