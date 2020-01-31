@@ -703,7 +703,7 @@ function showWikiData() {
     }
     $ui.push({
         props: {
-            title: "国外数据"
+            title: "疾病知识"
         },
         views: [
             {
