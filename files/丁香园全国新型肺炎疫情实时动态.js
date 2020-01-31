@@ -18,6 +18,12 @@ function json2string(_sourceJson) {
     return JSON.stringify(_sourceJson);
 }
 
+function toastIfNotEmpty(toastMessage) {
+    if (toastMessage !== "") {
+        $ui.toast(toastMessage);
+    }
+}
+
 function getRealUrl(_sourceUrl) {
     return _sourceUrl.split(" ​ ")[0];
 }
@@ -76,12 +82,12 @@ function getData() {
         handler: function (_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
-            processData(mData);
+            processAllData(mData);
         }
     });
 }
 
-function processData(_sourceData) {
+function processAllData(_sourceData) {
     const doc = $xml.parse({
         string: _sourceData,
         mode: "html"
@@ -201,7 +207,7 @@ function processMainData(_html) {
     _mainDataJson = _json;
     for (x in _json) {
         const _item = _json[x];
-        proList.push(_item.provinceShortName);
+        proList.push(_item.provinceShortName + " (" + _item.confirmedCount + "人)");
     }
     return proList;
 }
@@ -220,14 +226,14 @@ function showMainData() {
             events: {
                 didSelect: function (_sender, indexPath, _data) {
                     const _idx = indexPath.row;
-                    showProInfo(_idx);
+                    showMainDetailedData(_idx);
                 }
             }
         }]
     });
 }
 
-function showProInfo(_idx) {
+function showMainDetailedData(_idx) {
     const _jsonData = _mainDataJson[_idx];
     const updateTime = Math.round((new Date() - _jsonData.modifyTime) / 1000);
     var messageText =
@@ -246,6 +252,7 @@ function showProInfo(_idx) {
         title: _jsonData.provinceShortName,
         message: messageText
     });
+    toastIfNotEmpty(_jsonData.comment);
     /*
       $ui.push({
           props: {
@@ -561,9 +568,7 @@ function showAreaStatCityData(_thisPro) {
             }
         }]
     });
-    if (_thisPro.comment !== "") {
-        $ui.toast(_thisPro.comment);
-    }
+    toastIfNotEmpty(_thisPro.comment);
 }
 // 开始运行
 initMainMenu();
