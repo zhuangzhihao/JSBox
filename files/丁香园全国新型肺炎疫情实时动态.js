@@ -1,5 +1,5 @@
 var isLoading = true;
-const _menuList = ["简单数据", "详细数据", "时间线", "谣言", "地区排序"];
+const _menuList = ["简单数据", "详细数据", "时间线", "谣言", "地区排序", "国外数据"];
 var _headerDataJson = {};
 var _mainTitleDataJson = [];
 var _mainDataJson = [];
@@ -9,6 +9,8 @@ var _rumorData = [];
 var _rumorTitleData = [];
 var _areaStatData = [];
 var _areaStatProData = [];
+var _foreignTitleDataJson = [];
+var _foreignDataJson = [];
 var _imgList = {
     dailyPic: "",
     imgUrl: ""
@@ -65,6 +67,9 @@ function initMainMenu() {
                             case 4:
                                 showAreaStatData();
                                 break;
+                            case 5:
+                                showForeignData();
+                                break;
                             default:
                                 $ui.error("错误选项");
                         }
@@ -98,6 +103,7 @@ function processAllData(_sourceData) {
     getTimeLine(_element);
     getRumor(_element);
     getAreaStat(_element);
+    getForeignData(_element);
     $ui.loading(false);
     isLoading = false;
 }
@@ -569,6 +575,75 @@ function showAreaStatCityData(_thisPro) {
         }]
     });
     toastIfNotEmpty(_thisPro.comment);
+}
+
+// 国外数据
+function getForeignData(_element) {
+    const _dataId = "script#getListByCountryTypeService2";
+    _element.enumerate({
+        selector: _dataId,
+        handler: (element, _idx) => {
+            var _html = element.string;
+            const jsonLeft = "try { window.getListByCountryTypeService2 = ";
+            const jsonRight = "}catch(e){}";
+            _html = _html.replace(jsonLeft, "");
+            _html = _html.replace(jsonRight, "");
+            _foreignTitleDataJson = processForeignData(_html);
+        }
+    });
+}
+
+function processForeignData(_html) {
+    var list = [];
+    const _json = JSON.parse(_html);
+    _foreignDataJson = _json;
+    for (x in _json) {
+        const _item = _json[x];
+        list.push(_item.provinceName + " (" + _item.confirmedCount + "人)");
+    }
+    return list;
+}
+
+function showForeignData() {
+    $ui.push({
+        props: {
+            title: "国外数据"
+        },
+        views: [{
+            type: "list",
+            props: {
+                data: _foreignTitleDataJson
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    showForeignDetailedData(indexPath.row);
+                }
+            }
+        }]
+    });
+}
+
+function showForeignDetailedData(_idx) {
+    const _jsonData = _foreignDataJson[_idx];
+    const updateTime = Math.round((new Date() - _jsonData.modifyTime) / 1000);
+    var messageText =
+        "确诊 " +
+        _jsonData.confirmedCount.toString() +
+        " 例\n疑似 " +
+        _jsonData.suspectedCount +
+        " 例\n死亡 " +
+        _jsonData.deadCount +
+        " 例\n治愈 " +
+        _jsonData.curedCount +
+        " 例\n最后更新时间：" +
+        updateTime +
+        " 秒前";
+    $ui.alert({
+        title: _jsonData.provinceName,
+        message: messageText
+    });
+    toastIfNotEmpty(_jsonData.comment);
 }
 // 开始运行
 initMainMenu();
