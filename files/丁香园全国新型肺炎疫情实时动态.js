@@ -487,7 +487,9 @@ function processAreaStatData(_html) {
     _areaStatData = JSON.parse(_html);
     for (x in _areaStatData) {
         const thisPro = _areaStatData[x];
-        _list.push(thisPro.provinceName + " (" + thisPro.confirmedCount + "人)");
+        _list.push(
+            thisPro.provinceName + " (" + thisPro.confirmedCount + "人)"
+        );
     }
     return _list;
 }
@@ -518,7 +520,7 @@ function processAreaStatCityData(_json) {
     // 城市
     var _list = [];
     for (x in _json) {
-        const thisCity = _json[x]
+        const thisCity = _json[x];
         _list.push(thisCity.cityName + " (" + thisCity.confirmedCount + "人)");
     }
     return _list;
