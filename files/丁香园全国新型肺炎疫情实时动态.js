@@ -1,5 +1,13 @@
 var isLoading = true;
-const _menuList = ["简单数据", "详细数据", "时间线", "谣言", "地区排序", "国外数据"];
+const _menuList = [
+    "简单数据",
+    "详细数据",
+    "时间线",
+    "谣言",
+    "地区排序",
+    "国外数据",
+    "疾病知识"
+];
 var _headerDataJson = {};
 var _mainTitleDataJson = [];
 var _mainDataJson = [];
@@ -11,6 +19,7 @@ var _areaStatData = [];
 var _areaStatProData = [];
 var _foreignTitleDataJson = [];
 var _foreignDataJson = [];
+var _wikiData = [];
 var _imgList = {
     dailyPic: "",
     imgUrl: ""
@@ -39,44 +48,49 @@ function initMainMenu() {
             id: "listView_index",
             title: "全国新型肺炎疫情实时动态"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _menuList
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    if (isLoading) {
-                        $ui.error("请等待加载数据");
-                    } else {
-                        const _idx = indexPath.row;
-                        switch (_idx) {
-                            case 0:
-                                showHeaderData();
-                                break;
-                            case 1:
-                                showMainData();
-                                break;
-                            case 2:
-                                showTimeLineData();
-                                break;
-                            case 3:
-                                showRumorData();
-                                break;
-                            case 4:
-                                showAreaStatData();
-                                break;
-                            case 5:
-                                showForeignData();
-                                break;
-                            default:
-                                $ui.error("错误选项");
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _menuList
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        if (isLoading) {
+                            $ui.error("请等待加载数据");
+                        } else {
+                            const _idx = indexPath.row;
+                            switch (_idx) {
+                                case 0:
+                                    showHeaderData();
+                                    break;
+                                case 1:
+                                    showMainData();
+                                    break;
+                                case 2:
+                                    showTimeLineData();
+                                    break;
+                                case 3:
+                                    showRumorData();
+                                    break;
+                                case 4:
+                                    showAreaStatData();
+                                    break;
+                                case 5:
+                                    showForeignData();
+                                    break;
+                                case 6:
+                                    showWikiData();
+                                    break;
+                                default:
+                                    $ui.error("错误选项");
+                            }
                         }
                     }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -84,7 +98,7 @@ function getData() {
     const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
     $http.get({
         url: urlAllType,
-        handler: function (_resp) {
+        handler: function(_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
             processAllData(mData);
@@ -104,6 +118,7 @@ function processAllData(_sourceData) {
     getRumor(_element);
     getAreaStat(_element);
     getForeignData(_element);
+    getWikiData(_element);
     $ui.loading(false);
     isLoading = false;
 }
@@ -155,17 +170,18 @@ function showHeaderData() {
     $ui.alert({
         title: _headerDataJson.virus,
         message: messageText,
-        actions: [{
+        actions: [
+            {
                 title: "分享内容",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $share.sheet([messageText]);
                 }
             },
             {
                 title: "疫情地图",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: "疫情地图",
                         url: _imgList.imgUrl
@@ -175,7 +191,7 @@ function showHeaderData() {
             {
                 title: "全国疫情形势图",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: "全国疫情形势图",
                         url: _imgList.dailyPic
@@ -185,7 +201,7 @@ function showHeaderData() {
             {
                 title: "关闭",
                 disabled: false, // Optional
-                handler: function () {}
+                handler: function() {}
             }
         ]
     });
@@ -213,7 +229,9 @@ function processMainData(_html) {
     _mainDataJson = _json;
     for (x in _json) {
         const _item = _json[x];
-        proList.push(_item.provinceShortName + " (" + _item.confirmedCount + "人)");
+        proList.push(
+            _item.provinceShortName + " (" + _item.confirmedCount + "人)"
+        );
     }
     return proList;
 }
@@ -223,19 +241,21 @@ function showMainData() {
         props: {
             title: "各省数据"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _mainTitleDataJson
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showMainDetailedData(_idx);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _mainTitleDataJson
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showMainDetailedData(_idx);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -318,19 +338,21 @@ function showTimeLineData() {
         props: {
             title: "时间线"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _timeLineTitleData
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showTimeLineDetailedData(_idx);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _timeLineTitleData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showTimeLineDetailedData(_idx);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -343,10 +365,11 @@ function showTimeLineDetailedData(_idx) {
     $ui.alert({
         title: _updateDate,
         message: _message,
-        actions: [{
+        actions: [
+            {
                 title: "打开链接",
                 disabled: false, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -364,10 +387,10 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "分享链接",
-                handler: function () {
+                handler: function() {
                     $share.sheet({
                         items: _url,
-                        handler: function (success) {
+                        handler: function(success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -379,7 +402,7 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function () {}
+                handler: function() {}
             }
         ]
     });
@@ -415,19 +438,21 @@ function showRumorData() {
         props: {
             title: "谣言"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _rumorTitleData
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showRumorDetailedData(_idx);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _rumorTitleData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showRumorDetailedData(_idx);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -442,10 +467,11 @@ function showRumorDetailedData(_idx) {
     $ui.alert({
         title: _title,
         message: thisItem.body,
-        actions: [{
+        actions: [
+            {
                 title: "打开链接",
                 disabled: isNotUrl, // Optional
-                handler: function () {
+                handler: function() {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -458,10 +484,10 @@ function showRumorDetailedData(_idx) {
             {
                 title: "分享链接",
                 disabled: isNotUrl, // Optional
-                handler: function () {
+                handler: function() {
                     $share.sheet({
                         items: _url,
-                        handler: function (success) {
+                        handler: function(success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -473,7 +499,7 @@ function showRumorDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function () {}
+                handler: function() {}
             }
         ]
     });
@@ -513,19 +539,21 @@ function showAreaStatData() {
         props: {
             title: "地区排序"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _areaStatProData
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showAreaStatCityData(_areaStatData[_idx]);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _areaStatProData
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        showAreaStatCityData(_areaStatData[_idx]);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -548,31 +576,34 @@ function showAreaStatCityData(_thisPro) {
         props: {
             title: _thisPro.provinceName
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _cityTitleList
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    const thisItem = _cityList[_idx];
-                    $console.log(thisItem);
-                    $ui.alert({
-                        title: thisItem.cityName,
-                        message: "确诊人数：" +
-                            thisItem.confirmedCount +
-                            "\n疑似人数：" +
-                            thisItem.suspectedCount +
-                            "\n治愈人数：" +
-                            thisItem.curedCount +
-                            "\n死亡人数：" +
-                            thisItem.deadCount
-                    });
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _cityTitleList
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const _idx = indexPath.row;
+                        const thisItem = _cityList[_idx];
+                        $console.log(thisItem);
+                        $ui.alert({
+                            title: thisItem.cityName,
+                            message:
+                                "确诊人数：" +
+                                thisItem.confirmedCount +
+                                "\n疑似人数：" +
+                                thisItem.suspectedCount +
+                                "\n治愈人数：" +
+                                thisItem.curedCount +
+                                "\n死亡人数：" +
+                                thisItem.deadCount
+                        });
+                    }
                 }
             }
-        }]
+        ]
     });
     toastIfNotEmpty(_thisPro.comment);
 }
@@ -609,18 +640,20 @@ function showForeignData() {
         props: {
             title: "国外数据"
         },
-        views: [{
-            type: "list",
-            props: {
-                data: _foreignTitleDataJson
-            },
-            layout: $layout.fill,
-            events: {
-                didSelect: function (_sender, indexPath, _data) {
-                    showForeignDetailedData(indexPath.row);
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: _foreignTitleDataJson
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        showForeignDetailedData(indexPath.row);
+                    }
                 }
             }
-        }]
+        ]
     });
 }
 
@@ -645,5 +678,70 @@ function showForeignDetailedData(_idx) {
     });
     toastIfNotEmpty(_jsonData.comment);
 }
+
+// 疾病知识
+function getWikiData(_element) {
+    const elementId = "getWikiList";
+    _element.enumerate({
+        selector: "script#" + elementId,
+        handler: (element, _idx) => {
+            var _html = element.string;
+            const jsonLeft = "try { window." + elementId + " = ";
+            const jsonRight = "}catch(e){}";
+            _html = _html.replace(jsonLeft, "");
+            _html = _html.replace(jsonRight, "");
+            _wikiData = JSON.parse(_html);
+        }
+    });
+}
+
+function showWikiData() {
+    const wikiResult = _wikiData.result;
+    var wikiTitleList = [];
+    for (x in wikiResult) {
+        wikiTitleList.push(wikiResult[x].title);
+    }
+    $ui.push({
+        props: {
+            title: "国外数据"
+        },
+        views: [
+            {
+                type: "list",
+                props: {
+                    data: wikiTitleList
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function(_sender, indexPath, _data) {
+                        const item = wikiResult[indexPath.row];
+                        $ui.alert({
+                            title: item.title,
+                            message: item.description,
+                            actions: [
+                                {
+                                    title: "打开链接",
+                                    disabled: false, // Optional
+                                    handler: function() {
+                                        $ui.preview({
+                                            title: item.title,
+                                            url: item.linkUrl
+                                        });
+                                    }
+                                },
+                                {
+                                    title: "关闭",
+                                    disabled: false, // Optional
+                                    handler: function() {}
+                                }
+                            ]
+                        });
+                    }
+                }
+            }
+        ]
+    });
+}
+
 // 开始运行
 initMainMenu();
