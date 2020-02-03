@@ -1,4 +1,5 @@
 var isLoading = true;
+const _version = 1;
 const _menuList = [
     "简单数据",
     "详细数据",
