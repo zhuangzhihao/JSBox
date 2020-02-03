@@ -7,7 +7,7 @@
       "type" : "button",
       "props" : {
         "id" : "button[0]",
-        "title" : "Hello",
+        "title" : "丁香园",
         "frame" : {
           "y" : 120,
           "x" : 157,

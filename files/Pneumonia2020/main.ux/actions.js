@@ -1,5 +1,5 @@
-const app = require("./scripts/app");
+const dxy = require("./scripts/dxy");
 
 exports.tapped = sender => {
-  app.sayHello();
+  dxy.init();
 }

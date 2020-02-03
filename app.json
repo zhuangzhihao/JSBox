@@ -1,0 +1,20 @@
+{
+    "io.zhihao.jsbox.dxy": {
+        "name": "丁香园全国新型肺炎疫情实时动态",
+        "version": 1,
+        "version_name": "0.0.1",
+        "update_time": 0,
+        "update_note": "",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhihaofans/jsbox/files/%E4%B8%81%E9%A6%99%E5%9B%AD%E5%85%A8%E5%9B%BD%E6%96%B0%E5%9E%8B%E8%82%BA%E7%82%8E%E7%96%AB%E6%83%85%E5%AE%9E%E6%97%B6%E5%8A%A8%E6%80%81.js",
+        "isApp": false
+    },
+    "io.zhihao.jsbox.pneumonia2020": {
+        "name": "Pneumonia2020",
+        "version": 1,
+        "version_name": "0.0.1",
+        "update_time": 0,
+        "update_note": "",
+        "update_url": "",
+        "isApp": true
+    }
+}

@@ -7,15 +7,15 @@
   },
   "info" : {
     "types" : 15,
-    "author" : "",
+    "author" : "zhuangzhihao",
     "website" : "",
     "name" : "",
     "url" : "",
-    "version" : "1.0.0"
+    "version" : "0.0.1"
   },
   "settings" : {
     "minOSVer" : "11.0.0",
-    "minSDKVer" : "1.55.0",
+    "minSDKVer" : "1.60.0",
     "rotateDisabled" : false,
     "autoKeyboardEnabled" : false,
     "keyboardToolbarEnabled" : false,
