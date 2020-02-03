@@ -1,5 +1,5 @@
 var isLoading = true;
-const _version = 1;
+const _version = 2;
 const _menuList = [
     "简单数据",
     "详细数据",
@@ -22,11 +22,60 @@ var _areaStatProData = [];
 var _foreignTitleDataJson = [];
 var _foreignDataJson = [];
 var _wikiData = [];
-var _recommendData = []
+var _recommendData = [];
 var _imgList = {
     dailyPic: "",
     imgUrl: ""
 };
+
+function checkUpdate() {
+    const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
+    const appId = "io.zhihao.jsbox.dxy";
+    $ui.alert({
+        title: "你要检测更新吗?",
+        message: "你点了检测更新的按钮",
+        actions: [{
+            title: "好的",
+            disabled: false, // Optional
+            handler: function () {
+                $http.get({
+                    url: serverJsonUrl,
+                    handler: function (_resp) {
+                        const updateData = _resp.data;
+                        $console.log("更新：获取服务器数据成功");
+                        const app = updateData[appId];
+                        $console.log(app);
+                        if (app.version > _version) {
+                            $console.log("更新：发现更新");
+                            const updateUrl = "jsbox://import?url=" + $text.URLEncode(app.update_url) +
+                                "&name=" + $text.URLEncode(app.name) + "&icon=" + $text.URLEncode(app.update_icon);
+                            $ui.alert({
+                                title: "发现新版本",
+                                message: "版本号：" + app.name + "\n你要更新吗?",
+                                actions: [{
+                                    title: "好的",
+                                    disabled: false, // Optional
+                                    handler: function () {
+                                        $app.openURL(updateUrl);
+                                    }
+                                }, {
+                                    title: "不了不了",
+                                    disabled: false
+                                }]
+                            });
+                        } else {
+                            $console.log("更新：已经是最新版");
+                            $ui.toast("已经是最新版");
+                        }
+                    }
+                });
+            }
+        }, {
+            title: "不了不了",
+            disabled: false
+        }]
+    });
+}
 
 function json2string(_sourceJson) {
     return JSON.stringify(_sourceJson);
@@ -53,7 +102,15 @@ function initMainMenu() {
     $ui.render({
         props: {
             id: "listView_index",
-            title: "全国新型肺炎疫情实时动态"
+            title: "全国新型肺炎疫情实时动态",
+            navButtons: [{
+                title: "检测更新",
+                icon: "162", // Or you can use icon name
+                symbol: "checkmark.seal", // SF symbols are supported
+                handler: function () {
+                    checkUpdate();
+                }
+            }]
         },
         views: [{
             type: "list",
