@@ -1,24 +1,24 @@
 {
-  "widget" : {
-    "staticSize" : false,
-    "tintColor" : "",
-    "height" : 0,
-    "iconColor" : ""
+  "widget": {
+    "staticSize": false,
+    "tintColor": "",
+    "height": 0,
+    "iconColor": ""
   },
-  "info" : {
-    "types" : 15,
-    "author" : "zhuangzhihao",
-    "website" : "",
-    "name" : "",
-    "url" : "",
-    "version" : "0.0.1"
+  "info": {
+    "types": 15,
+    "author": "zhuangzhihao",
+    "website": "",
+    "name": "",
+    "url": "",
+    "version": "0.0.1"
   },
-  "settings" : {
-    "minOSVer" : "11.0.0",
-    "minSDKVer" : "1.60.0",
-    "rotateDisabled" : false,
-    "autoKeyboardEnabled" : false,
-    "keyboardToolbarEnabled" : false,
-    "idleTimerDisabled" : false
+  "settings": {
+    "minOSVer": "11.0.0",
+    "minSDKVer": "1.60.0",
+    "rotateDisabled": false,
+    "autoKeyboardEnabled": false,
+    "keyboardToolbarEnabled": false,
+    "idleTimerDisabled": false
   }
 }
