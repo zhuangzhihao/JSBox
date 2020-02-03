@@ -6,7 +6,8 @@ const _menuList = [
     "谣言",
     "地区排序",
     "国外数据",
-    "疾病知识"
+    "疾病知识",
+    "推荐文章"
 ];
 var _headerDataJson = {};
 var _mainTitleDataJson = [];
@@ -87,6 +88,9 @@ function initMainMenu() {
                             case 6:
                                 showWikiData();
                                 break;
+                            case 7:
+                                showRecommendedData();
+                                break;
                             default:
                                 $ui.error("错误选项");
                         }
@@ -122,6 +126,7 @@ function processAllData(_sourceData) {
     getAreaStat(_element);
     getForeignData(_element);
     getWikiData(_element);
+    getRecommendedData(_element);
     $ui.loading(false);
     isLoading = false;
 }
@@ -783,7 +788,7 @@ function showRecommendedData() {
     }
     $ui.push({
         props: {
-            title: "疾病知识"
+            title: "推荐文章"
         },
         views: [{
             type: "list",
@@ -793,7 +798,7 @@ function showRecommendedData() {
             layout: $layout.fill,
             events: {
                 didSelect: function (_sender, indexPath, _data) {
-                    const item = wikiResult[indexPath.row];
+                    const item = _recommendData[indexPath.row];
                     $ui.alert({
                         title: item.title,
                         message: item.description,
@@ -806,11 +811,18 @@ function showRecommendedData() {
                                         url: item.linkUrl
                                     });
                                 }
+                            }, {
+                                title: "打开封面图",
+                                disabled: false, // Optional
+                                handler: function () {
+                                    $ui.preview({
+                                        title: item.title,
+                                        url: item.imgUrl
+                                    });
+                                }
                             },
                             {
-                                title: "关闭",
-                                disabled: false, // Optional
-                                handler: function () {}
+                                title: "关闭"
                             }
                         ]
                     });
