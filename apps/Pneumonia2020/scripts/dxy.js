@@ -169,11 +169,10 @@ function showHeaderData() {
         _headerDataJson.seriousCount +
         " 例(+" +
         _headerDataJson.seriousIncr +
-        ")" +
-        "\n传染源:" +
-        _headerDataJson.infectSource +
-        "\n传播途径:" +
-        _headerDataJson.passWay +
+        ")\n" +
+        _headerDataJson.note2 +
+        "\n" +
+        _headerDataJson.note3 +
         "\n" +
         _headerDataJson.remark1 +
         "\n" +
@@ -182,7 +181,7 @@ function showHeaderData() {
         _headerDataJson.generalRemark +
         ")";
     $ui.alert({
-        title: _headerDataJson.virus,
+        title: _headerDataJson.note1,
         message: messageText,
         actions: [
             {
