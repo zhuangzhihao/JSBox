@@ -1,0 +1,43 @@
+{
+  "props" : {
+    "homeIndicatorHidden" : false,
+    "id" : "main",
+    "navButtons" : [
+      {
+        "handler" : {
+          "$type" : "$event",
+          "$props" : {
+            "selector" : "update"
+          }
+        },
+        "title" : "检测更新",
+        "icon" : "162",
+        "symbol" : "checkmark.seal"
+      }
+    ],
+    "modalPresentationStyle" : 0
+  },
+  "views" : [
+    {
+      "type" : "button",
+      "props" : {
+        "id" : "button[0]",
+        "title" : "丁香园",
+        "frame" : {
+          "y" : 120,
+          "x" : 157,
+          "width" : 100,
+          "height" : 36
+        }
+      },
+      "events" : {
+        "tapped" : {
+          "$type" : "$event",
+          "$props" : {
+            "selector" : "dxy"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -45,7 +45,6 @@ function getUpdateTime(modifyTime) {
 
 function initMainMenu() {
     isLoading = true;
-    $ui.loading("正在加载在线数据");
     getData();
     $ui.push({
         props: {
@@ -123,7 +122,6 @@ function processAllData(_sourceData) {
     getAreaStat(_element);
     getForeignData(_element);
     getWikiData(_element);
-    $ui.loading(false);
     isLoading = false;
 }
 
@@ -812,7 +810,7 @@ function showWikiData() {
         ]
     });
 }
-// 开始运行
+// 暴露接口
 module.exports = {
     init: initMainMenu
 };
