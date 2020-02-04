@@ -209,18 +209,43 @@ function getHeaderData(_element) {
 
 function showHeaderData() {
     var messageText =
-        "确诊 " + _headerDataJson.confirmedCount + " 例(+" + _headerDataJson.confirmedIncr + ")" +
-        "\n疑似 " + _headerDataJson.suspectedCount + " 例(+" + _headerDataJson.suspectedIncr + ")" +
-        "\n死亡 " + _headerDataJson.deadCount + " 例(+" + _headerDataJson.deadIncr + ")" +
-        "\n治愈 " + _headerDataJson.curedCount + " 例(+" + _headerDataJson.curedIncr + ")" +
-        "\n重症 " + _headerDataJson.seriousCount + " 例(+" + _headerDataJson.seriousIncr + ")" +
-        "\n传染源:" + _headerDataJson.infectSource +
-        "\n传播途径:" + _headerDataJson.passWay +
-        "\n" + _headerDataJson.remark1 +
-        "\n" + _headerDataJson.remark2 +
-        "\n(" + _headerDataJson.generalRemark + ")";
+        "确诊 " +
+        _headerDataJson.confirmedCount +
+        " 例(+" +
+        _headerDataJson.confirmedIncr +
+        ")" +
+        "\n疑似 " +
+        _headerDataJson.suspectedCount +
+        " 例(+" +
+        _headerDataJson.suspectedIncr +
+        ")" +
+        "\n死亡 " +
+        _headerDataJson.deadCount +
+        " 例(+" +
+        _headerDataJson.deadIncr +
+        ")" +
+        "\n治愈 " +
+        _headerDataJson.curedCount +
+        " 例(+" +
+        _headerDataJson.curedIncr +
+        ")" +
+        "\n重症 " +
+        _headerDataJson.seriousCount +
+        " 例(+" +
+        _headerDataJson.seriousIncr +
+        ")\n" +
+        _headerDataJson.note2 +
+        "\n" +
+        _headerDataJson.note3 +
+        "\n" +
+        _headerDataJson.remark1 +
+        "\n" +
+        _headerDataJson.remark2 +
+        "\n(" +
+        _headerDataJson.generalRemark +
+        ")";
     $ui.alert({
-        title: _headerDataJson.virus,
+        title: _headerDataJson.note1,
         message: messageText,
         actions: [{
                 title: "分享内容",
