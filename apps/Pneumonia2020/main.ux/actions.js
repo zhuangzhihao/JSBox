@@ -6,7 +6,8 @@ exports.dxy = () => {
 
 
 exports.update = () => {
-    const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
+    const time = Math.round(new Date() / 1000);
+    const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json?t=" + time;
     const appId = "io.zhihao.jsbox.pneumonia2020";
     update.checkUpdate(serverJsonUrl, appId);
 }

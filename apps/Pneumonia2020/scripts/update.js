@@ -21,7 +21,7 @@ function checkUpdate(jsonUrl, appId) {
                                 $console.log("更新：发现更新");
                                 $ui.alert({
                                     title: "发现新版本",
-                                    message: "版本号：" + app.name + "\n你要更新吗?\n" + app.update_note,
+                                    message: "版本号：" + app.version_name + "\n你要更新吗?\n更新内容：\n" + app.update_note,
                                     actions: [{
                                             title: "好的",
                                             disabled: false, // Optional
