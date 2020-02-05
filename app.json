@@ -11,12 +11,12 @@
     },
     "io.zhihao.jsbox.pneumonia2020": {
         "name": "Pneumonia2020",
-        "version": 1,
-        "version_name": "0.0.1",
+        "version": 2,
+        "version_name": "0.0.2",
         "update_time": 0,
-        "update_note": "",
-        "update_icon": "",
-        "update_url": "",
+        "update_note": "0.0.2",
+        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/Pneumonia2020/assets/icon.png",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/files/Pneumonia2020.box",
         "isApp": true
     }
 }

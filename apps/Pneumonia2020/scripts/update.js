@@ -1,4 +1,4 @@
-const appVersion = 1;
+const appVersion = 2;
 
 function checkUpdate(jsonUrl, appId) {
     //const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
@@ -21,7 +21,7 @@ function checkUpdate(jsonUrl, appId) {
                                 $console.log("更新：发现更新");
                                 $ui.alert({
                                     title: "发现新版本",
-                                    message: "版本号：" + app.name + "\n你要更新吗?",
+                                    message: "版本号：" + app.name + "\n你要更新吗?\n" + app.update_note,
                                     actions: [{
                                             title: "好的",
                                             disabled: false, // Optional
