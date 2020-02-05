@@ -98,7 +98,7 @@ function initMainMenu() {
 }
 
 function getData() {
-    const urlAllType = "https://3g.dxy.cn/newh5/view/pneumonia";
+    const urlAllType = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
     $http.get({
         url: urlAllType,
         handler: function(_resp) {
