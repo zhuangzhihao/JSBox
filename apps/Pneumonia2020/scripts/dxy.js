@@ -21,7 +21,7 @@ var _foreignTitleDataJson = [];
 var _foreignDataJson = [];
 var _wikiData = [];
 var _imgList = {
-    dailyPic: "",
+    dailyPics: [],
     imgUrl: ""
 };
 
@@ -51,49 +51,47 @@ function initMainMenu() {
             id: "listView_index",
             title: "丁香园·丁香医生"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _menuList
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        if (isLoading) {
-                            $ui.error("请等待加载数据");
-                        } else {
-                            const _idx = indexPath.row;
-                            switch (_idx) {
-                                case 0:
-                                    showHeaderData();
-                                    break;
-                                case 1:
-                                    showMainData();
-                                    break;
-                                case 2:
-                                    showTimeLineData();
-                                    break;
-                                case 3:
-                                    showRumorData();
-                                    break;
-                                case 4:
-                                    showAreaStatData();
-                                    break;
-                                case 5:
-                                    showForeignData();
-                                    break;
-                                case 6:
-                                    showWikiData();
-                                    break;
-                                default:
-                                    $ui.error("错误选项");
-                            }
+        views: [{
+            type: "list",
+            props: {
+                data: _menuList
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    if (isLoading) {
+                        $ui.error("请等待加载数据");
+                    } else {
+                        const _idx = indexPath.row;
+                        switch (_idx) {
+                            case 0:
+                                showHeaderData();
+                                break;
+                            case 1:
+                                showMainData();
+                                break;
+                            case 2:
+                                showTimeLineData();
+                                break;
+                            case 3:
+                                showRumorData();
+                                break;
+                            case 4:
+                                showAreaStatData();
+                                break;
+                            case 5:
+                                showForeignData();
+                                break;
+                            case 6:
+                                showWikiData();
+                                break;
+                            default:
+                                $ui.error("错误选项");
                         }
                     }
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -101,7 +99,7 @@ function getData() {
     const urlAllType = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
     $http.get({
         url: urlAllType,
-        handler: function(_resp) {
+        handler: function (_resp) {
             const mData = _resp.data;
             $console.log("获取数据成功");
             processAllData(mData);
@@ -138,12 +136,13 @@ function getHeaderData(_element) {
             _html = _html.replace(jsonRight, "");
             _headerDataJson = JSON.parse(_html);
             _imgList.imgUrl = _headerDataJson.imgUrl;
-            _imgList.dailyPic = _headerDataJson.dailyPic;
+            _imgList.dailyPics = _headerDataJson.dailyPics;
         }
     });
 }
 
 function showHeaderData() {
+    $console.log(_headerDataJson);
     var messageText =
         "确诊 " +
         _headerDataJson.confirmedCount +
@@ -180,21 +179,25 @@ function showHeaderData() {
         "\n(" +
         _headerDataJson.generalRemark +
         ")";
+    var imageHtml = "";
+    $console.log(_imgList.dailyPics);
+    for (i in _imgList.dailyPics) {
+        imageHtml += "<img src='" + _imgList.dailyPics[i] + "'/>"
+    }
     $ui.alert({
         title: _headerDataJson.note1,
         message: messageText,
-        actions: [
-            {
+        actions: [{
                 title: "分享内容",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     $share.sheet([messageText]);
                 }
             },
             {
                 title: "疫情地图",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     $ui.preview({
                         title: "疫情地图",
                         url: _imgList.imgUrl
@@ -204,29 +207,28 @@ function showHeaderData() {
             {
                 title: "全国疫情形势图",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     $ui.preview({
                         title: "全国疫情形势图",
-                        url: _imgList.dailyPic
+                        html: imageHtml
                     });
                 }
             },
             {
                 title: "查看重要公告",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     showHeaderMarqueeData(_headerDataJson.marquee);
                 }
             },
             {
-                title:
-                    getUpdateTime(_headerDataJson.modifyTime) + "秒前更新数据",
+                title: getUpdateTime(_headerDataJson.modifyTime) + "秒前更新数据",
                 disabled: true
             },
             {
                 title: "关闭",
                 disabled: false, // Optional
-                handler: function() {}
+                handler: function () {}
             }
         ]
     });
@@ -241,40 +243,37 @@ function showHeaderMarqueeData(marqueeDataList) {
         props: {
             title: "重要公告"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: marqueeTitleList
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        const thisMarquee = marqueeDataList[_idx];
-                        $ui.alert({
-                            title: thisMarquee.marqueeLabel,
-                            message: thisMarquee.marqueeContent,
-                            actions: [
-                                {
-                                    title: "打开链接",
-                                    disabled: false, // Optional
-                                    handler: function() {
-                                        $ui.preview({
-                                            title: thisMarquee.marqueeLabel,
-                                            url: thisMarquee.marqueeLink
-                                        });
-                                    }
-                                },
-                                {
-                                    title: "关闭"
+        views: [{
+            type: "list",
+            props: {
+                data: marqueeTitleList
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    const thisMarquee = marqueeDataList[_idx];
+                    $ui.alert({
+                        title: thisMarquee.marqueeLabel,
+                        message: thisMarquee.marqueeContent,
+                        actions: [{
+                                title: "打开链接",
+                                disabled: false, // Optional
+                                handler: function () {
+                                    $ui.preview({
+                                        title: thisMarquee.marqueeLabel,
+                                        url: thisMarquee.marqueeLink
+                                    });
                                 }
-                            ]
-                        });
-                    }
+                            },
+                            {
+                                title: "关闭"
+                            }
+                        ]
+                    });
                 }
             }
-        ]
+        }]
     });
 }
 // 详细数据
@@ -311,21 +310,19 @@ function showMainData() {
         props: {
             title: "各省数据"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _mainTitleDataJson
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        showMainDetailedData(_idx);
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _mainTitleDataJson
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    showMainDetailedData(_idx);
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -408,21 +405,19 @@ function showTimeLineData() {
         props: {
             title: "时间线"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _timeLineTitleData
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        showTimeLineDetailedData(_idx);
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _timeLineTitleData
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    showTimeLineDetailedData(_idx);
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -435,11 +430,10 @@ function showTimeLineDetailedData(_idx) {
     $ui.alert({
         title: _updateDate,
         message: _message,
-        actions: [
-            {
+        actions: [{
                 title: "打开链接",
                 disabled: false, // Optional
-                handler: function() {
+                handler: function () {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -457,10 +451,10 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "分享链接",
-                handler: function() {
+                handler: function () {
                     $share.sheet({
                         items: _url,
-                        handler: function(success) {
+                        handler: function (success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -472,7 +466,7 @@ function showTimeLineDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function() {}
+                handler: function () {}
             }
         ]
     });
@@ -508,21 +502,19 @@ function showRumorData() {
         props: {
             title: "谣言"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _rumorTitleData
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        showRumorDetailedData(_idx);
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _rumorTitleData
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    showRumorDetailedData(_idx);
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -537,11 +529,10 @@ function showRumorDetailedData(_idx) {
     $ui.alert({
         title: _title,
         message: thisItem.mainSummary + "\n\n" + thisItem.body,
-        actions: [
-            {
+        actions: [{
                 title: "打开链接",
                 disabled: isNotUrl, // Optional
-                handler: function() {
+                handler: function () {
                     $ui.preview({
                         title: _title,
                         url: _url
@@ -551,10 +542,10 @@ function showRumorDetailedData(_idx) {
             {
                 title: "分享链接",
                 disabled: isNotUrl, // Optional
-                handler: function() {
+                handler: function () {
                     $share.sheet({
                         items: _url,
-                        handler: function(success) {
+                        handler: function (success) {
                             if (success) {
                                 $ui.toast("分享成功");
                             } else {
@@ -566,7 +557,7 @@ function showRumorDetailedData(_idx) {
             },
             {
                 title: "关闭",
-                handler: function() {}
+                handler: function () {}
             }
         ]
     });
@@ -606,21 +597,19 @@ function showAreaStatData() {
         props: {
             title: "地区排序"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _areaStatProData
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        showAreaStatCityData(_areaStatData[_idx]);
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _areaStatProData
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    showAreaStatCityData(_areaStatData[_idx]);
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -643,34 +632,31 @@ function showAreaStatCityData(_thisPro) {
         props: {
             title: _thisPro.provinceName
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _cityTitleList
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const _idx = indexPath.row;
-                        const thisItem = _cityList[_idx];
-                        $console.log(thisItem);
-                        $ui.alert({
-                            title: thisItem.cityName,
-                            message:
-                                "确诊人数：" +
-                                thisItem.confirmedCount +
-                                "\n疑似人数：" +
-                                thisItem.suspectedCount +
-                                "\n治愈人数：" +
-                                thisItem.curedCount +
-                                "\n死亡人数：" +
-                                thisItem.deadCount
-                        });
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _cityTitleList
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    const thisItem = _cityList[_idx];
+                    $console.log(thisItem);
+                    $ui.alert({
+                        title: thisItem.cityName,
+                        message: "确诊人数：" +
+                            thisItem.confirmedCount +
+                            "\n疑似人数：" +
+                            thisItem.suspectedCount +
+                            "\n治愈人数：" +
+                            thisItem.curedCount +
+                            "\n死亡人数：" +
+                            thisItem.deadCount
+                    });
                 }
             }
-        ]
+        }]
     });
     toastIfNotEmpty(_thisPro.comment);
 }
@@ -707,20 +693,18 @@ function showForeignData() {
         props: {
             title: "国外数据"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: _foreignTitleDataJson
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        showForeignDetailedData(indexPath.row);
-                    }
+        views: [{
+            type: "list",
+            props: {
+                data: _foreignTitleDataJson
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    showForeignDetailedData(indexPath.row);
                 }
             }
-        ]
+        }]
     });
 }
 
@@ -772,41 +756,38 @@ function showWikiData() {
         props: {
             title: "疾病知识"
         },
-        views: [
-            {
-                type: "list",
-                props: {
-                    data: wikiTitleList
-                },
-                layout: $layout.fill,
-                events: {
-                    didSelect: function(_sender, indexPath, _data) {
-                        const item = wikiResult[indexPath.row];
-                        $ui.alert({
-                            title: item.title,
-                            message: item.description,
-                            actions: [
-                                {
-                                    title: "打开链接",
-                                    disabled: false, // Optional
-                                    handler: function() {
-                                        $ui.preview({
-                                            title: item.title,
-                                            url: item.linkUrl
-                                        });
-                                    }
-                                },
-                                {
-                                    title: "关闭",
-                                    disabled: false, // Optional
-                                    handler: function() {}
+        views: [{
+            type: "list",
+            props: {
+                data: wikiTitleList
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const item = wikiResult[indexPath.row];
+                    $ui.alert({
+                        title: item.title,
+                        message: item.description,
+                        actions: [{
+                                title: "打开链接",
+                                disabled: false, // Optional
+                                handler: function () {
+                                    $ui.preview({
+                                        title: item.title,
+                                        url: item.linkUrl
+                                    });
                                 }
-                            ]
-                        });
-                    }
+                            },
+                            {
+                                title: "关闭",
+                                disabled: false, // Optional
+                                handler: function () {}
+                            }
+                        ]
+                    });
                 }
             }
-        ]
+        }]
     });
 }
 // 暴露接口
