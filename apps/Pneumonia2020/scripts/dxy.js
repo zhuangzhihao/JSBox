@@ -176,6 +176,8 @@ function showHeaderData() {
         _headerDataJson.remark1 +
         "\n" +
         _headerDataJson.remark2 +
+        "\n" +
+        _headerDataJson.remark3 +
         "\n(" +
         _headerDataJson.generalRemark +
         ")";
