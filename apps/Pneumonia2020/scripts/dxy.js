@@ -34,7 +34,7 @@ function getNavButton() {
         handler: sender => {
             previewWeb("丁香园·丁香医生", webUrl);
         }
-    }]
+    }];
 }
 
 function previewWeb(title, url) {
