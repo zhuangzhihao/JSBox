@@ -1,6 +1,6 @@
-const update = require("./scripts/update");
-const dxy = require("./scripts/dxy");
-const toutiao = require("./scripts/toutiao");
+const update = require("./scripts/update.js");
+const dxy = require("./scripts/dxy.js");
+const toutiao = require("./scripts/toutiao.js");
 
 const menuList = ["丁香园", "头条热点"];
 

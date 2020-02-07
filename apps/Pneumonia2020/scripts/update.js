@@ -1,13 +1,6 @@
-const appVersion = getVersion();
+const lib = require("./lib.js");
+const appVersion = lib.getVersion();
 
-function getConfig() {
-    const file = $file.read("config.json");
-    return JSON.parse(file);
-}
-
-function getVersion() {
-    return getConfig().info.version;
-}
 
 function checkUpdate(jsonUrl, appId) {
     //const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
@@ -24,21 +17,21 @@ function checkUpdate(jsonUrl, appId) {
                         handler: function (_resp) {
                             const updateData = _resp.data;
                             $console.log("更新：获取服务器数据成功");
-                            const app = updateData[appId];
-                            $console.log(app);
-                            if (app.version > appVersion) {
+                            const _app = updateData[appId];
+                            $console.log(_app);
+                            if (_app.version > appVersion) {
                                 $console.log("更新：发现更新");
                                 $ui.alert({
                                     title: "发现新版本",
-                                    message: "版本号：" + app.version_name + "\n你要更新吗?\n更新内容：\n" + app.update_note,
+                                    message: "版本号：" + _app.version_name + "\n你要更新吗?\n更新内容：\n" + _app.update_note,
                                     actions: [{
                                             title: "好的",
                                             disabled: false, // Optional
                                             handler: function () {
                                                 installJs(
-                                                    app.update_url,
-                                                    app.name,
-                                                    app.update_icon
+                                                    _app.update_url,
+                                                    _app.name,
+                                                    _app.update_icon
                                                 );
                                             }
                                         },

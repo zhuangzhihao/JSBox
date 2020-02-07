@@ -1,3 +1,4 @@
+const lib = require("./lib.js");
 var isLoading = true;
 const webUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
 const _menuList = [
@@ -31,35 +32,10 @@ function getNavButton() {
         title: "打开网页版",
         icon: "068", // Or you can use icon name
         symbol: "checkmark.seal", // SF symbols are supported
-        handler: sender => {
-            previewWeb("丁香园·丁香医生", webUrl);
+        handler: () => {
+            lib.previewWeb("丁香园·丁香医生", webUrl);
         }
     }];
-}
-
-function previewWeb(title, url) {
-    $ui.preview({
-        title: title,
-        url: url
-    });
-}
-
-function json2string(_sourceJson) {
-    return JSON.stringify(_sourceJson);
-}
-
-function toastIfNotEmpty(toastMessage) {
-    if (toastMessage !== "") {
-        $ui.toast(toastMessage);
-    }
-}
-
-function getRealUrl(_sourceUrl) {
-    return _sourceUrl.split(" ​ ")[0];
-}
-
-function getUpdateTime(modifyTime) {
-    return Math.round((new Date() - modifyTime) / 1000);
 }
 
 function initMainMenu() {
@@ -220,7 +196,7 @@ function showHeaderData() {
                 title: "疫情地图",
                 disabled: false, // Optional
                 handler: function () {
-                    previewWeb("疫情地图", _imgList.imgUrl);
+                    lib.previewWeb("疫情地图", _imgList.imgUrl);
                 }
             },
             {
@@ -241,7 +217,7 @@ function showHeaderData() {
                 }
             },
             {
-                title: getUpdateTime(_headerDataJson.modifyTime) + "秒前更新数据",
+                title: lib.getUpdateTime(_headerDataJson.modifyTime) + "秒前更新数据",
                 disabled: true
             },
             {
@@ -279,7 +255,7 @@ function showHeaderMarqueeData(marqueeDataList) {
                                 title: "打开链接",
                                 disabled: false, // Optional
                                 handler: function () {
-                                    previewWeb(thisMarquee.marqueeLabel, thisMarquee.marqueeLink);
+                                    lib.previewWeb(thisMarquee.marqueeLabel, thisMarquee.marqueeLink);
                                 }
                             },
                             {
@@ -344,7 +320,7 @@ function showMainData() {
 
 function showMainDetailedData(_idx) {
     const _jsonData = _mainDataJson[_idx];
-    const updateTime = getUpdateTime(_jsonData.modifyTime);
+    const updateTime = lib.getUpdateTime(_jsonData.modifyTime);
     var messageText =
         "确诊 " +
         _jsonData.confirmedCount.toString() +
@@ -361,7 +337,7 @@ function showMainDetailedData(_idx) {
         title: _jsonData.provinceShortName,
         message: messageText
     });
-    toastIfNotEmpty(_jsonData.comment);
+    lib.toastIfNotEmpty(_jsonData.comment);
     /*
       $ui.push({
           props: {
@@ -442,7 +418,7 @@ function showTimeLineDetailedData(_idx) {
     const _title = thisItem.title;
     const _message = thisItem.summary;
     const _updateDate = thisItem.pubDateStr;
-    const _url = getRealUrl(thisItem.sourceUrl);
+    const _url = lib.getRealUrl(thisItem.sourceUrl);
     $ui.alert({
         title: _updateDate,
         message: _message,
@@ -450,7 +426,7 @@ function showTimeLineDetailedData(_idx) {
                 title: "打开链接",
                 disabled: false, // Optional
                 handler: function () {
-                    previewWeb(_title, _url);
+                    lib.previewWeb(_title, _url);
                 }
             },
             {
@@ -534,7 +510,7 @@ function showRumorData() {
 function showRumorDetailedData(_idx) {
     const thisItem = _rumorData[_idx];
     const _title = thisItem.title;
-    const _url = getRealUrl(thisItem.sourceUrl);
+    const _url = lib.getRealUrl(thisItem.sourceUrl);
     var isNotUrl = false;
     if (_url == "") {
         isNotUrl = true;
@@ -546,7 +522,7 @@ function showRumorDetailedData(_idx) {
                 title: "打开链接",
                 disabled: isNotUrl, // Optional
                 handler: function () {
-                    previewWeb(_title, _url);
+                    lib.previewWeb(_title, _url);
                 }
             },
             {
@@ -668,7 +644,7 @@ function showAreaStatCityData(_thisPro) {
             }
         }]
     });
-    toastIfNotEmpty(_thisPro.comment);
+    lib.toastIfNotEmpty(_thisPro.comment);
 }
 
 // 国外数据
@@ -720,7 +696,7 @@ function showForeignData() {
 
 function showForeignDetailedData(_idx) {
     const _jsonData = _foreignDataJson[_idx];
-    const updateTime = getUpdateTime(_jsonData.modifyTime);
+    const updateTime = lib.getUpdateTime(_jsonData.modifyTime);
     var messageText =
         "确诊 " +
         _jsonData.confirmedCount.toString() +
@@ -737,7 +713,7 @@ function showForeignDetailedData(_idx) {
         title: _jsonData.provinceName,
         message: messageText
     });
-    toastIfNotEmpty(_jsonData.comment);
+    lib.toastIfNotEmpty(_jsonData.comment);
 }
 
 // 疾病知识
@@ -782,7 +758,7 @@ function showWikiData() {
                                 title: "打开链接",
                                 disabled: false, // Optional
                                 handler: function () {
-                                    previewWeb(item.title, item.linkUrl);
+                                    lib.previewWeb(item.title, item.linkUrl);
                                 }
                             },
                             {
