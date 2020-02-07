@@ -2,7 +2,7 @@ const update = require("./scripts/update.js");
 const dxy = require("./scripts/dxy.js");
 const toutiao = require("./scripts/toutiao.js");
 
-const menuList = ["丁香园", "头条热点"];
+const menuList = [$l10n("DINGXIANGYUAN"), $l10n("TOUTIAO")];
 
 function getNavButton() {
     return [{
@@ -44,7 +44,7 @@ $ui.render({
                         dxy.init();
                         break;
                     case 1:
-                        $ui.error("未完成");
+                        toutiao.init();
                         break;
                     default:
                         $ui.error("错误选项");
