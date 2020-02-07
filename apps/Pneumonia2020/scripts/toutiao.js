@@ -37,19 +37,7 @@ function showProvincesList(_provincesList) {
         views: [{
             type: "list",
             props: {
-                data: [{
-                    type: "list",
-                    props: {
-                        data: provincesTitleList
-                    },
-                    layout: $layout.fill,
-                    events: {
-                        didSelect: function (_sender, indexPath, _data) {
-                            const _idx = indexPath.row;
-                            showProvincesInfo(_provincesList[_idx]);
-                        }
-                    }
-                }]
+                data: provincesTitleList
             },
             layout: $layout.fill,
             events: {
