@@ -1,4 +1,13 @@
-const appVersion = 2;
+const appVersion = getVersion();
+
+function getConfig() {
+    const file = $file.read("config.json");
+    return JSON.parse(file);
+}
+
+function getVersion() {
+    return getConfig().info.version;
+}
 
 function checkUpdate(jsonUrl, appId) {
     //const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
