@@ -1,4 +1,5 @@
 var isLoading = true;
+const webUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
 const _menuList = [
     "简单数据",
     "详细数据",
@@ -25,6 +26,24 @@ var _imgList = {
     imgUrl: ""
 };
 
+function getNavButton() {
+    return [{
+        title: "打开网页版",
+        icon: "068", // Or you can use icon name
+        symbol: "checkmark.seal", // SF symbols are supported
+        handler: sender => {
+            previewWeb("丁香园·丁香医生", webUrl);
+        }
+    }]
+}
+
+function previewWeb(title, url) {
+    $ui.preview({
+        title: title,
+        url: url
+    });
+}
+
 function json2string(_sourceJson) {
     return JSON.stringify(_sourceJson);
 }
@@ -49,7 +68,8 @@ function initMainMenu() {
     $ui.push({
         props: {
             id: "listView_index",
-            title: "丁香园·丁香医生"
+            title: "丁香园·丁香医生",
+            navButtons: getNavButton()
         },
         views: [{
             type: "list",
@@ -96,7 +116,7 @@ function initMainMenu() {
 }
 
 function getData() {
-    const urlAllType = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
+    const urlAllType = webUrl;
     $http.get({
         url: urlAllType,
         handler: function (_resp) {
@@ -200,10 +220,7 @@ function showHeaderData() {
                 title: "疫情地图",
                 disabled: false, // Optional
                 handler: function () {
-                    $ui.preview({
-                        title: "疫情地图",
-                        url: _imgList.imgUrl
-                    });
+                    previewWeb("疫情地图", _imgList.imgUrl);
                 }
             },
             {
@@ -262,10 +279,7 @@ function showHeaderMarqueeData(marqueeDataList) {
                                 title: "打开链接",
                                 disabled: false, // Optional
                                 handler: function () {
-                                    $ui.preview({
-                                        title: thisMarquee.marqueeLabel,
-                                        url: thisMarquee.marqueeLink
-                                    });
+                                    previewWeb(thisMarquee.marqueeLabel, thisMarquee.marqueeLink);
                                 }
                             },
                             {
@@ -436,10 +450,7 @@ function showTimeLineDetailedData(_idx) {
                 title: "打开链接",
                 disabled: false, // Optional
                 handler: function () {
-                    $ui.preview({
-                        title: _title,
-                        url: _url
-                    });
+                    previewWeb(_title, _url);
                 }
             },
             {
@@ -535,10 +546,7 @@ function showRumorDetailedData(_idx) {
                 title: "打开链接",
                 disabled: isNotUrl, // Optional
                 handler: function () {
-                    $ui.preview({
-                        title: _title,
-                        url: _url
-                    });
+                    previewWeb(_title, _url);
                 }
             },
             {
@@ -774,10 +782,7 @@ function showWikiData() {
                                 title: "打开链接",
                                 disabled: false, // Optional
                                 handler: function () {
-                                    $ui.preview({
-                                        title: item.title,
-                                        url: item.linkUrl
-                                    });
+                                    previewWeb(item.title, item.linkUrl);
                                 }
                             },
                             {
