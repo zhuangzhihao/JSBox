@@ -11,4 +11,4 @@
 
 2. 使用iOS自带相机扫描二维码安装
 
-![二维码](images/Pneumonia2020.png)
+![二维码](images/Qrcode.png)
