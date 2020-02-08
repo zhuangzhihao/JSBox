@@ -1,9 +1,14 @@
 const update = require("./scripts/update.js");
 const page = require("./scripts/page.js");
-const menuListL10n = ["DINGXIANGYUAN", "TOUTIAO", "TEST_PAGE"];
-var menuList = [];
-for (x in menuListL10n) {
-    menuList.push($l10n(menuListL10n[x]));
+const siteListL10n = ["DINGXIANGYUAN", "TOUTIAO"];
+const moreListL10n = ["TEST_PAGE"];
+var siteList = [];
+for (x in siteListL10n) {
+    siteList.push($l10n(siteListL10n[x]));
+}
+var moreList = [];
+for (x in moreListL10n) {
+    moreList.push($l10n(moreListL10n[x]));
 }
 
 function getNavButton() {
@@ -35,21 +40,40 @@ $ui.render({
     views: [{
         type: "list",
         props: {
-            data: menuList
+            data: [{
+                    title: "站点",
+                    rows: siteList
+                },
+                {
+                    title: "更多",
+                    rows: moreList
+                }
+            ]
         },
         layout: $layout.fill,
         events: {
             didSelect: function (_sender, indexPath, _data) {
-                const _idx = indexPath.row;
-                switch (_idx) {
+                switch (indexPath.section) {
                     case 0:
-                        page.dxy();
+                        switch (indexPath.row) {
+                            case 0:
+                                page.dxy();
+                                break;
+                            case 1:
+                                page.toutiao();
+                                break;
+                            default:
+                                $ui.error("错误选项");
+                        }
                         break;
                     case 1:
-                        page.toutiao();
-                        break;
-                    case 2:
-                        page.test();
+                        switch (indexPath.row) {
+                            case 0:
+                                page.test();
+                                break;
+                            default:
+                                $ui.error("错误选项");
+                        }
                         break;
                     default:
                         $ui.error("错误选项");
