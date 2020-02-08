@@ -1,6 +1,17 @@
-const lib = require("./lib.js");
 const apiUrl = "https://i.snssdk.com/forum/home/v1/info/?forum_id=1656784762444839";
+const webUrl = "https://i.snssdk.com/feoffline/hot_list/template/hot_list/forum_share.html?forum_id=1656388947394568";
 var updateTime = 0;
+
+function getNavButton() {
+    return [{
+        title: "打开网页版",
+        icon: "068", // Or you can use icon name
+        symbol: "checkmark.seal", // SF symbols are supported
+        handler: () => {
+            lib.previewWeb($l10n("TOUTIAO"), webUrl);
+        }
+    }];
+}
 // 全国疫情状况
 function getCountrywideData() {
     $http.get({
@@ -38,7 +49,8 @@ function showAllList(jsonData) {
     }
     $ui.push({
         props: {
-            title: $l10n("TOUTIAO")
+            title: $l10n("TOUTIAO"),
+            navButtons: getNavButton()
         },
         views: [{
             type: "list",
