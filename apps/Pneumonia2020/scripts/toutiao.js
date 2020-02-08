@@ -1,3 +1,4 @@
+const lib = require("./lib.js");
 const apiUrl = "https://i.snssdk.com/forum/home/v1/info/?forum_id=1656784762444839";
 const webUrl = "https://i.snssdk.com/feoffline/hot_list/template/hot_list/forum_share.html?forum_id=1656388947394568";
 var updateTime = 0;
