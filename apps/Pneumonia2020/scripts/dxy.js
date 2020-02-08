@@ -33,7 +33,7 @@ function getNavButton() {
         icon: "068", // Or you can use icon name
         symbol: "checkmark.seal", // SF symbols are supported
         handler: () => {
-            lib.previewWeb("丁香园·丁香医生", webUrl);
+            lib.previewWeb($l10n("DINGXIANGYUAN"), webUrl);
         }
     }];
 }
@@ -44,7 +44,7 @@ function initMainMenu() {
     $ui.push({
         props: {
             id: "listView_index",
-            title: "丁香园·丁香医生",
+            title: $l10n("DINGXIANGYUAN"),
             navButtons: getNavButton()
         },
         views: [{
