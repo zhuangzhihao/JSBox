@@ -5,15 +5,17 @@ function init() {
             bgcolor: $color("clear")
         },
         views: [{
-            type: "label",
+            type: "list",
             props: {
-                id: "label",
-                bgcolor: $color("#474b51"),
-                textColor: $color("#abb2bf"),
-                align: $align.center,
-                font: $font(32)
+                id: "list"
             },
-            layout: $layout.fill
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const _idx = indexPath.row;
+                    //showProvincesInfo(_provincesList[_idx]);
+                }
+            }
         }]
     };
     $ui.push({
@@ -23,16 +25,13 @@ function init() {
         views: [{
             type: "list",
             props: {
-                template: template,
                 data: [{
-                        label: {
-                            text: "Hello"
-                        }
+                        title: "Section 0",
+                        rows: ["0-0", "0-1", "0-2"]
                     },
                     {
-                        label: {
-                            text: "World"
-                        }
+                        title: "Section 1",
+                        rows: ["1-0", "1-1", "1-2"]
                     }
                 ]
             },
@@ -40,6 +39,8 @@ function init() {
             events: {
                 didSelect: function (_sender, indexPath, _data) {
                     const _idx = indexPath.row;
+                    indexPath.title;
+                    $console.info("indexPath.section:" + indexPath.section);
                     $console.info("indexPath.row:" + indexPath.row);
                 }
             }
