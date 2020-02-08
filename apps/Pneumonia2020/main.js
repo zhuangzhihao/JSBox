@@ -80,6 +80,13 @@ $ui.render({
                 }
             }
         }
-    }]
+    }],
+    events: {
+        appeared: function () {
+            $app.tips("右上角的按钮是更新按钮，摇一摇设备也可以触发检测更新");
+        },
+        shakeDetected: function () {
+            checkUpdate();
+        }
+    }
 });
-$app.tips("右上角的按钮是更新按钮");
