@@ -1,0 +1,24 @@
+{
+  "widget" : {
+    "staticSize" : false,
+    "tintColor" : "",
+    "height" : 0,
+    "iconColor" : ""
+  },
+  "info" : {
+    "types" : 15,
+    "author" : "zhuangzhihao",
+    "website" : "https://github.com/zhuangzhihao/JSBox",
+    "name" : "jsTool",
+    "url" : "https://github.com/zhuangzhihao/JSBox",
+    "version" : "0.0.1"
+  },
+  "settings" : {
+    "minOSVer" : "11.0.0",
+    "minSDKVer" : "1.55.0",
+    "rotateDisabled" : false,
+    "autoKeyboardEnabled" : false,
+    "keyboardToolbarEnabled" : false,
+    "idleTimerDisabled" : false
+  }
+}
