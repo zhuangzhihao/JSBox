@@ -12,8 +12,7 @@ function getCountrywideData() {
                 const jsonData = JSON.parse(data.forum.extra.ncov_string_list);
                 $console.info(jsonData);
                 updateTime = jsonData.updateTime;
-                const provincesList = jsonData.provinces;
-                showProvincesList(provincesList);
+                showAllList(jsonData);
             } else {
                 $ui.alert({
                     title: "加载失败",
@@ -24,11 +23,18 @@ function getCountrywideData() {
     });
 }
 
-function showProvincesList(_provincesList) {
+function showAllList(jsonData) {
+    const provincesList = jsonData.provinces;
+    const worldList = jsonData.world;
     var provincesTitleList = [];
-    for (x in _provincesList) {
-        const thisProvince = _provincesList[x];
+    var worldTitleList = [];
+    for (x in provincesList) {
+        const thisProvince = provincesList[x];
         provincesTitleList.push(thisProvince.name + "(" + thisProvince.confirmedNum + ")");
+    }
+    for (x in worldList) {
+        const thisCountry = worldList[x];
+        worldTitleList.push(thisCountry.country + "(" + thisCountry.confirmedNum + ")");
     }
     $ui.push({
         props: {
@@ -37,18 +43,55 @@ function showProvincesList(_provincesList) {
         views: [{
             type: "list",
             props: {
-                data: provincesTitleList
+                footer: {
+                    type: "label",
+                    props: {
+                        height: 20,
+                        text: "updateTime:" + updateTime,
+                        textColor: $color("#AAAAAA"),
+                        align: $align.center,
+                        font: $font(12)
+                    }
+                },
+                data: [{
+                        title: $l10n("CHINA"),
+                        rows: provincesTitleList
+                    },
+                    {
+                        title: $l10n("OTHER"),
+                        rows: worldTitleList
+                    }
+                ]
             },
             layout: $layout.fill,
             events: {
                 didSelect: function (_sender, indexPath, _data) {
-                    const _idx = indexPath.row;
-                    showProvincesInfo(_provincesList[_idx]);
+                    const row = indexPath.row;
+                    const section = indexPath.section;
+                    $console.info(indexPath.section + "-" + indexPath.row);
+                    switch (section) {
+                        case 0:
+                            showProvincesInfo(provincesList[row]);
+                            break;
+                        case 1:
+                            const thisCountry = worldList[row];
+                            $ui.alert({
+                                title: thisCountry.country,
+                                message: "确诊：" + thisCountry.confirmedNum +
+                                    "(+" + thisCountry.confirmedIncr + ")" +
+                                    "\n疑似：" + thisCountry.suspectedNum +
+                                    "\n死亡：" + thisCountry.deathsNum,
+                            });
+                            break;
+                        default:
+                            $ui.error("错误列表");
+                    }
                 }
             }
         }]
     });
 }
+
 
 function showProvincesInfo(provincesData) {
     var cityList = [];
@@ -74,7 +117,7 @@ function showProvincesInfo(provincesData) {
                     $ui.alert({
                         title: thisCity.name,
                         message: "确诊：" + thisCity.confirmedNum + "(+" + thisCity.confirmedIncr + ")" +
-                            "\n疑似：" + thisCity.curesNum +
+                            "\n治愈：" + thisCity.curesNum +
                             "\n死亡：" + thisCity.deathsNum
                     });
                 }
@@ -84,7 +127,7 @@ function showProvincesInfo(provincesData) {
     $ui.alert({
         title: provincesData.name,
         message: "确诊：" + provincesData.confirmedNum + "(+" + provincesData.confirmedIncr + ")" +
-            "\n疑似：" + provincesData.curesNum +
+            "\n治愈：" + provincesData.curesNum +
             "\n死亡：" + provincesData.deathsNum +
             "\n更新日期：" + provincesData.updateDate
     });
