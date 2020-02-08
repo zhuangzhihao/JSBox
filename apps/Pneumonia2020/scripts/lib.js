@@ -32,6 +32,9 @@ function previewWeb(title, url) {
     });
 }
 
+function githubCDN(sourceUrl) {
+
+}
 module.exports = {
     getConfig: getConfig,
     getVersion: getVersion,

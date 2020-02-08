@@ -1,8 +1,10 @@
 const update = require("./scripts/update.js");
-const dxy = require("./scripts/dxy.js");
-const toutiao = require("./scripts/toutiao.js");
-
-const menuList = [$l10n("DINGXIANGYUAN"), $l10n("TOUTIAO")];
+const page = require("./scripts/page.js");
+const menuListL10n = ["DINGXIANGYUAN", "TOUTIAO", "TEST_PAGE"];
+var menuList = [];
+for (x in menuListL10n) {
+    menuList.push($l10n(menuListL10n[x]));
+}
 
 function getNavButton() {
     return [{
@@ -41,10 +43,13 @@ $ui.render({
                 const _idx = indexPath.row;
                 switch (_idx) {
                     case 0:
-                        dxy.init();
+                        page.dxy();
                         break;
                     case 1:
-                        toutiao.init();
+                        page.toutiao();
+                        break;
+                    case 2:
+                        page.test();
                         break;
                     default:
                         $ui.error("错误选项");
