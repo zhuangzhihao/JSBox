@@ -61,7 +61,7 @@ $ui.render({
                         break;
                     case 1:
                         switch (indexPath.row) {
-                            case 1:
+                            case 0:
                                 page.cdn();
                                 break;
                             default:
