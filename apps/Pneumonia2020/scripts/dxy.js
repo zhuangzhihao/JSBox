@@ -97,7 +97,7 @@ function getData() {
         url: urlAllType,
         handler: function (_resp) {
             const mData = _resp.data;
-            $console.log("获取数据成功");
+            console.log("获取数据成功");
             processAllData(mData);
         }
     });
@@ -138,7 +138,7 @@ function getHeaderData(_element) {
 }
 
 function showHeaderData() {
-    $console.log(_headerDataJson);
+    console.log(_headerDataJson);
     var messageText =
         "确诊 " +
         _headerDataJson.confirmedCount +
@@ -178,7 +178,7 @@ function showHeaderData() {
         _headerDataJson.generalRemark +
         ")";
     var imageHtml = "";
-    $console.log(_imgList.dailyPics);
+    console.log(_imgList.dailyPics);
     for (i in _imgList.dailyPics) {
         imageHtml += "<img src='" + _imgList.dailyPics[i] + "'/>"
     }
@@ -611,7 +611,7 @@ function processAreaStatCityData(_json) {
 
 function showAreaStatCityData(_thisPro) {
     // 城市
-    $console.log(_thisPro);
+    console.log(_thisPro);
     const _cityList = _thisPro.cities;
     const _cityTitleList = processAreaStatCityData(_cityList);
     $ui.push({
@@ -628,7 +628,7 @@ function showAreaStatCityData(_thisPro) {
                 didSelect: function (_sender, indexPath, _data) {
                     const _idx = indexPath.row;
                     const thisItem = _cityList[_idx];
-                    $console.log(thisItem);
+                    console.log(thisItem);
                     $ui.alert({
                         title: thisItem.cityName,
                         message: "确诊人数：" +

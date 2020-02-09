@@ -29,7 +29,7 @@ function checkUpdate() {
     update.checkUpdate(serverJsonUrl, appId);
 }
 
-$console.log("main:init");
+console.log("main:init");
 $ui.render({
     props: {
         id: "main",
