@@ -22,7 +22,7 @@ function getType() {
       url: urlSiteList,
       handler: function (resp) {
         const mData = resp.data;
-        $console.log(
+        console.log(
           "siteList: " + mData.Code.toString() + " | " + mData.Message
         );
         setCache(cacheId.siteList, mData);
@@ -32,7 +32,7 @@ function getType() {
     });
   } else {
     $ui.loading(false);
-    $console.log("siteList使用缓存数据");
+    console.log("siteList使用缓存数据");
     checkSiteList(siteListCache);
   }
 }
@@ -49,7 +49,7 @@ function checkSiteList(siteListData) {
         const thisItem = siteList[a];
         itemTitleList.push(thisItem.title);
       }
-      $console.log(itemTitleList);
+      console.log(itemTitleList);
       pushSiteList(itemTitleList);
     }
   } else {
@@ -91,7 +91,7 @@ function getAllType() {
     url: urlAllType,
     handler: function (resp) {
       const mData = resp.data;
-      $console.log("newSiteList使用在线数据");
+      console.log("newSiteList使用在线数据");
       $ui.loading(false);
       showNewSiteList(mData);
     }
@@ -106,10 +106,10 @@ function showNewSiteList(siteCatListData) {
     } else {
       var itemTitleList = [];
       for (x in catList) {
-        $console.log(x);
+        console.log(x);
         itemTitleList.push();
       }
-      $console.log(siteCatListData);
+      console.log(siteCatListData);
       pushSiteList(itemTitleList);
     }
   } else {
@@ -141,7 +141,7 @@ function pushSiteCatList(itemList) {
       }
     ]
   });
-  //$console.log($ui.get("listView_cat"));
+  //console.log($ui.get("listView_cat"));
 }
 // 获取站点内容
 function getSiteInfo(siteId, title) {
@@ -157,21 +157,21 @@ function getSiteInfo(siteId, title) {
       handler: function (resp) {
         const itemListData = resp.data;
         setCache(cacheSiteId, itemListData);
-        $console.log("siteInfo使用在线数据");
+        console.log("siteInfo使用在线数据");
         $ui.loading(false);
         checkSiteInfo(itemListData, siteId, title);
       }
     });
   } else {
-    $console.log(cacheSiteId + ":" + JSON.stringify(siteInfoCache));
-    $console.log("siteInfo使用缓存数据");
+    console.log(cacheSiteId + ":" + JSON.stringify(siteInfoCache));
+    console.log("siteInfo使用缓存数据");
     $ui.loading(false);
     checkSiteInfo(siteInfoCache, siteId, title);
   }
 }
 // 处理站点内容数据
 function checkSiteInfo(siteInfoData, siteId, title) {
-  $console.log(siteInfoData);
+  console.log(siteInfoData);
   const cacheSiteId = cacheId.siteInfo + siteId;
   if (siteInfoData.Code == 0) {
     siteItemList = siteInfoData.Data;

@@ -1,6 +1,6 @@
 const page = require("./scripts/page_init.js");
 const siteListL10n = ["MO_FISH"];
-const moreListL10n = ["TEST_PAGE"];
+const moreListL10n = ["CDN", "TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
     siteList.push($l10n(siteListL10n[x]));
@@ -17,7 +17,7 @@ function getNavButton() {
         symbol: "checkmark.seal", // SF symbols are supported
         handler: () => {
             $ui.menu({
-                items: ["Hello","World"],
+                items: ["Hello", "World"],
                 handler: function (title, idx) {
 
                 }
@@ -25,6 +25,7 @@ function getNavButton() {
         }
     }];
 }
+console.clear();
 $ui.render({
     props: {
         id: "main",
@@ -60,7 +61,8 @@ $ui.render({
                         break;
                     case 1:
                         switch (indexPath.row) {
-                            case 0:
+                            case 1:
+                                page.cdn();
                                 break;
                             default:
                                 $ui.error("错误选项");

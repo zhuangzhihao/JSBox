@@ -42,11 +42,11 @@ function checkUpdate() {
                     url: serverJsonUrl,
                     handler: function (_resp) {
                         const updateData = _resp.data;
-                        $console.log("更新：获取服务器数据成功");
+                        console.log("更新：获取服务器数据成功");
                         const app = updateData[appId];
-                        $console.log(app);
+                        console.log(app);
                         if (app.version > _version) {
-                            $console.log("更新：发现更新");
+                            console.log("更新：发现更新");
                             const updateUrl = "jsbox://import?url=" + $text.URLEncode(app.update_url) +
                                 "&name=" + $text.URLEncode(app.name) + "&icon=" + $text.URLEncode(app.update_icon);
                             $ui.alert({
@@ -64,7 +64,7 @@ function checkUpdate() {
                                 }]
                             });
                         } else {
-                            $console.log("更新：已经是最新版");
+                            console.log("更新：已经是最新版");
                             $ui.toast("已经是最新版");
                         }
                     }
@@ -165,7 +165,7 @@ function getData() {
         url: urlAllType,
         handler: function (_resp) {
             const mData = _resp.data;
-            $console.log("获取数据成功");
+            console.log("获取数据成功");
             processAllData(mData);
         }
     });
@@ -683,7 +683,7 @@ function processAreaStatCityData(_json) {
 
 function showAreaStatCityData(_thisPro) {
     // 城市
-    $console.log(_thisPro);
+    console.log(_thisPro);
     const _cityList = _thisPro.cities;
     const _cityTitleList = processAreaStatCityData(_cityList);
     $ui.push({
@@ -700,7 +700,7 @@ function showAreaStatCityData(_thisPro) {
                 didSelect: function (_sender, indexPath, _data) {
                     const _idx = indexPath.row;
                     const thisItem = _cityList[_idx];
-                    $console.log(thisItem);
+                    console.log(thisItem);
                     $ui.alert({
                         title: thisItem.cityName,
                         message: "确诊人数：" +
