@@ -1,21 +1,32 @@
 const cdn = require("./api/cdn.js");
 
 function init() {
-    checkShare();
-    input();
+    input($context.link);
 }
 
-function checkShare() {
-
+function getClipboardLink() {
+    const clipUrl = $clipboard.link;
+    if (clipUrl == undefined) {
+        return ""
+    }
+    return clipUrl;
 }
 
-function input() {
+function input(inputUrl) {
+    console.info(inputUrl);
+    var sourceUrl = "";
+    if (inputUrl !== undefined && inputUrl.length > 0) {
+        sourceUrl = input;
+    } else {
+        sourceUrl = getClipboardLink();
+    }
     $ui.menu({
         items: [$l10n("IMAGE"), "Github raw"],
         handler: function (title, idx) {
             $input.text({
                 type: $kbType.url,
                 autoFontSize: true,
+                text: sourceUrl,
                 placeholder: "(" + title + ")输入源地址",
                 handler: function (text) {
                     if (text.length > 0) {
