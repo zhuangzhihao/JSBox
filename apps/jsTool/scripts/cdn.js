@@ -13,7 +13,7 @@ function getClipboardLink() {
 }
 
 function input(inputUrl) {
-    console.info(inputUrl);
+    $console.info(inputUrl);
     var sourceUrl = "";
     if (inputUrl !== undefined && inputUrl.length > 0) {
         sourceUrl = input;
@@ -44,7 +44,7 @@ function input(inputUrl) {
                         $ui.error("空白内容");
                     }
                 }
-            })
+            });
         }
     });
 }
