@@ -1,5 +1,5 @@
 function init() {
-    console.info("test.init");
+    $console.info("test.init");
     const template = {
         props: {
             bgcolor: $color("clear")
@@ -40,8 +40,8 @@ function init() {
                 didSelect: function (_sender, indexPath, _data) {
                     const _idx = indexPath.row;
                     indexPath.title;
-                    console.info("indexPath.section:" + indexPath.section);
-                    console.info("indexPath.row:" + indexPath.row);
+                    $console.info("indexPath.section:" + indexPath.section);
+                    $console.info("indexPath.row:" + indexPath.row);
                 }
             }
         }]

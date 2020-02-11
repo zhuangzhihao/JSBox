@@ -19,10 +19,10 @@ function getCountrywideData() {
         url: apiUrl,
         handler: function (resp) {
             var data = resp.data;
-            console.info(data);
+            $console.info(data);
             if (data.err_no == 0) {
                 const jsonData = JSON.parse(data.forum.extra.ncov_string_list);
-                console.info(jsonData);
+                $console.info(jsonData);
                 updateTime = jsonData.updateTime;
                 showAllList(jsonData);
             } else {
@@ -81,7 +81,7 @@ function showAllList(jsonData) {
                 didSelect: function (_sender, indexPath, _data) {
                     const row = indexPath.row;
                     const section = indexPath.section;
-                    console.info(indexPath.section + "-" + indexPath.row);
+                    $console.info(indexPath.section + "-" + indexPath.row);
                     switch (section) {
                         case 0:
                             showProvincesInfo(provincesList[row]);
