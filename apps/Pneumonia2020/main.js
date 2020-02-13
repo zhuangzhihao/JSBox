@@ -1,6 +1,6 @@
 const update = require("./scripts/update.js");
 const page = require("./scripts/page.js");
-const siteListL10n = ["DINGXIANGYUAN", "TOUTIAO"];
+const siteListL10n = ["DINGXIANGYUAN", "TOUTIAO", "GZDAILY"];
 const moreListL10n = ["TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
@@ -61,6 +61,9 @@ $ui.render({
                                 break;
                             case 1:
                                 page.toutiao();
+                                break;
+                            case 2:
+                                page.gzdaily();
                                 break;
                             default:
                                 $ui.error("错误选项");

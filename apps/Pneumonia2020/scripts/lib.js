@@ -32,8 +32,22 @@ function previewWeb(title, url) {
     });
 }
 
+function previewHtml(title, html) {
+    $ui.preview({
+        title: title,
+        html: html
+    });
+}
+
 function githubCDN(sourceUrl) {
 
+}
+
+function httpGet(url, handler) {
+    $http.get({
+        url: url,
+        handler: handler
+    });
 }
 module.exports = {
     getConfig: getConfig,
@@ -42,5 +56,7 @@ module.exports = {
     json2string: json2string,
     getRealUrl: getRealUrl,
     getUpdateTime: getUpdateTime,
-    previewWeb: previewWeb
+    previewWeb: previewWeb,
+    httpGet: httpGet,
+    previewHtml: previewHtml
 };
