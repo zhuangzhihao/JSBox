@@ -6,9 +6,15 @@ const _url = {
     web: "https://cdn.gzdaily.com/wapp/fyMap/index.html",
     api: {
         news: "https://cdn.gzdaily.com/wapp/fyMap/data/news.json", //每日疫情
+        map: "https://cdn.gzdaily.com/wapp/fyMap/data/map.json", //广东省每日数据
         guiji: "https://cdn.gzdaily.com/wapp/fyMap/data/guiji.json", //病例轨迹
     }
 };
+var _data = {
+    global: {
+
+    }
+}
 
 function getNavButton() {
     return [{
@@ -32,7 +38,7 @@ function initMainMenu() {
             props: {
                 data: [{
                         title: "站点",
-                        rows: ["每日疫情"]
+                        rows: ["总体数据", "每日疫情"]
                     },
                     {
                         title: "更多",
@@ -47,6 +53,9 @@ function initMainMenu() {
                         case 0:
                             switch (indexPath.row) {
                                 case 0:
+                                    getGdEverydayData();
+                                    break;
+                                case 1:
                                     getNews();
                                     break;
                                 default:
@@ -95,6 +104,72 @@ function getNews() {
                 }
             }]
         });
+    });
+}
+
+function getGdEverydayData() {
+    lib.httpGet(_url.api.map, function (_resp) {
+        var data = _resp.data;
+        if (data.code == 200 && data.success) {
+            const mapData = data.data;
+            _data.global = mapData.global;
+            const mGlobal = _data.global;
+            const gdDataList = [
+                "确诊：" + mGlobal.confirm,
+                "疑似：" + mGlobal.suspected,
+                "治愈：" + mGlobal.cure,
+                "死亡：" + mGlobal.die,
+                "昨日新增确诊：" + mGlobal.addConfirm,
+                "昨日新增疑似：" + mGlobal.addSuspected,
+                "昨日新增治愈：" + mGlobal.addCure,
+                "昨日新增死亡：" + mGlobal.addDie
+            ]
+            $ui.push({
+                props: {
+                    title: "总体数据",
+                    navButtons: getNavButton()
+                },
+                views: [{
+                    type: "list",
+                    props: {
+                        data: [{
+                                title: "功能",
+                                rows: []
+                            },
+                            {
+                                title: "广东省数据",
+                                rows: gdDataList
+                            }
+                        ],
+                        footer: {
+                            type: "label",
+                            props: {
+                                height: 20,
+                                text: "更新时间：" + mGlobal.time,
+                                textColor: $color("#AAAAAA"),
+                                align: $align.center,
+                                font: $font(12)
+                            }
+                        }
+                    },
+                    layout: $layout.fill,
+                    events: {
+                        didSelect: function (_sender, indexPath, _data) {
+                            switch (indexPath.section) {
+                                case 0:
+                                    switch (indexPath.row) {
+                                        default:
+                                            $ui.error("错误选项");
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }]
+            });
+        } else {
+            $ui.error(data.msg);
+        }
     });
 }
 // 暴露接口
