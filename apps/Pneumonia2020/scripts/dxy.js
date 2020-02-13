@@ -58,8 +58,7 @@ function initMainMenu() {
                     if (isLoading) {
                         $ui.error("请等待加载数据");
                     } else {
-                        const _idx = indexPath.row;
-                        switch (_idx) {
+                        switch (indexPath.row) {
                             case 0:
                                 showHeaderData();
                                 break;
