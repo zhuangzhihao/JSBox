@@ -38,9 +38,6 @@ function getComCode(kuaidiId) {
             "Referer": url,
             "User-Agent": httpUA
         },
-        body: {
-
-        },
         handler: function (resp) {
             _comId = resp.data["auto"][0]["comCode"];
             _comName = resp.data["auto"][0]["name"];
@@ -112,7 +109,7 @@ function init() {
                 $ui.error("请输入快递单号");
             }
         }
-    })
+    });
 }
 module.exports = {
     init: init
