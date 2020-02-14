@@ -1,6 +1,6 @@
 const page = require("./scripts/page_init.js");
 const siteListL10n = ["MO_FISH"];
-const moreListL10n = ["CDN", "KUAIDI", "TEST_PAGE"];
+const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
     siteList.push($l10n(siteListL10n[x]));
@@ -25,7 +25,6 @@ function getNavButton() {
         }
     }];
 }
-console.clear();
 $ui.render({
     props: {
         id: "main",
@@ -67,6 +66,9 @@ $ui.render({
                             case 1:
                                 page.kuaidi();
                                 break;
+                            case 2:
+                                page.smms();
+                                break;
                             default:
                                 $ui.error("错误选项");
                         }
@@ -80,7 +82,6 @@ $ui.render({
     events: {
         appeared: function () {
             $app.tips("右上角的按钮是更新按钮，摇一摇设备也可以触发检测更新");
-            $console.close();
         },
         shakeDetected: function () {
             //摇一摇
