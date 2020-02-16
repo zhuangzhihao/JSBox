@@ -4,3 +4,6 @@
 "NEWS" = "News";
 "MO_FISH" = "mo.fish";
 "IMAGE" = "Image";
+"SCAN_DOCUMENTS" = "Scan documents";
+"SCAN_SUCCESS" = "Scan success";
+"SCAN_FAILED" = "Scan failed";

@@ -4,3 +4,6 @@
 "NEWS" = "新闻";
 "MO_FISH" = "摸鱼热榜";
 "IMAGE" = "图片";
+"SCAN_DOCUMENTS" = "扫描文档";
+"SCAN_SUCCESS" = "扫描成功";
+"SCAN_FAILED" = "扫描失败";
