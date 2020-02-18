@@ -5,9 +5,9 @@ function docScan() {
             if (data.status) {
                 const resultList = data.results;
                 if (resultList.length > 0) {
-                    var imageTitleList = [];
+                    var imageDataList = [];
                     for (i in resultList) {
-                        imageTitleList.push($l10n("IMAGE"));
+                        imageDataList.push(resultList[i].png)
                     }
                     $ui.push({
                         props: {
@@ -16,13 +16,21 @@ function docScan() {
                         views: [{
                             type: "list",
                             props: {
-                                data: imageTitleList
+                                data: ["预览全部图片", "保存全部图片"]
                             },
                             layout: $layout.fill,
                             events: {
                                 didSelect: function (_sender, indexPath, _data) {
-                                    const thisImage = resultList[indexPath.row];
-                                    $quicklook.open(thisImage.png);
+                                    switch (indexPath.row) {
+                                        case 0:
+                                            $quicklook.open({
+                                                list: imageDataList
+                                            });
+                                            break;
+                                        case 1:
+                                            break;
+                                        default:
+                                    }
                                 }
                             }
                         }]
