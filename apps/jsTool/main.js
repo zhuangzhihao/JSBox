@@ -1,6 +1,6 @@
 const page = require("./scripts/page_init.js");
 const siteListL10n = ["MO_FISH"];
-const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "TEST_PAGE"];
+const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
     siteList.push($l10n(siteListL10n[x]));
@@ -74,6 +74,9 @@ $ui.render({
                                 break;
                             case 4:
                                 page.bilibili();
+                                break;
+                            case 5:
+                                page.musicSearch();
                                 break;
                             default:
                                 $ui.error("错误选项");
