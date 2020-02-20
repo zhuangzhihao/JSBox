@@ -1,3 +1,4 @@
+const sys = require("./api/system.js");
 const _apiBase = "https://sm.ms/api/v2";
 const _api = {
     getToken: _apiBase + "/token",
@@ -33,7 +34,7 @@ function getToken(user, pw) {
                 });
                 var success = $file.write({
                     data: resp.rawData,
-                    path: _cacheDir + "getToken_" + new Date().getTime() + ".json"
+                    path: _cacheDir + "getToken_" + sys.getNowUnixTime() + ".json"
                 });
                 $console.info("cache:" + success);
             } else {
@@ -60,7 +61,7 @@ function getProfile(token) {
                 _user.userInfo = data.data;
                 var success = $file.write({
                     data: resp.rawData,
-                    path: _cacheDir + "getProfile_" + new Date().getTime() + ".json"
+                    path: _cacheDir + "getProfile_" +sys.getNowUnixTime() + ".json"
                 });
                 $console.info("cache:" + success);
             } else {
@@ -95,7 +96,7 @@ function uploadImage(token) {
                         $console.info(resp.data);
                         var success = $file.write({
                             data: resp.rawData,
-                            path: _cacheDir + "updateImage_" + new Date().getTime() + ".json"
+                            path: _cacheDir + "updateImage_" + sys.getNowUnixTime() + ".json"
                         });
                         $console.info("cache:" + success);
                     }
