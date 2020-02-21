@@ -132,6 +132,9 @@ function getVideoInfo(vid) {
                                                         url: _biliData.face
                                                     });
                                                     break;
+                                                case 2:
+                                                    getVideo(vid, _biliData);
+                                                    break;
                                                 default:
                                                     $ui.error("不支持");
                                             }
@@ -163,14 +166,110 @@ function getVideoInfo(vid) {
     });
 }
 
+function getVideo(vid, _biliData) {
+    const partList = _biliData.list;
+    var partTitleList = [];
+    for (p in partList) {
+        partTitleList.push(partList[p].part)
+    }
+    $ui.menu({
+        items: partTitleList,
+        handler: function (title, idx) {
+            if (checkAccessKey()) {
+                getVideoData(vid, idx + 1, 116, _userData.access_key); //1080p以上需要带header
+            } else {
+                getVideoData(vid, idx + 1, 80, "");
+            }
+        }
+    });
+}
+
 function getVideoData(vid, page, quality, access_key) {
+    $ui.loading(true);
     $http.get({
         url: _api.getVideoData + "&id=" + vid + "&page=" + page + "&quality=" + quality + "&access_key=" + access_key,
         handler: function (videoResp) {
             var videoData = videoResp.data;
-            if (videoData.code == 0) {
+            if (videoData.status == "OK") {
+                $console.info(videoData);
+                if (videoData.url.length > 0) {
+                    const copyStr = JSON.stringify(videoData.headers);
+                    $http.get({
+                        url: videoData.url,
+                        handler: function (biliResp) {
+                            var biliData = biliResp.data;
+                            $console.info(biliData);
+                            if (biliData.code == 0) {
+                                const downloadList = biliData.data.durl;
+                                var dList = [];
+                                for (i in downloadList) {
+                                    dList.push("第" + (i + 1).toString() + "个文件");
+                                }
+                                $ui.loading(false);
+                                $ui.push({
+                                    props: {
+                                        title: "可下载文件列表"
+                                    },
+                                    views: [{
+                                        type: "list",
+                                        props: {
+                                            data: dList
+                                        },
+                                        layout: $layout.fill,
+                                        events: {
+                                            didSelect: function (_sender, indexPath, data) {
+                                                const thisFile = downloadList[indexPath.row];
+                                                var urlList = [thisFile.url];
+                                                urlList = urlList.concat(thisFile.backup_url);
+                                                $ui.push({
+                                                    props: {
+                                                        title: "可下载文件列表"
+                                                    },
+                                                    views: [{
+                                                        type: "list",
+                                                        props: {
+                                                            data: urlList
+                                                        },
+                                                        layout: $layout.fill,
+                                                        events: {
+                                                            didSelect: function (_sender, idxp, _data) {
+                                                                if (copyStr.length > 0) {
+                                                                    $ui.toast("请复制headers");
+                                                                    $input.text({
+                                                                        placeholder: "",
+                                                                        text: copyStr,
+                                                                        handler: function (text) {
+                                                                            sys.copyToClipboard(copyStr);
+                                                                            $share.sheet([_data]);
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    $share.sheet([_data]);
+                                                                }
+                                                            }
+                                                        }
+                                                    }]
+                                                });
+                                            }
+                                        }
+                                    }]
+                                });
 
+                            } else {
+                                $ui.loading(false);
+                                $ui.alert({
+                                    title: "Error " + biliData.code,
+                                    message: biliData.message,
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    $ui.loading(false);
+                    $ui.error("url.length==0");
+                }
             } else {
+                $ui.loading(false);
                 $ui.alert({
                     title: "Error Code " + videoResp.code,
                     message: videoResp.message,
@@ -393,6 +492,8 @@ module.exports = {
     getUserInfo: getUserInfo,
     saveAccessKey: saveAccessKey,
     init: init,
-    removeAccessKey:removeAccessKey,
+    removeAccessKey: removeAccessKey,
+    getVideoData: getVideoData,
+    getVideo: getVideo,
 
 };
