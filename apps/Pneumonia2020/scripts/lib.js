@@ -39,8 +39,12 @@ function previewHtml(title, html) {
     });
 }
 
-function githubCDN(sourceUrl) {
-
+function getListFromL10n(sourceList) {
+    var l10nList = [];
+    for (i in sourceList) {
+        l10nList.push($l10n(sourceList[i]));
+    }
+    return l10nList;
 }
 
 function httpGet(url, handler) {
@@ -49,6 +53,7 @@ function httpGet(url, handler) {
         handler: handler
     });
 }
+
 module.exports = {
     getConfig: getConfig,
     getVersion: getVersion,
@@ -58,5 +63,6 @@ module.exports = {
     getUpdateTime: getUpdateTime,
     previewWeb: previewWeb,
     httpGet: httpGet,
-    previewHtml: previewHtml
+    previewHtml: previewHtml,
+    getListFromL10n:getListFromL10n
 };

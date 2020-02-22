@@ -1,15 +1,8 @@
 const update = require("./scripts/update.js");
 const page = require("./scripts/page.js");
-const siteListL10n = ["DINGXIANGYUAN", "TOUTIAO", "GZDAILY"];
-const moreListL10n = ["TEST_PAGE"];
-var siteList = [];
-for (x in siteListL10n) {
-    siteList.push($l10n(siteListL10n[x]));
-}
-var moreList = [];
-for (x in moreListL10n) {
-    moreList.push($l10n(moreListL10n[x]));
-}
+const lib = require("./scripts/lib.js");
+const siteList = ["DINGXIANGYUAN", "TOUTIAO", "GZDAILY"];
+const moreList = ["口罩购买", "TEST_PAGE"];
 
 function getNavButton() {
     return [{
@@ -40,13 +33,14 @@ $ui.render({
     views: [{
         type: "list",
         props: {
+            style: 2,
             data: [{
                     title: "站点",
-                    rows: siteList
+                    rows: lib.getListFromL10n(siteList)
                 },
                 {
                     title: "更多",
-                    rows: moreList
+                    rows: lib.getListFromL10n(moreList)
                 }
             ]
         },
@@ -72,6 +66,9 @@ $ui.render({
                     case 1:
                         switch (indexPath.row) {
                             case 0:
+                                page.maskLookup();
+                                break;
+                            case 1:
                                 page.test();
                                 break;
                             default:
