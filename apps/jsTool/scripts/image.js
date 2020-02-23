@@ -1,3 +1,22 @@
+let app = require("./api/app.js");
+
+function girlImage() {
+    const url = "https://api.isoyu.com/mm_images.jsp";
+    $ui.preview({
+        title: "Girl image",
+        url: url
+    });
+}
+
+function bingDailyImage() {
+    const url = "https://api.isoyu.com/bing_images.jsp";
+    /* $ui.preview({
+        title: "Bing daily image",
+        url: url
+    }); */
+    $quicklook.open(url);
+}
+
 function docScan() {
     $photo.scan({
         handler: data => {
@@ -16,7 +35,7 @@ function docScan() {
                         views: [{
                             type: "list",
                             props: {
-                                data: ["预览全部图片", "保存全部图片"]
+                                data: app.getListFromL10n(["预览全部图片", "保存全部图片"])
                             },
                             layout: $layout.fill,
                             events: {
@@ -26,8 +45,6 @@ function docScan() {
                                             $quicklook.open({
                                                 list: imageDataList
                                             });
-                                            break;
-                                        case 1:
                                             break;
                                         default:
                                     }
@@ -60,7 +77,7 @@ function init() {
         views: [{
             type: "list",
             props: {
-                data: [$l10n("SCAN_DOCUMENTS")]
+                data: app.getListFromL10n(["SCAN_DOCUMENTS", "BING_DAILY_IMAGE","GIRL_IMAGE"])
             },
             layout: $layout.fill,
             events: {
@@ -69,12 +86,19 @@ function init() {
                         case 0:
                             docScan();
                             break;
+                        case 1:
+                            bingDailyImage();
+                            break;
+                        case 2:
+                            girlImage();
+                            break;
                     }
                 }
             }
         }]
     });
 }
+
 module.exports = {
     init: init
 };

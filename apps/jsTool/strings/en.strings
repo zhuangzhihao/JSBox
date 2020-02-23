@@ -7,3 +7,8 @@
 "SCAN_DOCUMENTS" = "Scan documents";
 "SCAN_SUCCESS" = "Scan success";
 "SCAN_FAILED" = "Scan failed";
+"MUSIC_SEARCH" = "Music search";
+"BILIBILI" = "Bilibili";
+"ZHIHU_DAILY" = "Zhihu daily";
+"SM_MS" = "sm.ms";
+"MORE" = "More";

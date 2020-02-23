@@ -7,3 +7,7 @@
 "SCAN_DOCUMENTS" = "扫描文档";
 "SCAN_SUCCESS" = "扫描成功";
 "SCAN_FAILED" = "扫描失败";
+"MUSIC_SEARCH" = "音乐搜索";
+"BILIBILI" = "哔哩哔哩";
+"ZHIHU_DAILY" = "知乎日报";
+"MORE" = "更多";

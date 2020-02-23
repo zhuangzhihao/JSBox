@@ -1,6 +1,6 @@
 const page = require("./scripts/page_init.js");
 const siteListL10n = ["MO_FISH"];
-const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "TEST_PAGE"];
+const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
     siteList.push($l10n(siteListL10n[x]));
@@ -40,7 +40,7 @@ $ui.render({
                     rows: siteList
                 },
                 {
-                    title: "更多",
+                    title: $l10n("更多"),
                     rows: moreList
                 }
             ]
@@ -77,6 +77,9 @@ $ui.render({
                                 break;
                             case 5:
                                 page.musicSearch();
+                                break;
+                            case 6:
+                                page.zhihuDaily();
                                 break;
                             default:
                                 $ui.error("错误选项");
