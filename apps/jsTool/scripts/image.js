@@ -77,7 +77,7 @@ function init() {
         views: [{
             type: "list",
             props: {
-                data: app.getListFromL10n(["SCAN_DOCUMENTS", "BING_DAILY_IMAGE","GIRL_IMAGE"])
+                data: app.getListFromL10n(["SCAN_DOCUMENTS"])
             },
             layout: $layout.fill,
             events: {
