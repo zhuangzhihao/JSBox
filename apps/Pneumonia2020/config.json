@@ -11,11 +11,11 @@
     "website": "https://github.com/zhuangzhihao/JSBox",
     "name": "Pneumonia2020",
     "url": "https://github.com/zhuangzhihao/JSBox",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "settings": {
-    "minOSVer": "11.0.0",
-    "minSDKVer": "1.60.0",
+    "minOSVer": "13.0.0",
+    "minSDKVer": "2.0.0",
     "rotateDisabled": false,
     "autoKeyboardEnabled": false,
     "keyboardToolbarEnabled": false,

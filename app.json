@@ -12,9 +12,9 @@
     "io.zhihao.jsbox.pneumonia2020": {
         "name": "Pneumonia2020",
         "version": 2,
-        "version_name": "0.0.3",
+        "version_name": "0.0.4",
         "update_time": 0,
-        "update_note": "新增《头条热点》",
+        "update_note": "新增《口罩购买》，最低版本：JSBox 2.0.0+、iOS 13+",
         "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/Pneumonia2020/assets/icon.png",
         "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/download/Pneumonia2020.box",
         "isApp": true
