@@ -15,6 +15,17 @@ var _userData = {
 };
 const _cacheDir = ".cache/bilibili/";
 
+function getVidFromUrl(url) {
+    const siteList = ['https://', 'http://', "b23.tv/", "www.bilibili.com/", "av"];
+    var newUrl = url;
+    siteList.map(x => {
+        if (newUrl.startsWith(x)) {
+            newUrl = newUrl.replace(x, "");
+        }
+    });
+    return newUrl;
+}
+
 function saveCache(mode, str) {
     $file.mkdir(_cacheDir + mode);
     return $file.write({
@@ -495,5 +506,6 @@ module.exports = {
     removeAccessKey: removeAccessKey,
     getVideoData: getVideoData,
     getVideo: getVideo,
+    getVidFromUrl: getVidFromUrl,
 
 };

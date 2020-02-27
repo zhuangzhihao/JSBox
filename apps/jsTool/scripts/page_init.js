@@ -6,6 +6,7 @@ let image = require("./image.js");
 let bilibili = require("./bilibili.js");
 let musicSearch = require("./music_search.js");
 let zhihuDaily = require("./zhihu_daily.js");
+let acfun = require("./acfun.js");
 module.exports = {
     mofish: mofish.init,
     cdn: cdn.init,
@@ -13,7 +14,7 @@ module.exports = {
     smms: smmsv2.init,
     image: image.init,
     bilibili: bilibili.init,
-    musicSearch:musicSearch.init,
-    zhihuDaily:zhihuDaily.init,
-
+    musicSearch: musicSearch.init,
+    zhihuDaily: zhihuDaily.init,
+    acfun: acfun.init
 };

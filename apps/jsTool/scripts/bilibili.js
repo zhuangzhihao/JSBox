@@ -19,16 +19,50 @@ function init() {
                 didSelect: function (_sender, indexPath, _data) {
                     switch (indexPath.row) {
                         case 0:
-                            $input.text({
-                                type: $kbType.number,
-                                autoFontSize: true,
-                                text: debugVid,
-                                placeholder: "输入视频id(不包含av)",
-                                handler: function (text) {
-                                    if (text.length > 0) {
-                                        biliApi.getVideoInfo(text);
-                                    } else {
-                                        $ui.error("空白id");
+                            $ui.menu({
+                                items: ["打开网址", "通过vid"],
+                                handler: function (title, idx) {
+                                    switch (idx) {
+                                        case 0:
+                                            $input.text({
+                                                type: $kbType.url,
+                                                autoFontSize: true,
+                                                text: `https://b23.tv/av${debugVid}`,
+                                                placeholder: "输入视频网址",
+                                                handler: function (url) {
+                                                    if (url.length > 0) {
+                                                        const vid = biliApi.getVidFromUrl(url);
+                                                        if (vid.length > 0) {
+                                                            $console.info(`url:${url}\nvid:${vid}`);
+                                                            biliApi.getVideoInfo(vid);
+                                                        } else if (vid == url) {
+                                                            $console.error(`url:${url}\nvid:${vid}`);
+                                                            $ui.error("解析网址失败");
+                                                        } else {
+                                                            $console.error(`url:${url}\nvid:${vid}`);
+                                                            $ui.error("空白id");
+                                                        }
+                                                    } else {
+                                                        $ui.error("空白网址");
+                                                    }
+                                                }
+                                            });
+                                            break;
+                                        case 1:
+                                            $input.text({
+                                                type: $kbType.number,
+                                                autoFontSize: true,
+                                                text: debugVid,
+                                                placeholder: "输入视频id(不包含av)",
+                                                handler: function (vid) {
+                                                    if (vid.length > 0) {
+                                                        biliApi.getVideoInfo(vid);
+                                                    } else {
+                                                        $ui.error("空白id");
+                                                    }
+                                                }
+                                            });
+                                            break;
                                     }
                                 }
                             });
