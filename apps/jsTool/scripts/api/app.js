@@ -1,9 +1,5 @@
 let getListFromL10n = sourceList => {
-  var l10nList = [];
-  for (i in sourceList) {
-    l10nList.push($l10n(sourceList[i]));
-  }
-  return l10nList;
+  return sourceList.map(x => $l10n(x));
 };
 module.exports = {
   getListFromL10n,

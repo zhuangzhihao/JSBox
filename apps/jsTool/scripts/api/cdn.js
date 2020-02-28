@@ -16,16 +16,13 @@ let getWeserv = imageUrl => {
 };
 
 let getGithubRealRaw = sourceGithubUrl => {
-    if (sourceGithubUrl.indexOf("https://raw.githubusercontent.com/") > -1) {
-        return sourceGithubUrl;
-    } else {
-        if (sourceGithubUrl.replace("https://github.com/").split("/")[2] == "blob") {
-            return sourceGithubUrl.replace("https://github.com/", "https://raw.githubusercontent.com/").replace("/blob/", "/");
-        } else {
-            return sourceGithubUrl.replace("https://github.com/", "https://raw.githubusercontent.com/").replace("/raw/", "/");
-        }
+    const newUrl = sourceGithubUrl.replace("https://github.com/", "https://raw.githubusercontent.com/");
+    return sourceGithubUrl.indexOf("https://raw.githubusercontent.com/") > -1 ?
+        sourceGithubUrl :
+        (newUrl.split("/")[2] == "blob" ?
+            newUrl.replace("/blob/", "/") :
+            newUrl.replace("/raw/", "/"));
 
-    }
 };
 
 let getGithubRaw = sourceGithubUrl => {
@@ -44,6 +41,6 @@ let getGithubRaw = sourceGithubUrl => {
 };
 
 module.exports = {
-    weserv: getWeserv,
-    githubRaw: getGithubRaw
+    getWeserv,
+    getGithubRaw
 };
