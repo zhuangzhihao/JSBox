@@ -6,10 +6,7 @@ var _comName = "";
 
 function getLastId() {
     const _id = $cache.get(cacheId);
-    if (_id == undefined) {
-        return "";
-    }
-    return _id;
+    return _id?_id:"";
 }
 
 function getNavButton() {

@@ -6,20 +6,12 @@ let init = () => {
 
 let getClipboardLink = () => {
     const clipUrl = $clipboard.link;
-    if (clipUrl == undefined) {
-        return ""
-    }
-    return clipUrl;
+    return clipUrl ? clipUrl : "";
 };
 
 let input = inputUrl => {
     $console.info(inputUrl);
-    var sourceUrl = "";
-    if (inputUrl !== undefined && inputUrl.length > 0) {
-        sourceUrl = input;
-    } else {
-        sourceUrl = getClipboardLink();
-    }
+    const sourceUrl = (inputUrl && inputUrl.length > 0) ? inputUrl : getClipboardLink();
     $ui.menu({
         items: [$l10n("IMAGE"), "Github raw"],
         handler: function (title, idx) {
@@ -27,7 +19,7 @@ let input = inputUrl => {
                 type: $kbType.url,
                 autoFontSize: true,
                 text: sourceUrl,
-                placeholder: "(" + title + ")输入源地址",
+                placeholder: `(${title})输入源地址`,
                 handler: function (text) {
                     if (text.length > 0) {
                         switch (idx) {

@@ -1,5 +1,5 @@
 function toastIfNotEmpty(toastMessage) {
-    if (toastMessage !== "") {
+    if (toastMessage != "") {
         $ui.toast(toastMessage);
     }
 }

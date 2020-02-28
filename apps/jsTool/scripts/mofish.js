@@ -17,7 +17,11 @@ function init() {
 // 旧版获取站点列表
 function getType() {
   const siteListCache = getCache(cacheId.siteList);
-  if (!isCache || siteListCache == undefined) {
+  if (isCache && siteListCache) {
+    $ui.loading(false);
+    $console.info("siteList使用缓存数据");
+    checkSiteList(siteListCache);
+  } else {
     const urlSiteList = "https://www.tophub.fun:8080/GetType";
     $http.get({
       url: urlSiteList,
@@ -29,10 +33,6 @@ function getType() {
         checkSiteList(mData);
       }
     });
-  } else {
-    $ui.loading(false);
-    $console.info("siteList使用缓存数据");
-    checkSiteList(siteListCache);
   }
 }
 // 处理站点列表数据
@@ -43,11 +43,7 @@ function checkSiteList(siteListData) {
       $ui.error("空白列表");
       $cache.remove(cacheId.siteList);
     } else {
-      var itemTitleList = [];
-      for (var a = 0; a < siteList.length; a++) {
-        const thisItem = siteList[a];
-        itemTitleList.push(thisItem.title);
-      }
+      const itemTitleList = siteList.map(x => x.title);
       $console.info(itemTitleList);
       pushSiteList(itemTitleList);
     }
@@ -144,11 +140,14 @@ function getSiteInfo(siteId, title) {
   siteItemList = [];
   const cacheSiteId = cacheId.siteInfo + siteId;
   const siteInfoCache = getCache(cacheSiteId);
-  if (siteInfoCache == undefined || !isCache) {
-    const urlSiteInfo =
-      "https://www.tophub.fun:8888/GetAllInfoGzip?id=" + siteId.toString();
+  if (siteInfoCache && isCache) {
+    $console.info(`${cacheSiteId}:${JSON.stringify(siteInfoCache)}`);
+    $console.info("siteInfo使用缓存数据");
+    $ui.loading(false);
+    checkSiteInfo(siteInfoCache, siteId, title);
+  } else {
     $http.get({
-      url: urlSiteInfo,
+      url: `https://www.tophub.fun:8888/GetAllInfoGzip?id=${siteId.toString()}`,
       handler: function (resp) {
         const itemListData = resp.data;
         setCache(cacheSiteId, itemListData);
@@ -157,11 +156,6 @@ function getSiteInfo(siteId, title) {
         checkSiteInfo(itemListData, siteId, title);
       }
     });
-  } else {
-    $console.info(cacheSiteId + ":" + JSON.stringify(siteInfoCache));
-    $console.info("siteInfo使用缓存数据");
-    $ui.loading(false);
-    checkSiteInfo(siteInfoCache, siteId, title);
   }
 }
 // 处理站点内容数据
@@ -225,9 +219,9 @@ function getCache(thisCacheId) {
     const lastCacheTime = $cache.get(cacheId.lastCacheTime);
     const mCache = $cache.get(thisCacheId);
     $console.info(mCache);
-    if (mCache !== undefined) {
+    if (mCache != undefined) {
       if (
-        lastCacheTime !== undefined &&
+        lastCacheTime != undefined &&
         getNowUnixTime() - lastCacheTime < 3600
       ) {
         return mCache;
@@ -238,12 +232,10 @@ function getCache(thisCacheId) {
 }
 
 function getNowUnixTime() {
-  const dateTime = Date.now();
-  const timestamp = Math.floor(dateTime / 1000);
-  return timestamp;
+  return Math.floor(Date.now() / 1000);
 }
 
 // 开始初始化
 module.exports = {
-  init: init
+  init
 };

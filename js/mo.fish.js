@@ -234,9 +234,9 @@ function getCache(thisCacheId) {
     const lastCacheTime = $cache.get(cacheId.lastCacheTime);
     const mCache = $cache.get(thisCacheId);
     console.log(mCache);
-    if (mCache !== undefined) {
+    if (mCache != undefined) {
       if (
-        lastCacheTime !== undefined &&
+        lastCacheTime != undefined &&
         getNowUnixTime() - lastCacheTime < 3600
       ) {
         return mCache;

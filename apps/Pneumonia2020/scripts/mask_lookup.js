@@ -171,9 +171,7 @@ function showRegionPicker(regionList) {
 
 function initView() {
     const cacheData = $cache.get(cacheKey);
-    if (cacheData !== undefined) {
-        regionData = cacheData;
-    }
+    regionData = cacheData ? cacheData : regionData;
     $ui.push({
         props: {
             title: $l10n("口罩购买")

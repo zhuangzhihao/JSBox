@@ -109,9 +109,7 @@ let uploadImage = token => {
 };
 
 let getHeader = token => {
-    if (token !== undefined) {
-        _user.token = token;
-    }
+    _user.token = token ? token : ""
     $console.info(_user);
     return {
         "Content-Type": "multipart/form-data",

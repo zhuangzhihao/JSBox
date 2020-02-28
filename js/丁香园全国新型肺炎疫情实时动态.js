@@ -82,7 +82,7 @@ function json2string(_sourceJson) {
 }
 
 function toastIfNotEmpty(toastMessage) {
-    if (toastMessage !== "") {
+    if (toastMessage != "") {
         $ui.toast(toastMessage);
     }
 }
