@@ -1,26 +1,26 @@
-const _api = {
+let _api = {
     search: "https://api.wispx.cn/music/search",
     download: "https://api.wispx.cn/music/url",
     pic: "https://api.wispx.cn/music/pic",
 };
-const siteList = ["netease", "tencent", "xiami", "kugou", "baidu"];
+let siteList = ["netease", "tencent", "xiami", "kugou", "baidu"];
 var siteId = 0;
 
-function getSiteIdList() {
+let getSiteIdList = () => {
     return siteList;
-}
+};
 
-function getSiteListWithChoose() {
+let getSiteListWithChoose = () => {
     var _list = ["netease", "tencent", "xiami", "kugou", "baidu"];
     _list[siteId] = _list[siteId] + " √";
     return _list;
-}
+};
 
-function setSiteId(siteIndex) {
+let setSiteId = siteIndex => {
     siteId = siteIndex;
-}
+};
 
-function getDownloadUrl(siteId, songId) {
+let getDownloadUrl = (siteId, songId) => {
     $ui.loading(true);
     $http.get({
         url: _api.download + "?type=" + siteId + "&id=" + songId,
@@ -91,9 +91,9 @@ function getDownloadUrl(siteId, songId) {
             }
         }
     });
-}
+};
 
-function getSongPic(siteId, songId) {
+let getSongPic = (siteId, songId) => {
     $ui.loading(true);
     $http.get({
         url: _api.pic + "?type=" + siteId + "&id=" + songId,
@@ -117,9 +117,9 @@ function getSongPic(siteId, songId) {
             }
         }
     });
-}
+};
 
-function search(siteId, keyword) {
+let search = (siteId, keyword) => {
     $ui.loading(true);
     $http.get({
         url: _api.search + "?type=" + siteId + "&keywords=" + encodeURI(keyword),
@@ -211,11 +211,11 @@ function search(siteId, keyword) {
             }
         }
     });
-}
+};
 
-function searchByDefaultSite(keyword) {
+let searchByDefaultSite = keyword => {
     search(siteList[siteId], keyword);
-}
+};
 module.exports = {
     search: search,
     getSiteIdList: getSiteIdList,

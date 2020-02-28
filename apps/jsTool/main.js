@@ -1,16 +1,16 @@
-const page = require("./scripts/page_init.js");
-const siteListL10n = ["MO_FISH"];
-const moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "TEST_PAGE"];
+let page = require("./scripts/page_init.js");
+let siteListL10n = ["MO_FISH"];
+let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "TEST_PAGE"];
 var siteList = [];
 for (x in siteListL10n) {
     siteList.push($l10n(siteListL10n[x]));
-}
+};
 var moreList = [];
 for (x in moreListL10n) {
     moreList.push($l10n(moreListL10n[x]));
-}
+};
 
-function getNavButton() {
+let getNavButton = () => {
     return [{
         title: $l10n("MENU"),
         icon: "067", // Or you can use icon name
@@ -24,7 +24,7 @@ function getNavButton() {
             });
         }
     }];
-}
+};
 $ui.render({
     props: {
         id: "main",

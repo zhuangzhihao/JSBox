@@ -1,7 +1,7 @@
-const biliApi = require("./api/bilibili.js");
-const debugVid = "90035938";
+let biliApi = require("./api/bilibili.js");
+let debugVid = "90035938";
 
-function init() {
+let init = () => {
     if (biliApi.init()) {
         $ui.toast("已登录");
     }
@@ -105,9 +105,9 @@ function init() {
             }
         }]
     });
-}
+};
 
-function login() {
+let login = () => {
     $ui.menu({
         items: ["输入Access key(推荐)", "账号密码(明文)"],
         handler: function (_title, idx) {
@@ -151,7 +151,7 @@ function login() {
             }
         }
     });
-}
+};
 module.exports = {
     init: init,
 };

@@ -1,18 +1,18 @@
-const cdn = require("./api/cdn.js");
+let cdn = require("./api/cdn.js");
 
-function init() {
+let init = () => {
     input($context.link);
-}
+};
 
-function getClipboardLink() {
+let getClipboardLink = () => {
     const clipUrl = $clipboard.link;
     if (clipUrl == undefined) {
         return ""
     }
     return clipUrl;
-}
+};
 
-function input(inputUrl) {
+let input = inputUrl => {
     $console.info(inputUrl);
     var sourceUrl = "";
     if (inputUrl !== undefined && inputUrl.length > 0) {
@@ -47,9 +47,9 @@ function input(inputUrl) {
             });
         }
     });
-}
+};
 
-function showResult(_title, resultUrl) {
+let showResult = (_title, resultUrl) => {
     $ui.alert({
         title: _title,
         message: resultUrl,
@@ -91,7 +91,7 @@ function showResult(_title, resultUrl) {
             title: "关闭"
         }]
     });
-}
+};
 module.exports = {
     init: init
 };

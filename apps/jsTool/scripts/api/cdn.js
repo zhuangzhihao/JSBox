@@ -1,4 +1,4 @@
-const cdnUrl = {
+let cdnUrl = {
     weserv: "https://images.weserv.nl/?url=",
     github: {
         releases: {
@@ -11,11 +11,11 @@ const cdnUrl = {
     }
 };
 
-function getWeserv(imageUrl) {
+let getWeserv = imageUrl => {
     return cdnUrl.weserv + imageUrl;
-}
+};
 
-function getGithubRealRaw(sourceGithubUrl) {
+let getGithubRealRaw = sourceGithubUrl => {
     if (sourceGithubUrl.indexOf("https://raw.githubusercontent.com/") > -1) {
         return sourceGithubUrl;
     } else {
@@ -26,26 +26,23 @@ function getGithubRealRaw(sourceGithubUrl) {
         }
 
     }
-}
+};
 
-function getGithubRaw(sourceGithubUrl) {
-    //https://github.com/zhuangzhihao/JSBox/raw/master/apps/jsTool/scripts/api/cdn.js
-    //https://raw.githubusercontent.com/zhuangzhihao/JSBox/master/README.md
-    //https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/README.md
+let getGithubRaw = sourceGithubUrl => {
     var newUrl = getGithubRealRaw(sourceGithubUrl);
     const list = newUrl.replace("https://raw.githubusercontent.com/", "").split("/");
     newUrl = "https://cdn.jsdelivr.net/gh";
     for (x in list) {
         switch (x.toString()) {
             case "2":
-                newUrl = newUrl + "@" + list[x];
+                newUrl = `${newUrl}@${list[x]}`;
                 break;
             default:
-                newUrl = newUrl + "/" + list[x]
+                newUrl = `${newUrl}/${list[x]}`;
         }
     }
     return newUrl;
-}
+};
 
 module.exports = {
     weserv: getWeserv,

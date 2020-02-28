@@ -1,21 +1,21 @@
-const sys = require("./system.js");
-const _api = {
+let sys = require("./system.js");
+let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true",
     getAccessKey: "https://api.kaaass.net/biliapi/user/login?jsonerr=true&direct=true",
     getUserInfo: "https://api.kaaass.net/biliapi/user/info?jsonerr=true",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true&direct=true",
 };
-const _cacheKey = {
+let _cacheKey = {
     access_key: "bilibili_access_key"
 };
 var _userData = {
     access_key: "",
     loginData: {},
 };
-const _cacheDir = ".cache/bilibili/";
+let _cacheDir = ".cache/bilibili/";
 
-function getVidFromUrl(url) {
+let getVidFromUrl = url => {
     const siteList = ['https://', 'http://', "b23.tv/", "www.bilibili.com/", "av"];
     var newUrl = url;
     siteList.map(x => {
@@ -24,35 +24,35 @@ function getVidFromUrl(url) {
         }
     });
     return newUrl;
-}
+};
 
-function saveCache(mode, str) {
+let saveCache = (mode, str) => {
     $file.mkdir(_cacheDir + mode);
     return $file.write({
         data: str,
         path: _cacheDir + mode + "/" + sys.getNowUnixTime() + ".json"
     });
-}
+};
 
-function saveAccessKey(access_key) {
+let saveAccessKey = access_key => {
     _userData.access_key = access_key;
     $cache.set(_cacheKey.access_key, access_key);
     $ui.toast("已保存access key");
-}
+};
 
-function loadAccessKey() {
+let loadAccessKey = () => {
     const cacheKey = $cache.get(_cacheKey.access_key);
     if (cacheKey) {
         _userData.access_key = cacheKey;
     }
-}
+};
 
-function removeAccessKey() {
+let removeAccessKey = () => {
     $cache.remove(_cacheKey.access_key);
     $ui.toast("已清除access key");
-}
+};
 
-function checkAccessKey() {
+let checkAccessKey = () => {
     if (_userData.access_key) {
         return true;
     } else {
@@ -63,9 +63,9 @@ function checkAccessKey() {
         }
         return false;
     }
-}
+};
 
-function getVideoInfo(vid) {
+let getVideoInfo = vid => {
     // https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=90035938
     $http.get({
         url: _api.getVideoInfo + vid,
@@ -175,9 +175,9 @@ function getVideoInfo(vid) {
             }
         }
     });
-}
+};
 
-function getVideo(vid, _biliData) {
+let getVideo = (vid, _biliData) => {
     const partList = _biliData.list;
     var partTitleList = [];
     for (p in partList) {
@@ -193,9 +193,9 @@ function getVideo(vid, _biliData) {
             }
         }
     });
-}
+};
 
-function getVideoData(vid, page, quality, access_key) {
+let getVideoData = (vid, page, quality, access_key) => {
     $ui.loading(true);
     $http.get({
         url: _api.getVideoData + "&id=" + vid + "&page=" + page + "&quality=" + quality + "&access_key=" + access_key,
@@ -289,9 +289,9 @@ function getVideoData(vid, page, quality, access_key) {
 
         }
     });
-}
+};
 
-function getAccessKey(userName, password) {
+let getAccessKey = (userName, password) => {
     $ui.loading(true);
     $http.post({
         url: _api.getAccessKey,
@@ -318,9 +318,9 @@ function getAccessKey(userName, password) {
             }
         }
     });
-}
+};
 
-function loginBilibili(loginUrl, bodyStr, headers) {
+let loginBilibili = (loginUrl, bodyStr, headers) => {
     var passportBody = {};
     const bodyList = bodyStr.split("&");
     for (b in bodyList) {
@@ -357,9 +357,9 @@ function loginBilibili(loginUrl, bodyStr, headers) {
             }
         }
     });
-}
+};
 
-function getUserInfo() {
+let getUserInfo = () => {
     // furtherInfo: 是否获取详细用户信息
     if (checkAccessKey()) {
         const url = _api.getUserInfo + "&access_key=" + _userData.access_key + "&furtherInfo=true";
@@ -489,13 +489,13 @@ function getUserInfo() {
         $ui.loading(false);
         $ui.error("未登录！");
     }
-}
+};
 
-function init() {
+let init = () => {
     //初始化，加载缓存
     loadAccessKey();
     return checkAccessKey();
-}
+};
 module.exports = {
     getVideoInfo: getVideoInfo,
     getAccessKey: getAccessKey,

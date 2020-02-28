@@ -1,15 +1,15 @@
-const sys = require("./api/system.js");
-const _apiBase = "https://sm.ms/api/v2";
-const _api = {
+let sys = require("./api/system.js");
+let _apiBase = "https://sm.ms/api/v2";
+let _api = {
     getToken: _apiBase + "/token",
     getProfile: _apiBase + "/profile",
     upload: _apiBase + "/upload"
 };
-const _user = {
+let _user = {
     token: "",
     userInfo: {}
 };
-const _cacheDir = ".cache/sm_ms_v2/";
+let _cacheDir = ".cache/sm_ms_v2/";
 
 function getToken(user, pw) {
     $http.post({
@@ -61,7 +61,7 @@ function getProfile(token) {
                 _user.userInfo = data.data;
                 var success = $file.write({
                     data: resp.rawData,
-                    path: _cacheDir + "getProfile_" +sys.getNowUnixTime() + ".json"
+                    path: _cacheDir + "getProfile_" + sys.getNowUnixTime() + ".json"
                 });
                 $console.info("cache:" + success);
             } else {
@@ -74,7 +74,7 @@ function getProfile(token) {
     });
 }
 
-function uploadImage(token) {
+let uploadImage = token => {
     $photo.pick({
         format: "data",
         handler: function (resp) {
@@ -106,10 +106,9 @@ function uploadImage(token) {
             }
         }
     });
+};
 
-}
-
-function getHeader(token) {
+let getHeader = token => {
     if (token !== undefined) {
         _user.token = token;
     }
@@ -119,7 +118,7 @@ function getHeader(token) {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36 Edg/80.0.361.50",
         "Authorization": _user.token
     };
-}
+};
 
 
 function initView() {
@@ -174,4 +173,4 @@ function initView() {
 }
 module.exports = {
     init: initView
-}
+};

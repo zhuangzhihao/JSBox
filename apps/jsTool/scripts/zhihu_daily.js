@@ -1,6 +1,6 @@
 let _url = "https://news-at.zhihu.com/api/4/news/latest";
 
-function init() {
+let init = () => {
     $ui.loading(true);
     $http.get({
         url: _url,
@@ -62,7 +62,7 @@ function init() {
             }
         }
     });
-}
+};
 
 module.exports = {
     init: init

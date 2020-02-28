@@ -1,11 +1,9 @@
-const _api = require("./api/music_search.js");
-const viewId = "listView_music_search";
+let _api = require("./api/music_search.js");
 
 
-function initView() {
+let initView = () => {
     $ui.push({
         props: {
-            id: viewId,
             title: $l10n("MUSIC_SEARCH")
         },
         views: [{
@@ -53,7 +51,7 @@ function initView() {
             }
         }]
     });
-}
+};
 module.exports = {
     init: initView
 };

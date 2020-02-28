@@ -1,23 +1,23 @@
 let app = require("./api/app.js");
 
-function girlImage() {
+let girlImage = () => {
     const url = "https://api.isoyu.com/mm_images.jsp";
     $ui.preview({
         title: "Girl image",
         url: url
     });
-}
+};
 
-function bingDailyImage() {
+let bingDailyImage = () => {
     const url = "https://api.isoyu.com/bing_images.jsp";
     /* $ui.preview({
         title: "Bing daily image",
         url: url
     }); */
     $quicklook.open(url);
-}
+};
 
-function docScan() {
+let docScan = () => {
     $photo.scan({
         handler: data => {
             $console.info(data);
@@ -67,9 +67,9 @@ function docScan() {
         }
     });
 
-}
+};
 
-function init() {
+let init = () => {
     $ui.push({
         props: {
             title: $l10n("IMAGE")
@@ -97,7 +97,7 @@ function init() {
             }
         }]
     });
-}
+};
 
 module.exports = {
     init: init
