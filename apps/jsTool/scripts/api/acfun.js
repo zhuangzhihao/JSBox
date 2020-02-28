@@ -31,7 +31,7 @@ var acUserData = {
 };
 var personalInfo = {};
 
-let loginAcfun = (id, pwd) => {
+let login = (id, pwd) => {
     $ui.loading(true);
     $http.post({
         url: _url.login,
@@ -80,28 +80,21 @@ let saveUserToken = acResult => {
     $ui.toast("已保存登录信息");
 };
 
-function loadUserToken() {
+let loadUserToken = () => {
     acUserData.acPassToken = $cache.get(_cacheKey.acPassToken) || "";
     acUserData.token = $cache.get(_cacheKey.token) || "";
     acUserData.acSecurity = $cache.get(_cacheKey.acSecurity) || "";
     acUserData.auth_key = $cache.get(_cacheKey.auth_key) || "";
     acUserData.userid = $cache.get(_cacheKey.userid) || "";
-    if (
-        acUserData.acPassToken.length > 0 &&
+    acUserData.isLogin = (acUserData.acPassToken.length > 0 &&
         acUserData.token.length > 0 &&
         acUserData.acSecurity.length > 0 &&
         acUserData.auth_key.length > 0 &&
-        acUserData.userid.length > 0
-    ) {
-        acUserData.isLogin = true;
-    } else {
-        acUserData.isLogin = false;
-    }
-
+        acUserData.userid.length > 0) ? true : false;
     $console.info(acUserData);
 };
 
-let logoutAcfun = () => {
+let logout = () => {
     $cache.remove(_cacheKey.acPassToken);
     $cache.remove(_cacheKey.token);
     $cache.remove(_cacheKey.acSecurity);
@@ -215,11 +208,7 @@ let getUserInfo = () => {
     }
 };
 let getCookies = () => {
-    if (isLogin()) {
-        return `acPasstoken=${acUserData.acPassToken};auth_key=${acUserData.auth_key}`;
-    } else {
-        return "";
-    }
+    return isLogin() ? `acPasstoken=${acUserData.acPassToken};auth_key=${acUserData.auth_key}` : "";
 }
 
 let getVideoInfo = () => {
@@ -331,10 +320,10 @@ let init = () => {
     loadUserToken();
 };
 module.exports = {
-    login: loginAcfun,
-    logout: logoutAcfun,
-    isLogin: isLogin,
-    init: init,
-    getUserInfo: getUserInfo,
-    getVideoInfo: getVideoInfo,
+    login,
+    logout,
+    isLogin,
+    init,
+    getUserInfo,
+    getVideoInfo,
 };

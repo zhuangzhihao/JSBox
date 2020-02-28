@@ -17,9 +17,8 @@ let init = () => {
                     $console.info(`acApi.isLogin:${acApi.isLogin()}`);
                     switch (indexPath.row) {
                         case 0:
-                            if (acApi.isLogin()) {
-                                $ui.error("已登录");
-                            } else {
+                            acApi.isLogin() ?
+                                $ui.error("已登录") :
                                 $input.text({
                                     autoFontSize: true,
                                     placeholder: "输入账号",
@@ -41,21 +40,16 @@ let init = () => {
                                         }
                                     }
                                 });
-                            }
                             break;
                         case 1:
-                            if (acApi.isLogin()) {
-                                acApi.logout();
-                            } else {
+                            acApi.isLogin() ?
+                                acApi.logout() :
                                 $ui.error("未登录");
-                            }
                             break;
                         case 2:
-                            if (acApi.isLogin()) {
-                                acApi.getUserInfo();
-                            } else {
+                            acApi.isLogin() ?
+                                acApi.getUserInfo() :
                                 $ui.error("未登录");
-                            }
                             break;
                         case 3:
                             acApi.getVideoInfo()
@@ -69,5 +63,5 @@ let init = () => {
     });
 };
 module.exports = {
-    init: init
+    init,
 };

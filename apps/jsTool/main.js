@@ -1,14 +1,9 @@
 let page = require("./scripts/page_init.js");
 let siteListL10n = ["MO_FISH"];
 let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "TEST_PAGE"];
-var siteList = [];
-for (x in siteListL10n) {
-    siteList.push($l10n(siteListL10n[x]));
-};
-var moreList = [];
-for (x in moreListL10n) {
-    moreList.push($l10n(moreListL10n[x]));
-};
+
+let siteList = siteListL10n.map(x => $l10n(x));
+let moreList = moreListL10n.map(x => $l10n(x));
 
 let getNavButton = () => {
     return [{
