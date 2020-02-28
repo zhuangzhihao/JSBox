@@ -5,7 +5,6 @@ let getListFromL10n = sourceList => {
   }
   return l10nList;
 };
-
 module.exports = {
   getListFromL10n,
 };

@@ -5,6 +5,7 @@ let _api = {
     getAccessKey: "https://api.kaaass.net/biliapi/user/login?jsonerr=true&direct=true",
     getUserInfo: "https://api.kaaass.net/biliapi/user/info?jsonerr=true",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true&direct=true",
+    getLiveGiftList: "https://api.live.bilibili.com/xlive/app-room/v1/gift/bag_list?access_key="
 };
 let _cacheKey = {
     access_key: "bilibili_access_key"
@@ -14,7 +15,58 @@ var _userData = {
     loginData: {},
 };
 let _cacheDir = ".cache/bilibili/";
-
+let getLiveGiftList = () => {
+    $ui.loading(true);
+    const accessKey = checkAccessKey() ? _userData.access_key : undefined;
+    if (accessKey) {
+        $http.get({
+            url: _api.getLiveGiftList + accessKey,
+            handler: function (resp) {
+                const giftResult = resp.data;
+                $console.info(giftResult);
+                if (giftResult.code == 0) {
+                    const giftList = giftResult.data.list;
+                    const giftTitleList = giftList.map(gift =>
+                        `${gift.gift_name}（${gift.corner_mark}）${gift.gift_num}个`
+                    );
+                    $ui.loading(false);
+                    if (giftList.length) {
+                        saveCache("getLiveGiftList", resp.rawData);
+                        $ui.push({
+                            props: {
+                                title: $l10n("BILIBILI")
+                            },
+                            views: [{
+                                type: "list",
+                                props: {
+                                    data: giftTitleList
+                                },
+                                layout: $layout.fill,
+                                events: {
+                                    didSelect: function (_sender, indexPath, _data) {
+                                        const thisGift = giftList[indexPath.row];
+                                        $ui.alert({
+                                            title: thisGift.gift_name,
+                                            message: `拥有数量:${thisGift.gift_num}个\n到期时间:${thisGift.corner_mark}`,
+                                        });
+                                    }
+                                }
+                            }]
+                        });
+                    } else {
+                        $ui.error("你没有任何礼物");
+                    }
+                } else {
+                    $ui.loading(false);
+                    $ui.error(giftResult.message);
+                }
+            }
+        })
+    } else {
+        $ui.loading(false);
+        $ui.error("未登录");
+    }
+}
 let getVidFromUrl = url => {
     const siteList = ['https://', 'http://', "b23.tv/", "www.bilibili.com/", "av"];
     var newUrl = url;
@@ -29,8 +81,10 @@ let getVidFromUrl = url => {
 let saveCache = (mode, str) => {
     $file.mkdir(_cacheDir + mode);
     return $file.write({
-        data: str,
-        path: `${_cacheDir}${mode}/${sys.getNowUnixTime()}.json`
+        path: `${_cacheDir}${mode}/${sys.getNowUnixTime()}.json`,
+        data: $data({
+            string: str
+        })
     });
 };
 
@@ -497,4 +551,5 @@ module.exports = {
     getVideoData,
     getVideo,
     getVidFromUrl,
+    getLiveGiftList,
 };
