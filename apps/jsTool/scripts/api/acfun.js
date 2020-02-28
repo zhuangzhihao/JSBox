@@ -4,6 +4,7 @@ let _url = {
     getUserInfo: "https://api-new.app.acfun.cn/rest/app/user/personalInfo",
     downloadVideo: "https://api-new.app.acfun.cn/rest/app/play/playInfo/mp4",
     getVideoInfo: "https://api-new.app.acfun.cn/rest/app/douga/info?dougaId=",
+    signIn: "https://api-new.app.acfun.cn/rest/app/user/signIn",
 };
 let _cacheDir = ".cache/acfun/";
 let acHeaders = {
@@ -313,7 +314,46 @@ let downloadVideo = (vid, pid) => {
         }
     });
 };
-
+let signIn = () => {
+    isLogin() ?
+        $http.post({
+            url: _url.signIn,
+            header: {
+                Cookie: getCookies(),
+                acPlatform: "IPHONE"
+            },
+            handler: function (resp) {
+                var signinResult = resp.data;
+                $console.info(signinResult);
+                signinResult.result == 0 ?
+                    $ui.alert({
+                        title: "签到成功",
+                        message: signinResult.msg,
+                        actions: [{
+                            title: "查看今日运势",
+                            disabled: false, // Optional
+                            handler: function () {
+                                const todayAlmanac = signinResult.almanac;
+                                $ui.alert({
+                                    title: todayAlmanac.fortune,
+                                    message: `宜(${todayAlmanac.avoids.toString()})\n` +
+                                        `忌(${todayAlmanac.suits.toString()})`,
+                                });
+                            }
+                        }, {
+                            title: "关闭",
+                            disabled: false, // Optional
+                            handler: function () {}
+                        }]
+                    }) :
+                    $ui.alert({
+                        title: `错误代码${signinResult.result}`,
+                        message: signinResult.msg ? signinResult.msg : signinResult.error_msg,
+                    });
+            }
+        }) :
+        $ui.error("未登录");
+};
 let init = () => {
     loadUserToken();
 };
@@ -324,4 +364,5 @@ module.exports = {
     init,
     getUserInfo,
     getVideoInfo,
+    signIn,
 };

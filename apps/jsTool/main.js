@@ -1,7 +1,6 @@
 let page = require("./scripts/page_init.js");
 let siteListL10n = ["MO_FISH"];
 let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "TEST_PAGE"];
-
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
 
@@ -20,6 +19,24 @@ let getNavButton = () => {
         }
     }];
 };
+let checkCacheDir = () => {
+    const cacheDir = ".cache/";
+    if (!$file.exists(cacheDir)) {
+        $file.mkdir(cacheDir);
+    } else if (!$file.isDirectory(cacheDir)) {
+        $file.delete(cacheDir);
+        $file.mkdir(cacheDir);
+    }
+    return $file.write({
+        path: `${cacheDir}这个文件夹用来存成功请求的数据.txt`,
+        data: $data({
+            string: "这个文件夹用来存成功请求的数据"
+        })
+    });
+};
+if (!checkCacheDir()) {
+    $console.error("初始化缓存目录失败");
+}
 $ui.render({
     props: {
         id: "main",

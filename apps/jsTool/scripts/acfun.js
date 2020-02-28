@@ -9,7 +9,7 @@ let init = () => {
         views: [{
             type: "list",
             props: {
-                data: ["登录账号", "注销账号", "获取用户信息", "视频解析"]
+                data: ["登录账号", "注销账号", "获取用户信息", "视频解析", "每日签到"]
             },
             layout: $layout.fill,
             events: {
@@ -53,6 +53,9 @@ let init = () => {
                             break;
                         case 3:
                             acApi.getVideoInfo()
+                            break;
+                        case 4:
+                            acApi.signIn()
                             break;
                         default:
                             $ui.error("暂未支持");
