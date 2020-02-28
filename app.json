@@ -1,4 +1,15 @@
 {
+    "example": {
+        "name": "例子",
+        "version": 1,
+        "version_name": "0.0.1",
+        "update_time": 0,
+        "update_note": "更新内容，选填",
+        "update_icon": "应用图标，选填",
+        "update_url": "更新链接，当isApp为true时必须为zip/box格式的链接",
+        "isApp": false,
+        "appConfig": "应用配置文件链接，选填，当isApp为true时优先检测应用配置文件的应用信息"
+    },
     "io.zhihao.jsbox.dxy": {
         "name": "丁香园全国新型肺炎疫情实时动态",
         "version": 2,
@@ -18,5 +29,16 @@
         "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/Pneumonia2020/assets/icon.png",
         "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/download/Pneumonia2020.box",
         "isApp": true
+    },
+    "io.zhihao.jsbox.jstool": {
+        "name": "jsTool",
+        "version": 2,
+        "version_name": "0.0.2",
+        "update_time": 0,
+        "update_note": "新增更新功能",
+        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/jsTool/assets/icon.png",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/download/jsTool.box",
+        "isApp": true,
+        "appConfig": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/jsTool/config.json"
     }
 }
