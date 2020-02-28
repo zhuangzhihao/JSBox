@@ -30,7 +30,7 @@ let saveCache = (mode, str) => {
     $file.mkdir(_cacheDir + mode);
     return $file.write({
         data: str,
-        path: _cacheDir + mode + "/" + sys.getNowUnixTime() + ".json"
+        path: `${_cacheDir}${mode}/${sys.getNowUnixTime()}.json`
     });
 };
 
@@ -66,22 +66,16 @@ let checkAccessKey = () => {
 };
 
 let getVideoInfo = vid => {
-    // https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=90035938
     $http.get({
         url: _api.getVideoInfo + vid,
         handler: function (resp) {
             //$console.info(resp);
-            var data = resp.data;
+            const data = resp.data;
             if (resp.response.statusCode == 200) {
                 if (data.status == "OK") {
                     $console.info(data);
                     const _biliData = data.data;
-                    var allow_download = "";
-                    if (_biliData.allow_download) {
-                        allow_download = "是";
-                    } else {
-                        allow_download = "否";
-                    }
+                    const allow_download = _biliData.allow_download ? "是" : "否";
                     var videoInfoList = [
                         "标题：" + _biliData.title,
                         "描述：" + _biliData.description,
@@ -107,7 +101,7 @@ let getVideoInfo = vid => {
                                 handler: () => {
                                     $ui.preview({
                                         title: "av" + vid,
-                                        url: "https://www.bilibili.com/av" + vid
+                                        url: `https://www.bilibili.com/av${vid}`
                                     });
                                 }
                             }]
@@ -163,13 +157,13 @@ let getVideoInfo = vid => {
                     });
                 } else {
                     $ui.alert({
-                        title: "Error " + resp.response.statusCode,
+                        title: `Error ${resp.response.statusCode}`,
                         message: data.code,
                     });
                 }
             } else {
                 $ui.alert({
-                    title: "Error " + resp.response.statusCode,
+                    title: `Error ${resp.response.statusCode}`,
                     message: data.code,
                 });
             }
@@ -179,18 +173,14 @@ let getVideoInfo = vid => {
 
 let getVideo = (vid, _biliData) => {
     const partList = _biliData.list;
-    var partTitleList = [];
-    for (p in partList) {
-        partTitleList.push(partList[p].part)
-    }
+    const partTitleList = partList.map(x => x.part);
     $ui.menu({
         items: partTitleList,
         handler: function (title, idx) {
-            if (checkAccessKey()) {
-                getVideoData(vid, idx + 1, 116, _userData.access_key); //1080p以上需要带header
-            } else {
+            checkAccessKey() ?
+                getVideoData(vid, idx + 1, 116, _userData.access_key) : //1080p以上需要带header
                 getVideoData(vid, idx + 1, 80, "");
-            }
+
         }
     });
 };
@@ -198,7 +188,7 @@ let getVideo = (vid, _biliData) => {
 let getVideoData = (vid, page, quality, access_key) => {
     $ui.loading(true);
     $http.get({
-        url: _api.getVideoData + "&id=" + vid + "&page=" + page + "&quality=" + quality + "&access_key=" + access_key,
+        url: `${_api.getVideoData}&id=${vid}&page=${page}&quality${quality}&access_key=${access_key}`,
         handler: function (videoResp) {
             var videoData = videoResp.data;
             if (videoData.status == "OK") {
@@ -214,7 +204,7 @@ let getVideoData = (vid, page, quality, access_key) => {
                                 const downloadList = biliData.data.durl;
                                 var dList = [];
                                 for (i in downloadList) {
-                                    dList.push("第" + (i + 1).toString() + "个文件");
+                                    dList.push(`第${(i + 1).toString()}个文件`);
                                 }
                                 $ui.loading(false);
                                 $ui.push({
@@ -269,7 +259,7 @@ let getVideoData = (vid, page, quality, access_key) => {
                             } else {
                                 $ui.loading(false);
                                 $ui.alert({
-                                    title: "Error " + biliData.code,
+                                    title: `Error ${biliData.code}`,
                                     message: biliData.message,
                                 });
                             }
@@ -282,7 +272,7 @@ let getVideoData = (vid, page, quality, access_key) => {
             } else {
                 $ui.loading(false);
                 $ui.alert({
-                    title: "Error Code " + videoResp.code,
+                    title: `Error Code ${videoResp.code}`,
                     message: videoResp.message,
                 });
             }
@@ -307,7 +297,7 @@ let getAccessKey = (userName, password) => {
             $console.info(kaaassData);
             if (kaaassData.status == "OK") {
                 var success = saveCache("getAccessKey", kaaassResult.rawData);
-                $console.info("cache:" + success);
+                $console.info(`cache:${success}`);
                 loginBilibili(kaaassData.url, kaaassData.body, kaaassData.headers);
             } else {
                 $ui.loading(false);
@@ -338,9 +328,9 @@ let loginBilibili = (loginUrl, bodyStr, headers) => {
             $console.info(loginData);
             if (loginData.code == 0) {
                 var success = saveCache("bilibiliPassport", loginResp.rawData);
-                $console.info("cache:" + success);
+                $console.info(`cache:${success}`);
                 saveAccessKey(loginData.data.token_info.access_token);
-                $console.info("loginData.access_token: " + _userData.access_key);
+                $console.info(`loginData.access_token:${_userData.access_key}`);
                 $ui.loading(false);
                 $input.text({
                     placeholder: "",
@@ -352,8 +342,8 @@ let loginBilibili = (loginUrl, bodyStr, headers) => {
                 });
             } else {
                 $ui.loading(false);
-                $console.error("bilibiliLogin: " + loginData.message);
-                $ui.error("bilibiliLogin: " + loginData.message);
+                $console.error(`bilibiliLogin: ${loginData.message}`);
+                $ui.error(`bilibiliLogin: ${loginData.message}`);
             }
         }
     });
@@ -362,7 +352,7 @@ let loginBilibili = (loginUrl, bodyStr, headers) => {
 let getUserInfo = () => {
     // furtherInfo: 是否获取详细用户信息
     if (checkAccessKey()) {
-        const url = _api.getUserInfo + "&access_key=" + _userData.access_key + "&furtherInfo=true";
+        const url = `${_api.getUserInfo}&access_key=${_userData.access_key}&furtherInfo=true`;
         $ui.loading(true);
         $http.get({
             url: url,
@@ -390,19 +380,19 @@ let getUserInfo = () => {
                         subscribeComic: user_further.sub_comic
                     };
                     const userDataList = [
-                        "用户昵称：" + user.userName,
-                        "用户uid：" + user.uid,
-                        "登录用id：" + user.loginId,
-                        "注册时间戳：" + user.registerTime,
-                        "此次登录到期时间戳：" + user.loginExpireTime,
-                        "登录用access key：" + user.accessKey,
-                        "投稿视频：" + user.uploadVideo.count + " 个",
-                        "点赞视频：" + user.likeVideo.count + " 个",
-                        "投硬币：" + user.giveCoin.count + " 个",
-                        "玩过游戏：" + user.playGame.count + " 个",
-                        "追番：" + user.anime.count + " 部",
-                        "收藏夹：" + user.favourite.count + " 个",
-                        "追更漫画：" + user.subscribeComic.count + " 部",
+                        `用户昵称：${user.userName}`,
+                        `用户uid：${ user.uid}`,
+                        `登录用id：${user.loginId}`,
+                        `注册时间戳：${user.registerTime}`,
+                        `此次登录到期时间戳：${user.loginExpireTime}`,
+                        `登录用access key：${ user.accessKey}`,
+                        `投稿视频：${user.uploadVideo.count} 个`,
+                        `点赞视频：${ user.likeVideo.count} 个`,
+                        `投硬币：${user.giveCoin.count} 个`,
+                        `玩过游戏：${user.playGame.count} 个`,
+                        `追番：${ user.anime.count} 部`,
+                        `收藏夹：${user.favourite.count} 个`,
+                        `追更漫画：${user.subscribeComic.count} 部`,
                     ];
                     $ui.loading(false);
                     $ui.push({
@@ -415,7 +405,7 @@ let getUserInfo = () => {
                                 handler: () => {
                                     $ui.preview({
                                         title: user.userName,
-                                        url: "https://space.bilibili.com/" + user.uid
+                                        url: `https://space.bilibili.com/${user.uid}`
                                     });
                                 }
                             }]
@@ -497,15 +487,14 @@ let init = () => {
     return checkAccessKey();
 };
 module.exports = {
-    getVideoInfo: getVideoInfo,
-    getAccessKey: getAccessKey,
-    checkAccessKey: checkAccessKey,
-    getUserInfo: getUserInfo,
-    saveAccessKey: saveAccessKey,
-    init: init,
-    removeAccessKey: removeAccessKey,
-    getVideoData: getVideoData,
-    getVideo: getVideo,
-    getVidFromUrl: getVidFromUrl,
-
+    getVideoInfo,
+    getAccessKey,
+    checkAccessKey,
+    getUserInfo,
+    saveAccessKey,
+    init,
+    removeAccessKey,
+    getVideoData,
+    getVideo,
+    getVidFromUrl,
 };

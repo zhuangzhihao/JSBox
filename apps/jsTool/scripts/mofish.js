@@ -23,9 +23,7 @@ function getType() {
       url: urlSiteList,
       handler: function (resp) {
         const mData = resp.data;
-        console.log(
-          "siteList: " + mData.Code.toString() + " | " + mData.Message
-        );
+        $console.info(`siteList: ${mData.Code.toString()}|${mData.Message}`);
         setCache(cacheId.siteList, mData);
         $ui.loading(false);
         checkSiteList(mData);
@@ -33,7 +31,7 @@ function getType() {
     });
   } else {
     $ui.loading(false);
-    console.log("siteList使用缓存数据");
+    $console.info("siteList使用缓存数据");
     checkSiteList(siteListCache);
   }
 }
@@ -50,7 +48,7 @@ function checkSiteList(siteListData) {
         const thisItem = siteList[a];
         itemTitleList.push(thisItem.title);
       }
-      console.log(itemTitleList);
+      $console.info(itemTitleList);
       pushSiteList(itemTitleList);
     }
   } else {
@@ -81,7 +79,7 @@ function pushSiteList(itemList) {
       }
     }]
   });
-  //console.log($ui.get("listView_index"));
+  //$console.info($ui.get("listView_index"));
 }
 // 按分类获取站点列表
 function getAllType() {
@@ -90,7 +88,7 @@ function getAllType() {
     url: urlAllType,
     handler: function (resp) {
       const mData = resp.data;
-      console.log("newSiteList使用在线数据");
+      $console.info("newSiteList使用在线数据");
       $ui.loading(false);
       showNewSiteList(mData);
     }
@@ -105,10 +103,10 @@ function showNewSiteList(siteCatListData) {
     } else {
       var itemTitleList = [];
       for (x in catList) {
-        console.log(x);
+        $console.info(x);
         itemTitleList.push();
       }
-      console.log(siteCatListData);
+      $console.info(siteCatListData);
       pushSiteList(itemTitleList);
     }
   } else {
@@ -138,7 +136,7 @@ function pushSiteCatList(itemList) {
       }
     }]
   });
-  //console.log($ui.get("listView_cat"));
+  //$console.info($ui.get("listView_cat"));
 }
 // 获取站点内容
 function getSiteInfo(siteId, title) {
@@ -154,21 +152,21 @@ function getSiteInfo(siteId, title) {
       handler: function (resp) {
         const itemListData = resp.data;
         setCache(cacheSiteId, itemListData);
-        console.log("siteInfo使用在线数据");
+        $console.info("siteInfo使用在线数据");
         $ui.loading(false);
         checkSiteInfo(itemListData, siteId, title);
       }
     });
   } else {
-    console.log(cacheSiteId + ":" + JSON.stringify(siteInfoCache));
-    console.log("siteInfo使用缓存数据");
+    $console.info(cacheSiteId + ":" + JSON.stringify(siteInfoCache));
+    $console.info("siteInfo使用缓存数据");
     $ui.loading(false);
     checkSiteInfo(siteInfoCache, siteId, title);
   }
 }
 // 处理站点内容数据
 function checkSiteInfo(siteInfoData, siteId, title) {
-  console.log(siteInfoData);
+  $console.info(siteInfoData);
   const cacheSiteId = cacheId.siteInfo + siteId;
   if (siteInfoData.Code == 0) {
     siteItemList = siteInfoData.Data;
@@ -226,7 +224,7 @@ function getCache(thisCacheId) {
   if (isCache) {
     const lastCacheTime = $cache.get(cacheId.lastCacheTime);
     const mCache = $cache.get(thisCacheId);
-    console.log(mCache);
+    $console.info(mCache);
     if (mCache !== undefined) {
       if (
         lastCacheTime !== undefined &&

@@ -29,9 +29,8 @@ let getGithubRealRaw = sourceGithubUrl => {
 };
 
 let getGithubRaw = sourceGithubUrl => {
-    var newUrl = getGithubRealRaw(sourceGithubUrl);
-    const list = newUrl.replace("https://raw.githubusercontent.com/", "").split("/");
-    newUrl = "https://cdn.jsdelivr.net/gh";
+    const list = getGithubRealRaw(sourceGithubUrl).replace("https://raw.githubusercontent.com/", "").split("/");
+    const newUrl = "https://cdn.jsdelivr.net/gh";
     for (x in list) {
         switch (x.toString()) {
             case "2":

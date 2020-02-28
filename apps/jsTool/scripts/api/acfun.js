@@ -283,7 +283,6 @@ let downloadVideo = (vid, pid) => {
                     } else {
                         return "未知源";
                     }
-
                 });
                 $ui.loading(false);
                 $ui.push({
@@ -304,7 +303,6 @@ let downloadVideo = (vid, pid) => {
                         }
                     }]
                 });
-
             } else {
                 $ui.loading(false);
                 $ui.alert({

@@ -1,15 +1,15 @@
-function getNowUnixTime() {
+let getNowUnixTime = () => {
     return new Date().getTime();
-}
+};
 
-function copyToClipboard(text) {
+let copyToClipboard = text => {
     $clipboard.copy({
         "text": text,
         "ttl": 30,
         "locally": true
     });
-}
+};
 module.exports = {
-    getNowUnixTime: getNowUnixTime,
-    copyToClipboard: copyToClipboard,
+    getNowUnixTime,
+    copyToClipboard,
 }
