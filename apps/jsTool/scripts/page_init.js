@@ -7,6 +7,7 @@ let bilibili = require("./view/bilibili.js");
 let musicSearch = require("./view/music_search.js");
 let zhihuDaily = require("./view/zhihu_daily.js");
 let acfun = require("./view/acfun.js");
+let instagram = require("./view/instagram.js");
 
 let gotoUrl = url => {
 
@@ -21,5 +22,6 @@ module.exports = {
     musicSearch: musicSearch.init,
     zhihuDaily: zhihuDaily.init,
     acfun: acfun.init,
-    gotoUrl
+    gotoUrl,
+    instagram: instagram.init,
 };
