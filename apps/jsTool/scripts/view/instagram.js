@@ -32,12 +32,10 @@ let instaoffline = instLink => {
                                 url: $(this).attr("href")
                             };
                         });
-                        $console.info(resultList);
                         if (resultList.length > 0) {
                             $ui.loading(false);
                             showResultListView(resultList);
                         } else {
-                            $console.info(httpData);
                             $ui.loading(false);
                             $ui.alert({
                                 title: "解析结果为空",
@@ -67,13 +65,6 @@ let instaoffline = instLink => {
             message: "请输入正确的链接",
         });
     }
-};
-let getItem = (type, url) => {
-    $console.info(`type:${type}\nurl:${url}`);
-    return {
-        type: type,
-        url: url
-    };
 };
 let showResultListView = resultList => {
     $ui.push({
