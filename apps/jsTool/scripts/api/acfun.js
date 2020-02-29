@@ -120,83 +120,82 @@ let getUserInfo = () => {
         if (postCookies.length > 0) {
             var thisHeaders = acHeaders;
             thisHeaders.Cookie = postCookies;
-            $console.info(thisHeaders);
+            // $console.info(thisHeaders);
             $http.get({
                 url: _url.getUserInfo,
                 header: thisHeaders,
-                handler: function (resp) {
-                    var userResult = resp.data;
-                    $console.info(userResult);
-                    if (userResult.result == 0) {
-                        personalInfo = userResult;
-                        const userInfo = userResult.info;
-                        saveCache("getUserInfo", resp.rawData);
-                        var userInfoList = [
-                            `昵称：${userInfo.userName}`,
-                            `uid：${userInfo.userId}`,
-                            `个性签名：${userInfo.signature}`,
-                            `注册时间：${userInfo.registerTime}`,
-                            `关注：${userInfo.following}`,
-                            `粉丝：${userInfo.followed}`,
-                            `话题：${userInfo.tagStowCount}`,
-                            `投稿：${userInfo.contentCount}`,
-                            `手机号码：${userInfo.mobile}`,
-                            `香蕉/金香蕉：${userInfo.banana}/${userInfo.goldBanana}`,
-                            `等级：${userInfo.level}`,
-                            `红名：${userInfo.nameRed}`,
-                            `头像：${userInfo.headUrl}`,
-                            `博客：${userInfo.blog}`,
-                            `改名卡：${userInfo.renameCard}`,
-                            `QQ：${userInfo.qq}`,
-                        ];
-                        $ui.loading(false);
-                        $ui.push({
-                            props: {
-                                title: $l10n("个人信息"),
-                                navButtons: [{
-                                    title: "打开网页版",
-                                    icon: "068", // Or you can use icon name
-                                    symbol: "checkmark.seal", // SF symbols are supported
-                                    handler: () => {
-                                        $ui.preview({
-                                            title: userInfo.userName,
-                                            url: userInfo.shareUrl
-                                        });
-                                    }
-                                }]
-                            },
-                            views: [{
-                                type: "list",
-                                props: {
-                                    data: userInfoList
-                                },
-                                layout: $layout.fill,
-                                events: {
-                                    didSelect: function (_sender, indexPath, _data) {
-                                        const _g = _data.split("：");
-                                        $ui.alert({
-                                            title: _g[0],
-                                            message: _g[1],
-                                            actions: [{
-                                                title: "分享",
-                                                disabled: false, // Optional
-                                                handler: function () {
-                                                    $share.sheet([_g[1]]);
-                                                }
-                                            }, {
-                                                title: "关闭",
-                                                disabled: false, // Optional
-                                                handler: function () {}
-                                            }]
-                                        });
-                                    }
+            }).then(function (resp) {
+                var userResult = resp.data;
+                $console.info(userResult);
+                if (userResult.result == 0) {
+                    personalInfo = userResult;
+                    const userInfo = userResult.info;
+                    saveCache("getUserInfo", resp.rawData);
+                    var userInfoList = [
+                        `昵称：${userInfo.userName}`,
+                        `uid：${userInfo.userId}`,
+                        `个性签名：${userInfo.signature}`,
+                        `注册时间：${userInfo.registerTime}`,
+                        `关注：${userInfo.following}`,
+                        `粉丝：${userInfo.followed}`,
+                        `话题：${userInfo.tagStowCount}`,
+                        `投稿：${userInfo.contentCount}`,
+                        `手机号码：${userInfo.mobile}`,
+                        `香蕉/金香蕉：${userInfo.banana}/${userInfo.goldBanana}`,
+                        `等级：${userInfo.level}`,
+                        `红名：${userInfo.nameRed?"是":"否"}`,
+                        `头像：${userInfo.headUrl}`,
+                        `博客：${userInfo.blog}`,
+                        `改名卡：${userInfo.renameCard}`,
+                        `QQ：${userInfo.qq?userInfo.qq:"[空白]"}`,
+                    ];
+                    $ui.loading(false);
+                    $ui.push({
+                        props: {
+                            title: $l10n("个人信息"),
+                            navButtons: [{
+                                title: "打开网页版",
+                                icon: "068", // Or you can use icon name
+                                symbol: "checkmark.seal", // SF symbols are supported
+                                handler: () => {
+                                    $ui.preview({
+                                        title: userInfo.userName,
+                                        url: userInfo.shareUrl
+                                    });
                                 }
                             }]
-                        });
-                    } else {
-                        $ui.loading(false);
-                        $ui.error(`result ${userResult.result}:${userResult.error_msg}`);
-                    }
+                        },
+                        views: [{
+                            type: "list",
+                            props: {
+                                data: userInfoList
+                            },
+                            layout: $layout.fill,
+                            events: {
+                                didSelect: function (_sender, indexPath, _data) {
+                                    const _g = _data.split("：");
+                                    $ui.alert({
+                                        title: _g[0],
+                                        message: _g[1],
+                                        actions: [{
+                                            title: "分享",
+                                            disabled: false, // Optional
+                                            handler: function () {
+                                                $share.sheet([_g[1]]);
+                                            }
+                                        }, {
+                                            title: "关闭",
+                                            disabled: false, // Optional
+                                            handler: function () {}
+                                        }]
+                                    });
+                                }
+                            }
+                        }]
+                    });
+                } else {
+                    $ui.loading(false);
+                    $ui.error(`result ${userResult.result}:${userResult.error_msg}`);
                 }
             });
         } else {
