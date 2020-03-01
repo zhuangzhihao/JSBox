@@ -1,4 +1,5 @@
 let sys = require("./system.js");
+let appScheme = require("./app_scheme.js");
 let _url = {
     login: "https://id.app.acfun.cn/rest/app/login/signin",
     getUserInfo: "https://api-new.app.acfun.cn/rest/app/user/personalInfo",
@@ -361,7 +362,7 @@ let signIn = () => {
         }) :
         $ui.error("未登录");
 };
-let getUploaderVideo = (uid, page, count = 10) => {
+let getUploaderVideo = (uid, page, count = 20) => {
     $http.post({
         url: _url.getUploaderVideo,
         header: {
@@ -421,10 +422,7 @@ let showUploaderVideoList = acData => {
             events: {
                 didSelect: function (_sender, indexPath, _data) {
                     const thisVideo = videoList[indexPath.row];
-                    $ui.preview({
-                        title: thisVideo.title,
-                        url: `https://www.acfun.cn/v/ac${thisVideo.dougaId}`
-                    });
+                    appScheme.acfunVideo(thisVideo.dougaId);
                 }
             }
         }]
