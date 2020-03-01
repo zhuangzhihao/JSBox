@@ -20,5 +20,6 @@ let qqBrowserOpen = url => {
 module.exports = {
     alookBrowserOpen,
     chromeBrowserOpen,
-    qqBrowserOpen
+    qqBrowserOpen,
+    alookBrowserDownload
 };
