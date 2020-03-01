@@ -1,4 +1,5 @@
 const lib = require("./lib.js");
+let cheerio = require("cheerio");
 var isLoading = true;
 const webUrl = "https://ncov.dxy.cn/ncovh5/view/pneumonia";
 const _menuList = [
@@ -97,7 +98,7 @@ function getData() {
         handler: function (_resp) {
             const mData = _resp.data;
             console.log("获取数据成功");
-            processAllData(mData);
+            processAllData2(mData);
         }
     });
 }
@@ -118,22 +119,29 @@ function processAllData(_sourceData) {
     isLoading = false;
 }
 
+function processAllData2(_sourceData) {
+    const _element = $xml.parse({
+        string: _sourceData,
+        mode: "html"
+    }).rootElement;
+    const $ = cheerio.load(_sourceData);
+    getHeaderData($("script#getStatisticsService").html());
+    getMainData($("script#getListByCountryTypeService1").html());
+    getTimeLine($("script#getTimelineService").html());
+    getRumor($("script#getIndexRumorList").html());
+    getAreaStat($("script#getAreaStat").html());
+    getForeignData($("script#getListByCountryTypeService2").html());
+    getWikiData($("script#getWikiList").html());
+    isLoading = false;
+}
+
 // 简单数据
-function getHeaderData(_element) {
-    const _dataId = "script#getStatisticsService";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getStatisticsService = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _headerDataJson = JSON.parse(_html);
-            _imgList.imgUrl = _headerDataJson.imgUrl;
-            _imgList.dailyPics = _headerDataJson.dailyPics;
-        }
-    });
+function getHeaderData(str) {
+    const jsonLeft = "try { window.getStatisticsService = ";
+    const jsonRight = "}catch(e){}";
+    _headerDataJson = JSON.parse(str.replace(jsonLeft, "").replace(jsonRight, ""));
+    _imgList.imgUrl = _headerDataJson.imgUrl;
+    _imgList.dailyPics = _headerDataJson.dailyPics;
 }
 
 function showHeaderData() {
@@ -268,19 +276,10 @@ function showHeaderMarqueeData(marqueeDataList) {
     });
 }
 // 详细数据
-function getMainData(_element) {
-    const _dataId = "script#getListByCountryTypeService1";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getListByCountryTypeService1 = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _mainTitleDataJson = processMainData(_html);
-        }
-    });
+function getMainData(str) {
+    const jsonLeft = "try { window.getListByCountryTypeService1 = ";
+    const jsonRight = "}catch(e){}";
+    _mainTitleDataJson = processMainData(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function processMainData(_html) {
@@ -365,19 +364,10 @@ function showMainDetailedData(_idx) {
         });*/
 }
 // 时间线
-function getTimeLine(_element) {
-    const _dataId = "script#getTimelineService";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getTimelineService = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _timeLineTitleData = processTimeLineData(_html);
-        }
-    });
+function getTimeLine(str) {
+    const jsonLeft = "try { window.getTimelineService = ";
+    const jsonRight = "}catch(e){}";
+    _timeLineTitleData = processTimeLineData(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function processTimeLineData(_html) {
@@ -461,19 +451,10 @@ function showTimeLineDetailedData(_idx) {
 }
 
 // 谣言
-function getRumor(_element) {
-    const _dataId = "script#getIndexRumorList";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getIndexRumorList = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _rumorTitleData = processRumorData(_html);
-        }
-    });
+function getRumor(str) {
+    const jsonLeft = "try { window.getIndexRumorList = ";
+    const jsonRight = "}catch(e){}";
+    _rumorTitleData = processRumorData(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function processRumorData(_html) {
@@ -548,19 +529,10 @@ function showRumorDetailedData(_idx) {
     });
 }
 // 地区排序
-function getAreaStat(_element) {
-    const _dataId = "script#getAreaStat";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getAreaStat = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _areaStatProData = processAreaStatData(_html);
-        }
-    });
+function getAreaStat(str) {
+    const jsonLeft = "try { window.getAreaStat = ";
+    const jsonRight = "}catch(e){}";
+    _areaStatProData = processAreaStatData(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function processAreaStatData(_html) {
@@ -647,19 +619,10 @@ function showAreaStatCityData(_thisPro) {
 }
 
 // 国外数据
-function getForeignData(_element) {
-    const _dataId = "script#getListByCountryTypeService2";
-    _element.enumerate({
-        selector: _dataId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window.getListByCountryTypeService2 = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _foreignTitleDataJson = processForeignData(_html);
-        }
-    });
+function getForeignData(str) {
+    const jsonLeft = "try { window.getListByCountryTypeService2 = ";
+    const jsonRight = "}catch(e){}";
+    _foreignTitleDataJson = processForeignData(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function processForeignData(_html) {
@@ -716,19 +679,10 @@ function showForeignDetailedData(_idx) {
 }
 
 // 疾病知识
-function getWikiData(_element) {
-    const elementId = "getWikiList";
-    _element.enumerate({
-        selector: "script#" + elementId,
-        handler: (element, _idx) => {
-            var _html = element.string;
-            const jsonLeft = "try { window." + elementId + " = ";
-            const jsonRight = "}catch(e){}";
-            _html = _html.replace(jsonLeft, "");
-            _html = _html.replace(jsonRight, "");
-            _wikiData = JSON.parse(_html);
-        }
-    });
+function getWikiData(str) {
+    const jsonLeft = "try { window.getWikiList = ";
+    const jsonRight = "}catch(e){}";
+    _wikiData = JSON.parse(str.replace(jsonLeft, "").replace(jsonRight, ""));
 }
 
 function showWikiData() {
