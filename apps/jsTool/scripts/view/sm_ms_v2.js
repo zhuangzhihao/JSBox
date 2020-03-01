@@ -37,6 +37,7 @@ function getToken(user, pw) {
                     path: _cacheDir + "getToken_" + sys.getNowUnixTime() + ".json"
                 });
                 $console.info("cache:" + success);
+
             } else {
                 $ui.alert({
                     title: data.code,
@@ -79,13 +80,13 @@ let uploadImage = token => {
         format: "data",
         handler: function (resp) {
             const imageData = resp.data;
-            if (resp.data) {
+            if (imageData) {
                 $ui.loading(true);
                 $http.upload({
                     url: _api.upload,
-                    /* header: getHeader(token), */
+                    header: getHeader(token),
                     files: [{
-                        "data": resp.data,
+                        "data": imageData,
                         "name": "smfile"
                     }],
                     progress: function (percentage) {
@@ -93,7 +94,7 @@ let uploadImage = token => {
                     },
                     handler: function (resp) {
                         $ui.loading(false);
-                        $console.info(resp.data);
+                        $console.info(imageData);
                         var success = $file.write({
                             data: resp.rawData,
                             path: _cacheDir + "updateImage_" + sys.getNowUnixTime() + ".json"
@@ -163,7 +164,14 @@ function initView() {
                     });
                     break;
                 case 2:
-                    uploadImage();
+                    $input.text({
+                        placeholder: "输入token",
+                        handler: function (token) {
+                            token ?
+                                uploadImage(token) :
+                                $ui.error("空白token");
+                        }
+                    });
                     break;
             }
         }
