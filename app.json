@@ -17,7 +17,7 @@
         "update_time": 1580722827,
         "update_note": "新增检测功能",
         "update_icon": "",
-        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/js/%E4%B8%81%E9%A6%99%E5%9B%AD%E5%85%A8%E5%9B%BD%E6%96%B0%E5%9E%8B%E8%82%BA%E7%82%8E%E7%96%AB%E6%83%85%E5%AE%9E%E6%97%B6%E5%8A%A8%E6%80%81.js",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/js/%E4%B8%81%E9%A6%99%E5%9B%AD%E5%85%A8%E5%9B%BD%E6%96%B0%E5%9E%8B%E8%82%BA%E7%82%8E%E7%96%AB%E6%83%85%E5%AE%9E%E6%97%B6%E5%8A%A8%E6%80%81.js",
         "isApp": false
     },
     "io.zhihao.jsbox.pneumonia2020": {
@@ -26,8 +26,8 @@
         "version_name": "0.0.6",
         "update_time": 0,
         "update_note": "优化代码，修复更新检查功能失效的BUG",
-        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/Pneumonia2020/assets/icon.png",
-        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/download/Pneumonia2020.box",
+        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/Pneumonia2020/assets/icon.png",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/download/Pneumonia2020.box",
         "isApp": true
     },
     "io.zhihao.jsbox.jstool": {
@@ -36,9 +36,9 @@
         "version_name": "0.0.2",
         "update_time": 0,
         "update_note": "新增更新功能",
-        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/jsTool/assets/icon.png",
-        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/download/jsTool.box",
+        "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/jsTool/assets/icon.png",
+        "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/download/jsTool.box",
         "isApp": true,
-        "appConfig": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/apps/jsTool/config.json"
+        "appConfig": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/jsTool/config.json"
     }
 }
