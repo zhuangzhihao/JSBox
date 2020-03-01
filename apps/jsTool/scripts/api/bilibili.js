@@ -1,4 +1,5 @@
 let sys = require("./system.js");
+let str = require("./string.js");
 let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true",
@@ -15,6 +16,9 @@ var _userData = {
     loginData: {},
 };
 let _cacheDir = ".cache/bilibili/";
+let isShareMode = true;
+
+// function
 let getLiveGiftList = () => {
     $ui.loading(true);
     const accessKey = checkAccessKey() ? _userData.access_key : undefined;
@@ -23,7 +27,6 @@ let getLiveGiftList = () => {
             url: _api.getLiveGiftList + accessKey,
             handler: function (resp) {
                 const giftResult = resp.data;
-                $console.info(giftResult);
                 if (giftResult.code == 0) {
                     const giftList = giftResult.data.list;
                     const giftTitleList = giftList.map(gift =>
@@ -68,13 +71,16 @@ let getLiveGiftList = () => {
     }
 }
 let getVidFromUrl = url => {
-    const siteList = ['https://', 'http://', "b23.tv/", "www.bilibili.com/", "av"];
+    const siteList = ['https://', 'http://', "b23.tv/", "www.bilibili.com/video/", "www.bilibili.com/", "av"];
     var newUrl = url;
     siteList.map(x => {
         if (newUrl.startsWith(x)) {
             newUrl = newUrl.replace(x, "");
         }
     });
+    if (newUrl.indexOf("?")) {
+        newUrl = newUrl.split("?")[0].replace("/", "");
+    }
     return newUrl;
 };
 
@@ -123,11 +129,9 @@ let getVideoInfo = vid => {
     $http.get({
         url: _api.getVideoInfo + vid,
         handler: function (resp) {
-            //$console.info(resp);
             const data = resp.data;
             if (resp.response.statusCode == 200) {
                 if (data.status == "OK") {
-                    $console.info(data);
                     const _biliData = data.data;
                     const allow_download = _biliData.allow_download ? "是" : "否";
                     var videoInfoList = [
@@ -145,7 +149,7 @@ let getVideoInfo = vid => {
                         "投币：" + _biliData.coins,
                         "稿件类型：" + _biliData.arctype
                     ];
-                    $ui.push({
+                    const listView = {
                         props: {
                             title: "加载成功",
                             navButtons: [{
@@ -199,20 +203,28 @@ let getVideoInfo = vid => {
                                             }
                                             break;
                                         case 1:
+                                            const _list = _data.split("：");
                                             $ui.alert({
-                                                title: "",
-                                                message: JSON.stringify(_data)
+                                                title: _list[0],
+                                                message: _list[1]
                                             });
                                             break;
                                     }
                                 }
                             }
                         }]
-                    });
+                    };
+                    switch ($app.env) {
+                        case $env.app:
+                            $ui.push(listView);
+                            break;
+                        default:
+                            $ui.render(listView);
+                    }
                 } else {
                     $ui.alert({
                         title: `Error ${resp.response.statusCode}`,
-                        message: data.code,
+                        message: data,
                     });
                 }
             } else {
@@ -246,69 +258,40 @@ let getVideoData = (vid, page, quality, access_key) => {
         handler: function (videoResp) {
             var videoData = videoResp.data;
             if (videoData.status == "OK") {
-                $console.info(videoData);
                 if (videoData.url.length > 0) {
                     const copyStr = JSON.stringify(videoData.headers);
                     $http.get({
                         url: videoData.url,
                         handler: function (biliResp) {
                             var biliData = biliResp.data;
-                            $console.info(biliData);
-                            if (biliData.code == 0) {
+                           if (biliData.code == 0) {
                                 const downloadList = biliData.data.durl;
-                                var dList = [];
-                                for (i in downloadList) {
-                                    dList.push(`第${(i + 1).toString()}个文件`);
-                                }
-                                $ui.loading(false);
-                                $ui.push({
-                                    props: {
-                                        title: "可下载文件列表"
-                                    },
-                                    views: [{
-                                        type: "list",
+                                if (downloadList.length > 1) {
+                                    var dList = [];
+                                    for (i in downloadList) {
+                                        dList.push(`第${(i + 1).toString()}个文件`);
+                                    }
+                                    $ui.loading(false);
+                                    $ui.push({
                                         props: {
-                                            data: dList
+                                            title: "可下载文件列表"
                                         },
-                                        layout: $layout.fill,
-                                        events: {
-                                            didSelect: function (_sender, indexPath, data) {
-                                                const thisFile = downloadList[indexPath.row];
-                                                var urlList = [thisFile.url];
-                                                urlList = urlList.concat(thisFile.backup_url);
-                                                $ui.push({
-                                                    props: {
-                                                        title: "可下载文件列表"
-                                                    },
-                                                    views: [{
-                                                        type: "list",
-                                                        props: {
-                                                            data: urlList
-                                                        },
-                                                        layout: $layout.fill,
-                                                        events: {
-                                                            didSelect: function (_sender, idxp, _data) {
-                                                                if (copyStr.length > 0) {
-                                                                    $ui.toast("请复制headers");
-                                                                    $input.text({
-                                                                        placeholder: "",
-                                                                        text: copyStr,
-                                                                        handler: function (text) {
-                                                                            sys.copyToClipboard(copyStr);
-                                                                            $share.sheet([_data]);
-                                                                        }
-                                                                    });
-                                                                } else {
-                                                                    $share.sheet([_data]);
-                                                                }
-                                                            }
-                                                        }
-                                                    }]
-                                                });
+                                        views: [{
+                                            type: "list",
+                                            props: {
+                                                data: dList
+                                            },
+                                            layout: $layout.fill,
+                                            events: {
+                                                didSelect: function (_sender, indexPath, data) {
+                                                    showDownList(downloadList[indexPath.row], copyStr);
+                                                }
                                             }
-                                        }
-                                    }]
-                                });
+                                        }]
+                                    });
+                                } else {
+                                    showDownList(downloadList[0], copyStr);
+                                }
 
                             } else {
                                 $ui.loading(false);
@@ -334,7 +317,39 @@ let getVideoData = (vid, page, quality, access_key) => {
         }
     });
 };
-
+let showDownList = (thisFile, copyStr) => {
+    var urlList = [thisFile.url];
+    urlList = urlList.concat(thisFile.backup_url);
+    $ui.push({
+        props: {
+            title: "可下载文件列表"
+        },
+        views: [{
+            type: "list",
+            props: {
+                data: urlList
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, idxp, _data) {
+                    if (copyStr.length > 0) {
+                        $ui.toast("请复制headers");
+                        $input.text({
+                            placeholder: "",
+                            text: copyStr,
+                            handler: function (text) {
+                                sys.copyToClipboard(copyStr);
+                                $share.sheet([_data]);
+                            }
+                        });
+                    } else {
+                        $share.sheet([_data]);
+                    }
+                }
+            }
+        }]
+    });
+};
 let getAccessKey = (userName, password) => {
     $ui.loading(true);
     $http.post({
@@ -348,10 +363,8 @@ let getAccessKey = (userName, password) => {
         },
         handler: function (kaaassResult) {
             var kaaassData = kaaassResult.data;
-            $console.info(kaaassData);
             if (kaaassData.status == "OK") {
                 var success = saveCache("getAccessKey", kaaassResult.rawData);
-                $console.info(`cache:${success}`);
                 loginBilibili(kaaassData.url, kaaassData.body, kaaassData.headers);
             } else {
                 $ui.loading(false);
@@ -372,7 +385,6 @@ let loginBilibili = (loginUrl, bodyStr, headers) => {
         const bb = thisBody.split("=");
         passportBody[bb[0]] = bb[1];
     }
-    $console.info(passportBody);
     $http.post({
         url: loginUrl,
         header: headers,
@@ -449,7 +461,7 @@ let getUserInfo = () => {
                         `追更漫画：${user.subscribeComic.count} 部`,
                     ];
                     $ui.loading(false);
-                    $ui.push({
+                    const view = {
                         props: {
                             title: "加载成功",
                             navButtons: [{
@@ -519,7 +531,9 @@ let getUserInfo = () => {
                                 }
                             }
                         }]
-                    });
+                    };
+                    $ui.push(view);
+
                 } else {
                     $ui.loading(false);
                     $ui.alert({
@@ -537,8 +551,15 @@ let getUserInfo = () => {
 
 let init = () => {
     //初始化，加载缓存
+    isShareMode = false;
     loadAccessKey();
     return checkAccessKey();
+};
+let isVideoUrl = url => {
+    return str.startsWithList(url, ["https://www.bilibili.com/av", "https://www.bilibili.com/video/av", "https://b23.tv/av"])
+};
+let isBiliUrl = url => {
+    return isVideoUrl(url);
 };
 module.exports = {
     getVideoInfo,
@@ -552,4 +573,6 @@ module.exports = {
     getVideo,
     getVidFromUrl,
     getLiveGiftList,
+    isBiliUrl,
+    isVideoUrl,
 };
