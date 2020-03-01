@@ -5,6 +5,7 @@ let _url = {
     downloadVideo: "https://api-new.app.acfun.cn/rest/app/play/playInfo/mp4",
     getVideoInfo: "https://api-new.app.acfun.cn/rest/app/douga/info?dougaId=",
     signIn: "https://api-new.app.acfun.cn/rest/app/user/signIn",
+    getUploaderVideo: "https://api-new.app.acfun.cn/rest/app/user/resource/query"
 };
 let _cacheDir = ".cache/acfun/";
 let acHeaders = {
@@ -20,6 +21,8 @@ let _cacheKey = {
     acSecurity: "acfun_acSecurity",
     auth_key: "acfun_auth_key",
     userid: "acfun_userid",
+    uploaderVideo_lastUid: "acfun_uploaderVideo_lastUid",
+    uploaderVideo_lastPage: "acfun_uploaderVideo_lastPage_",
 };
 var acUserData = {
     acPassToken: "",
@@ -45,7 +48,9 @@ let login = (id, pwd) => {
             const acResult = resp.data;
             $console.info(acResult);
             if (acResult.result == 0) {
-                saveCache("loginAcfun", resp.rawData);
+                saveCache("loginAcfun", $data({
+                    string: JSON.stringify(resp.data, null, 2)
+                }));
                 saveUserToken(acResult);
                 loadUserToken();
                 $ui.loading(false);
@@ -130,7 +135,9 @@ let getUserInfo = () => {
                 if (userResult.result == 0) {
                     personalInfo = userResult;
                     const userInfo = userResult.info;
-                    saveCache("getUserInfo", resp.rawData);
+                    saveCache("getUserInfo", $data({
+                        string: JSON.stringify(resp.data, null, 2)
+                    }));
                     var userInfoList = [
                         `昵称：${userInfo.userName}`,
                         `uid：${userInfo.userId}`,
@@ -141,6 +148,7 @@ let getUserInfo = () => {
                         `话题：${userInfo.tagStowCount}`,
                         `投稿：${userInfo.contentCount}`,
                         `手机号码：${userInfo.mobile}`,
+                        `邮箱：${userInfo.email}`,
                         `香蕉/金香蕉：${userInfo.banana}/${userInfo.goldBanana}`,
                         `等级：${userInfo.level}`,
                         `红名：${userInfo.nameRed?"是":"否"}`,
@@ -353,6 +361,75 @@ let signIn = () => {
         }) :
         $ui.error("未登录");
 };
+let getUploaderVideo = (uid, page, count = 10) => {
+    $http.post({
+        url: _url.getUploaderVideo,
+        header: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: {
+            authorId: uid,
+            count: count,
+            pcursor: page - 1,
+            resourceType: 2,
+            sortType: 3,
+            status: 1
+        }
+    }).then(function (resp) {
+        var acData = resp.data;
+        if (acData.result == 0) {
+            const feedList = acData.feed;
+            if (feedList.length > 0) {
+                saveCache("getUploaderVideo", resp.rawData);
+                $cache.set(_cacheKey.uploaderVideo_lastUid, uid);
+                $cache.set(_cacheKey.uploaderVideo_lastPage + uid, page);
+                showUploaderVideoList(acData);
+            } else {
+                $ui.error(`第${page}页空白`);
+            }
+        } else {
+            $ui.alert({
+                title: `错误代码 ${acData.result}`,
+                message: acData.error_msg,
+            });
+        }
+    });
+};
+let showUploaderVideoList = acData => {
+    const videoList = acData.feed;
+    $ui.push({
+        props: {
+            title: videoList[0].user.name
+        },
+        views: [{
+            type: "list",
+            props: {
+                data: [{
+                        title: "结果",
+                        rows: [
+                            `全部${acData.totalNum}共个视频`,
+                            `当前第${acData.pcursor}页，有${videoList.length}个视频`
+                        ]
+                    },
+                    {
+                        title: "视频列表",
+                        rows: videoList.map(v => v.title)
+                    }
+                ]
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const thisVideo = videoList[indexPath.row];
+                    $ui.preview({
+                        title: thisVideo.title,
+                        url: `https://www.acfun.cn/v/ac${thisVideo.dougaId}`
+                    });
+                }
+            }
+        }]
+    });
+}
 let init = () => {
     loadUserToken();
 };
@@ -364,4 +441,6 @@ module.exports = {
     getUserInfo,
     getVideoInfo,
     signIn,
+    getUploaderVideo,
+    _cacheKey,
 };
