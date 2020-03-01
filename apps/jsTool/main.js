@@ -37,9 +37,7 @@ let init = () => {
     var query = $context.query;
     if (query.mod) {
         page.contextOpen(query);
-    } /* else if (shareUrl) {
-        page.gotoUrl(shareUrl);
-    } */ else if ($context.link) {
+    } else if ($context.link) {
         page.gotoUrl($context.link);
     } else {
         if (!checkCacheDir()) {

@@ -62,7 +62,14 @@ let init = () => {
                     }
                 }
             }
-        }]
+        }],
+        events: {
+            appeared: function () {
+                if (acApi.isLogin()) {
+                    $ui.toast("已登录");
+                }
+            }
+        }
     });
 };
 module.exports = {

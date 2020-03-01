@@ -2,10 +2,6 @@ let biliApi = require("../api/bilibili.js");
 let debugVid = "90035938";
 
 let init = (url) => {
-    if (biliApi.init()) {
-        $ui.toast("已登录");
-    }
-    $console.info(`url:${url}`);
     if (url) {
         if (biliApi.isVideoUrl(url)) {
             biliApi.getVideoInfo(biliApi.getVidFromUrl(url));
@@ -92,13 +88,10 @@ let init = (url) => {
                                                                 if (url.length > 0) {
                                                                     const vid = biliApi.getVidFromUrl(url);
                                                                     if (vid.length > 0) {
-                                                                        $console.info(`url:${url}\nvid:${vid}`);
                                                                         biliApi.getVideoInfo(vid);
                                                                     } else if (vid == url) {
-                                                                        $console.error(`url:${url}\nvid:${vid}`);
                                                                         $ui.error("解析网址失败");
                                                                     } else {
-                                                                        $console.error(`url:${url}\nvid:${vid}`);
                                                                         $ui.error("空白id");
                                                                     }
                                                                 } else {
@@ -148,7 +141,14 @@ let init = (url) => {
                         }
                     }
                 }
-            }]
+            }],
+            events: {
+                appeared: function () {
+                    if (biliApi.init()) {
+                        $ui.toast("已登录");
+                    }
+                }
+            }
         });
     }
 };
