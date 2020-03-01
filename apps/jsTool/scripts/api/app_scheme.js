@@ -16,10 +16,17 @@ let qqBrowserOpen = url => {
         url: url
     })
 };
+let firefoxBrowserOpen = url => {
+    $app.openBrowser({
+        type: 10002,
+        url: url
+    })
+};
 
 module.exports = {
     alookBrowserOpen,
     chromeBrowserOpen,
     qqBrowserOpen,
-    alookBrowserDownload
+    alookBrowserDownload,
+    firefoxBrowserOpen
 };
