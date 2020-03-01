@@ -3,8 +3,6 @@ const appVersion = lib.getVersion();
 
 
 function checkUpdate(jsonUrl, appId) {
-    //const serverJsonUrl = "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox@master/app.json";
-    //const appId = "io.zhihao.jsbox.dxy";
     $ui.alert({
         title: "你要检测更新吗?",
         message: "你点了检测更新的按钮",
@@ -16,11 +14,10 @@ function checkUpdate(jsonUrl, appId) {
                         url: jsonUrl,
                         handler: function (_resp) {
                             const updateData = _resp.data;
-                            console.log("更新：获取服务器数据成功");
+                            $console.info("更新：获取服务器数据成功");
                             const _app = updateData[appId];
-                            console.log(_app);
-                            if (_app.version > appVersion) {
-                                console.log("更新：发现更新");
+                            if (_app.version_name > appVersion) {
+                                $console.info("更新：发现更新");
                                 $ui.alert({
                                     title: "发现新版本",
                                     message: "版本号：" + _app.version_name + "\n你要更新吗?\n更新内容：\n" + _app.update_note,
@@ -42,7 +39,7 @@ function checkUpdate(jsonUrl, appId) {
                                     ]
                                 });
                             } else {
-                                console.log("更新：已经是最新版");
+                                $console.info("更新：已经是最新版");
                                 $ui.toast("已经是最新版");
                             }
                         }
