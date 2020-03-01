@@ -1,5 +1,6 @@
 let cheerio = require("cheerio");
 let sys = require("../api/system.js");
+let appScheme = require("../api/app_scheme.js");
 let apiUrl = {
     instaoffline_net: "https://instaoffline.net/process/",
 };
@@ -79,43 +80,77 @@ let showResultListView = resultList => {
             layout: $layout.fill,
             events: {
                 didSelect: function (_sender, indexPath, _data) {
-                    const thisItem = resultList[indexPath.row];
+                    const itemUrl = resultList[indexPath.row].url;
                     $ui.menu({
                         items: ["打开", "预览", "分享", "复制", "下载"],
                         handler: function (title, idx) {
                             switch (idx) {
                                 case 0:
-                                    $app.openURL(thisItem.url);
+                                    $ui.menu({
+                                        items: ["Safari", "Chrome", "Alook browser", "QQ browser", "Firefox"],
+                                        handler: function (browserTitle, browserIndex) {
+                                            switch (browserIndex) {
+                                                case 0:
+                                                    $app.openURL(itemUrl);
+                                                    break;
+                                                case 1:
+                                                    appScheme.chromeBrowserOpen(itemUrl);
+                                                    break;
+                                                case 2:
+                                                    appScheme.alookBrowserOpen(itemUrl);
+                                                    break;
+                                                case 3:
+                                                    appScheme.qqBrowserOpen(itemUrl);
+                                                    break;
+                                                case 4:
+                                                    appScheme.firefoxBrowserOpen(itemUrl);
+                                                    break;
+                                            }
+
+                                        }
+                                    });
                                     break;
                                 case 1:
                                     $ui.preview({
                                         title: title,
-                                        url: thisItem.url
+                                        url: itemUrl
                                     });
                                     break;
                                 case 2:
-                                    $share.sheet([thisItem.url]);
+                                    $share.sheet([itemUrl]);
                                     break;
                                 case 3:
-                                    sys.copyToClipboard(thisItem.url);
+                                    sys.copyToClipboard(itemUrl);
                                     break;
                                 case 4:
-                                    $ui.alert({
-                                        title: "注意事项",
-                                        message: "下载是调用系统的预览功能，需要等待媒体完整加载后才能预览下载",
-                                        actions: [{
-                                            title: "确定下载",
-                                            disabled: false, // Optional
-                                            handler: function () {
-                                                $quicklook.open({
-                                                    url: thisItem.url
-                                                })
+                                    $ui.menu({
+                                        items: ["自带下载功能", "调用Alook browser下载"],
+                                        handler: function (downtitle, downIndex) {
+                                            switch (downIndex) {
+                                                case 0:
+                                                    $ui.alert({
+                                                        title: "注意事项",
+                                                        message: "下载是调用系统的预览功能，需要等待媒体完整加载后才能预览下载",
+                                                        actions: [{
+                                                            title: "确定下载",
+                                                            disabled: false, // Optional
+                                                            handler: function () {
+                                                                $quicklook.open({
+                                                                    url: itemUrl
+                                                                })
+                                                            }
+                                                        }, {
+                                                            title: "关闭",
+                                                            disabled: false, // Optional
+                                                            handler: function () {}
+                                                        }]
+                                                    });
+                                                    break;
+                                                case 1:
+                                                    appScheme.alookBrowserDownload(itemUrl)
+                                                    break;
                                             }
-                                        }, {
-                                            title: "关闭",
-                                            disabled: false, // Optional
-                                            handler: function () {}
-                                        }]
+                                        }
                                     });
                                     break;
                                 default:
