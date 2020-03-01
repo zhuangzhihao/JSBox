@@ -3,7 +3,6 @@ let siteListL10n = ["MO_FISH"];
 let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "INSTAGRAM", "TEST_PAGE"];
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
-let shareUrl = "https://www.bilibili.com/av92555571";
 let getNavButton = () => {
     return [{
         title: $l10n("MENU"),
