@@ -8,19 +8,22 @@ let chromeBrowserOpen = url => {
     $app.openBrowser({
         type: 10000,
         url: url
-    })
+    });
 };
 let qqBrowserOpen = url => {
     $app.openBrowser({
         type: 10003,
         url: url
-    })
+    });
 };
 let firefoxBrowserOpen = url => {
     $app.openBrowser({
         type: 10002,
         url: url
-    })
+    });
+};
+let acfunVideo = vid => {
+    $app.openURL(`acfun://detail/video/${vid}`);
 };
 
 module.exports = {
@@ -28,5 +31,6 @@ module.exports = {
     chromeBrowserOpen,
     qqBrowserOpen,
     alookBrowserDownload,
-    firefoxBrowserOpen
+    firefoxBrowserOpen,
+    acfunVideo
 };
