@@ -1,5 +1,6 @@
 let sys = require("./api/system.js");
 let str = require("./api/string.js");
+
 // 模块
 let mofish = require("./view/mofish.js");
 let cdn = require("./view/cdn.js");
@@ -12,6 +13,7 @@ let musicSearch = require("./view/music_search.js");
 let zhihuDaily = require("./view/zhihu_daily.js");
 let acfun = require("./view/acfun.js");
 let instagram = require("./view/instagram.js");
+let freeSms = require("./view/free_sms_getter.js");
 
 let gotoUrl = url => {
     const newUrl = $text.URLDecode(url);
@@ -73,6 +75,7 @@ module.exports = {
     zhihuDaily: zhihuDaily.init,
     acfun: acfun.init,
     instagram: instagram.init,
+    freeSms: freeSms.init,
     contextOpen,
     gotoUrl,
 };

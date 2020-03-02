@@ -1,6 +1,6 @@
 let page = require("./scripts/page_init.js");
 let siteListL10n = ["MO_FISH"];
-let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "INSTAGRAM", "TEST_PAGE"];
+let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "INSTAGRAM", "免费短信接收"];
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
 let getNavButton = () => {
@@ -104,6 +104,9 @@ let init = () => {
                                         break;
                                     case 8:
                                         page.instagram();
+                                        break;
+                                    case 9:
+                                        page.freeSms();
                                         break;
                                     default:
                                         $ui.error("错误选项");
