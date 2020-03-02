@@ -9,8 +9,10 @@ const cacheId = {
   siteInfo: "SITE_INFO_",
   lastCacheTime: "LAST_CACHE_TIME"
 };
+var isFirstInit = false;
 
-function init() {
+function init(firstInit = false) {
+  isFirstInit = firstInit;
   $ui.loading("加载中...");
   getType();
 }
@@ -54,7 +56,7 @@ function checkSiteList(siteListData) {
 }
 // 渲染站点列表
 function pushSiteList(itemList) {
-  $ui.push({
+  const listView = {
     props: {
       id: "listView_index",
       title: "加载完毕"
@@ -74,7 +76,10 @@ function pushSiteList(itemList) {
         }
       }
     }]
-  });
+  };
+  isFirstInit ?
+    $ui.render(listView) :
+    $ui.push(listView);
   //$console.info($ui.get("listView_index"));
 }
 // 按分类获取站点列表

@@ -14,7 +14,7 @@ let acfun = require("./view/acfun.js");
 let instagram = require("./view/instagram.js");
 
 let gotoUrl = url => {
-    const newUrl=$text.URLDecode(url);
+    const newUrl = $text.URLDecode(url);
     if (str.checkIfUrl(newUrl)) {
         checkMod(newUrl);
     } else {
@@ -52,7 +52,8 @@ let contextOpen = query => {
                 });
             }
             break;
-        case "bilibili":
+        case "mofish":
+            mofish.init(true);
             break;
         default:
             $ui.alert({
