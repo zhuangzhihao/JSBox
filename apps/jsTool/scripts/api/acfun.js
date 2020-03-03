@@ -1,4 +1,5 @@
 let sys = require("./system.js");
+let str = require("./string.js");
 let appScheme = require("./app_scheme.js");
 let _url = {
     login: "https://id.app.acfun.cn/rest/app/login/signin",
@@ -8,6 +9,11 @@ let _url = {
     signIn: "https://api-new.app.acfun.cn/rest/app/user/signIn",
     getUploaderVideo: "https://api-new.app.acfun.cn/rest/app/user/resource/query"
 };
+let acVideoSiteList = [
+    "acfun://detail/video/",
+    "https://www.acfun.cn/v/ac",
+    "https://m.acfun.cn/v/?ac="
+];
 let _cacheDir = ".cache/acfun/";
 let acHeaders = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -24,6 +30,7 @@ let _cacheKey = {
     userid: "acfun_userid",
     uploaderVideo_lastUid: "acfun_uploaderVideo_lastUid",
     uploaderVideo_lastPage: "acfun_uploaderVideo_lastPage_",
+    lastClickedVid: "acfun_lastClickedVid",
 };
 var acUserData = {
     acPassToken: "",
@@ -229,37 +236,7 @@ let getVideoInfo = () => {
         /* text: "12702163", */
         handler: function (vid) {
             if (vid.length > 0) {
-                $http.get({
-                    url: _url.getVideoInfo + vid,
-                    handler: function (resp) {
-                        var videoResult = resp.data;
-                        $console.info(videoResult);
-                        if (videoResult.result == 0) {
-                            const partList = videoResult.videoList;
-                            var pid = -1;
-                            if (partList.length == 1) {
-                                pid = videoResult.videoList[0].id;
-                            } else {
-                                const pidList = partList.map(function (x) {
-                                    return x
-                                });
-                                $ui.menu({
-                                    items: pidList,
-                                    handler: function (title, idx) {
-                                        pid = title;
-                                    }
-                                });
-                            }
-                            downloadVideo(vid, pid);
-                        } else {
-                            $ui.loading(false);
-                            $ui.alert({
-                                title: `错误代码${videoResult.result}`,
-                                message: videoResult.error_msg,
-                            });
-                        }
-                    }
-                });
+                getVideoPid(vid)
             } else {
                 $ui.loading(false);
                 $ui.error("空白vid");
@@ -267,7 +244,40 @@ let getVideoInfo = () => {
         }
     });
 };
-
+let getVideoPid = vid => {
+    $ui.loading(true);
+    $http.get({
+        url: _url.getVideoInfo + vid,
+        handler: function (resp) {
+            var videoResult = resp.data;
+            $console.info(videoResult);
+            if (videoResult.result == 0) {
+                const partList = videoResult.videoList;
+                var pid = -1;
+                if (partList.length == 1) {
+                    pid = videoResult.videoList[0].id;
+                } else {
+                    const pidList = partList.map(function (x) {
+                        return x
+                    });
+                    $ui.menu({
+                        items: pidList,
+                        handler: function (title, idx) {
+                            pid = title;
+                        }
+                    });
+                }
+                downloadVideo(vid, pid);
+            } else {
+                $ui.loading(false);
+                $ui.alert({
+                    title: `错误代码${videoResult.result}`,
+                    message: videoResult.error_msg,
+                });
+            }
+        }
+    });
+}
 let downloadVideo = (vid, pid) => {
     $console.info(`vid:${vid}\npid:${pid}`);
     $http.post({
@@ -306,8 +316,41 @@ let downloadVideo = (vid, pid) => {
                         layout: $layout.fill,
                         events: {
                             didSelect: function (_sender, indexPath, _data) {
-                                indexPath.row
-                                $share.sheet([cdnUrl[indexPath.row].url]);
+                                const idx = indexPath.row;
+                                const videoUrl = cdnUrl[idx].url;
+                                $ui.alert({
+                                    title: cdnTitleList[idx],
+                                    message: videoUrl,
+                                    actions: [{
+                                        title: "使用Alook浏览器打开",
+                                        disabled: false,
+                                        handler: function () {
+                                            $ui.menu({
+                                                items: ["网页浏览", "下载"],
+                                                handler: function (title, idx) {
+                                                    switch (idx) {
+                                                        case 0:
+                                                            appScheme.alookBrowserOpen(videoUrl);
+                                                            break;
+                                                        case 1:
+                                                            appScheme.alookBrowserDownload(videoUrl);
+                                                            break;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }, {
+                                        title: "分享",
+                                        disabled: false,
+                                        handler: function () {
+                                            $share.sheet([videoUrl]);
+                                        }
+                                    }, {
+                                        title: "关闭",
+                                        disabled: false,
+                                        handler: function () {}
+                                    }, ]
+                                });
                             }
                         }
                     }]
@@ -398,6 +441,8 @@ let getUploaderVideo = (uid, page, count = 20) => {
 };
 let showUploaderVideoList = acData => {
     const videoList = acData.feed;
+    const listClickedVid = $cache.get(_cacheKey.lastClickedVid);
+    $console
     $ui.push({
         props: {
             title: videoList[0].user.name
@@ -414,20 +459,85 @@ let showUploaderVideoList = acData => {
                     },
                     {
                         title: "视频列表",
-                        rows: videoList.map(v => v.title)
+                        rows: videoList.map(v => {
+                            if (listClickedVid) {
+                                if (listClickedVid == v.dougaId) {
+                                    return `[上次]${v.title}`
+                                }
+                            }
+                            return v.title
+                        })
                     }
                 ]
             },
             layout: $layout.fill,
             events: {
                 didSelect: function (_sender, indexPath, _data) {
-                    const thisVideo = videoList[indexPath.row];
-                    appScheme.acfunVideo(thisVideo.dougaId);
+                    switch (indexPath.section) {
+                        case 1:
+                            const thisVideo = videoList[indexPath.row];
+                            const vid = thisVideo.dougaId;
+                            const schemeUrl = `acfun://detail/video/${vid}`;
+                            const webUrl = `https://www.acfun.cn/v/ac${vid}`
+                            $cache.set(_cacheKey.lastClickedVid, vid);
+                            $ui.menu({
+                                items: [
+                                    "打开客户端",
+                                    "分享网址",
+                                    "分享打开客户端的链接",
+                                    "二维码分享网址",
+                                    "二维码分享打开客户端的链接",
+                                    "视频解析",
+                                ],
+                                handler: function (title, idx) {
+                                    switch (idx) {
+                                        case 0:
+                                            appScheme.acfunVideo(vid);
+                                            break;
+                                        case 1:
+                                            $share.sheet([webUrl]);
+                                            break;
+                                        case 2:
+                                            $share.sheet([schemeUrl]);
+                                            break;
+                                        case 3:
+                                            $quicklook.open({
+                                                image: $qrcode.encode(webUrl)
+                                            });
+                                            break;
+                                        case 4:
+                                            $quicklook.open({
+                                                image: $qrcode.encode(schemeUrl)
+                                            });
+                                            break;
+                                        case 5:
+                                            getVideoPid(vid);
+                                            break;
+                                    }
+                                }
+                            });
+                            break;
+                    }
                 }
             }
         }]
     });
 }
+let isVideoUrl = url => {
+    return str.startsWithList(url, acVideoSiteList);
+};
+let getVidFromUrl = url => {
+    var vid = undefined;
+    if (isVideoUrl(url)) {
+        acVideoSiteList.map(s => {
+            if (url.startsWith(s)) {
+                vid = url.replace(s, "");
+            }
+        });
+    }
+    return vid;
+};
+// init
 let init = () => {
     loadUserToken();
 };
@@ -441,4 +551,7 @@ module.exports = {
     signIn,
     getUploaderVideo,
     _cacheKey,
+    isVideoUrl,
+    getVidFromUrl,
+    getVideoPid,
 };
