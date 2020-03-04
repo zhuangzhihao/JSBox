@@ -4,68 +4,23 @@ let appScheme = require("../api/app_scheme.js");
 let apiUrl = {
     instaoffline_net: "https://instaoffline.net/process/",
 };
-let instaoffline = instLink => {
-    $ui.loading(true);
-    if (instLink) {
-        $http.post({
-            url: apiUrl.instaoffline_net,
-            header: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: {
-                q: instLink
-            },
-        }).then(function (httpResp) {
-            const httpData = httpResp.data;
-            const strData = httpResp.rawData.toString();
-            if (strData.startsWith("{") && strData.endsWith("}")) {
-                if (httpData.error) {
-                    $ui.loading(false);
-                    $ui.error("发生错误，请检查链接是否正确");
-                } else {
-                    if (httpData.html) {
-                        $ui.loading(false);
-                        const $ = cheerio.load(httpData.html);
-                        var resultList = [];
-                        $("div.items-list").find("a.button").each(function (i, elem) {
-                            resultList[i] = {
-                                type: $(this).text().remove("Download ").toLowerCase(),
-                                url: $(this).attr("href")
-                            };
-                        });
-                        if (resultList.length > 0) {
-                            $ui.loading(false);
-                            showResultListView(resultList);
-                        } else {
-                            $ui.loading(false);
-                            $ui.alert({
-                                title: "解析结果为空",
-                                message: "服务器返回0个媒体",
-                            });
-                        }
-                    } else {
-                        $ui.loading(false);
-                        $ui.alert({
-                            title: "服务器返回空白数据",
-                            message: "HTML为空",
-                        });
-                    }
-                }
+
+function MediaItem(type, url) {
+    this.type = type;
+    this.url = url;
+}
+let init = () => {
+    $input.text({
+        type: $kbType.url,
+        placeholder: "输入instagram链接",
+        handler: function (url) {
+            if (url) {
+                instagramOfficial(url);
             } else {
-                $ui.loading(false);
-                $ui.alert({
-                    title: "服务器返回错误数据格式",
-                    message: "不是JSON",
-                });
+                $ui.error("请输入网址");
             }
-        });
-    } else {
-        $ui.loading(false);
-        $ui.alert({
-            title: "链接错误",
-            message: "请输入正确的链接",
-        });
-    }
+        }
+    });
 };
 let showResultListView = resultList => {
     $ui.push({
@@ -124,7 +79,7 @@ let showResultListView = resultList => {
                                     break;
                                 case 4:
                                     $ui.menu({
-                                        items: ["自带下载功能", "调用Alook browser下载"],
+                                        items: ["系统预览"],
                                         handler: function (downtitle, downIndex) {
                                             switch (downIndex) {
                                                 case 0:
@@ -146,9 +101,6 @@ let showResultListView = resultList => {
                                                         }]
                                                     });
                                                     break;
-                                                case 1:
-                                                    appScheme.alookBrowserDownload(itemUrl)
-                                                    break;
                                             }
                                         }
                                     });
@@ -162,18 +114,109 @@ let showResultListView = resultList => {
         }]
     });
 }
-let init = () => {
-    $input.text({
-        type: $kbType.url,
-        placeholder: "输入instagram链接",
-        handler: function (url) {
-            if (url) {
-                instaoffline(url);
+let instaoffline = instLink => {
+    $ui.loading(true);
+    if (instLink) {
+        $http.post({
+            url: apiUrl.instaoffline_net,
+            header: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: {
+                q: instLink
+            },
+        }).then(function (httpResp) {
+            const httpData = httpResp.data;
+            const strData = httpResp.rawData.toString();
+            if (strData.startsWith("{") && strData.endsWith("}")) {
+                if (httpData.error) {
+                    $ui.loading(false);
+                    $ui.error("发生错误，请检查链接是否正确");
+                } else {
+                    if (httpData.html) {
+                        $ui.loading(false);
+                        const $ = cheerio.load(httpData.html);
+                        var resultList = [];
+                        $("div.items-list").find("a.button").each(function (i, elem) {
+                            const media_item = new MediaItem(
+                                $(this).text().remove("Download ").toLowerCase(),
+                                $(this).attr("href")
+                            );
+                            resultList[i] = media_item;
+                        });
+                        if (resultList.length > 0) {
+                            $ui.loading(false);
+                            showResultListView(resultList);
+                        } else {
+                            $ui.loading(false);
+                            $ui.alert({
+                                title: "解析结果为空",
+                                message: "服务器返回0个媒体",
+                            });
+                        }
+                    } else {
+                        $ui.loading(false);
+                        $ui.alert({
+                            title: "服务器返回空白数据",
+                            message: "HTML为空",
+                        });
+                    }
+                }
             } else {
-                $ui.error("请输入网址");
+                $ui.loading(false);
+                $ui.alert({
+                    title: "服务器返回错误数据格式",
+                    message: "不是JSON",
+                });
             }
-        }
-    });
+        });
+    } else {
+        $ui.loading(false);
+        $ui.alert({
+            title: "链接错误",
+            message: "请输入正确的链接",
+        });
+    }
+};
+let instagramOfficial = link => {
+    if (link.startsWith("https://www.instagram.com/p/")) {
+        var insUrl = link.split("?")[0];
+        $http.get({
+            url: `${insUrl}?__a=1`,
+            handler: function (resp) {
+                var data = resp.data;
+                if (data) {
+                    const mediaList = data.graphql.shortcode_media.edge_sidecar_to_children.edges;
+                    if (mediaList) {
+                        if (mediaList.length > 0) {
+                            const insMediaList = mediaList.map(media => {
+                                const thisData = media.node;
+                                return thisData.is_video ?
+                                    new MediaItem("video", thisData.video_url) :
+                                    new MediaItem("image", thisData.display_url);
+                            });
+                            showResultListView(insMediaList);
+                        } else {
+                            $ui.alert({
+                                title: "解析数据失败",
+                                message: "媒体列表空白",
+                            });
+                        }
+                    } else {
+                        $ui.alert({
+                            title: "解析数据失败",
+                            message: "数据空白",
+                        });
+                    }
+                } else {
+                    $ui.alert({
+                        title: "解析数据失败",
+                        message: "数据格式错误",
+                    });
+                }
+            }
+        });
+    }
 };
 module.exports = {
     init
