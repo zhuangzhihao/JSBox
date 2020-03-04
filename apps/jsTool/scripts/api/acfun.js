@@ -10,9 +10,13 @@ let _url = {
     getUploaderVideo: "https://api-new.app.acfun.cn/rest/app/user/resource/query"
 };
 let acVideoSiteList = [
-    "acfun://detail/video/",
+    "acfun://detail/upPage/",
     "https://www.acfun.cn/v/ac",
     "https://m.acfun.cn/v/?ac="
+];
+let acUploaderSiteList = [
+    "https://www.acfun.cn/u/",
+    "https://m.acfun.cn/upPage/"
 ];
 let _cacheDir = ".cache/acfun/";
 let acHeaders = {
@@ -41,8 +45,6 @@ var acUserData = {
     userid: "",
 
 };
-var personalInfo = {};
-
 let login = (id, pwd) => {
     $ui.loading(true);
     $http.post({
@@ -442,7 +444,6 @@ let getUploaderVideo = (uid, page, count = 20) => {
 let showUploaderVideoList = acData => {
     const videoList = acData.feed;
     const listClickedVid = $cache.get(_cacheKey.lastClickedVid);
-    $console
     $ui.push({
         props: {
             title: videoList[0].user.name
@@ -468,7 +469,86 @@ let showUploaderVideoList = acData => {
                             return v.title
                         })
                     }
-                ]
+                ],
+                menu: {
+                    title: "菜单",
+                    items: [{
+                        title: "打开客户端",
+                        symbol: "arrowshape.turn.up.right",
+                        handler: (sender, indexPath) => {
+                            const vid = videoList[indexPath.row].dougaId;
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                appScheme.acfunVideo(vid);
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    }, {
+                        title: "分享网址",
+                        symbol: "square.and.arrow.up",
+                        handler: (sender, indexPath) => {
+                            const vid = videoList[indexPath.row].dougaId;
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                $share.sheet([`https://www.acfun.cn/v/ac${vid}`]);
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    }, {
+                        title: "分享打开客户端的链接",
+                        symbol: "square.and.arrow.up",
+                        handler: (sender, indexPath) => {
+                            const vid = videoList[indexPath.row].dougaId;
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                $share.sheet([`acfun://detail/video/${vid}`]);
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    }, {
+                        title: "分享网址(二维码)",
+                        symbol: "qrcode",
+                        handler: (sender, indexPath) => {
+                            const vid = videoList[indexPath.row].dougaId;
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                $quicklook.open({
+                                    image: $qrcode.encode(`https://www.acfun.cn/v/ac${vid}`)
+                                });
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    },{
+                        title: "分享打开客户端的链接(二维码)",
+                        symbol: "qrcode",
+                        handler: (sender, indexPath) => {
+                            const vid = videoList[indexPath.row].dougaId;
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                $quicklook.open({
+                                    image: $qrcode.encode(`acfun://detail/video/${vid}`)
+                                });
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    }, {
+                        title: "视频解析",
+                        symbol: "square.and.arrow.down",
+                        handler: (sender, indexPath) => {
+                            if (indexPath.section == 1) {
+                                $cache.set(_cacheKey.lastClickedVid, vid);
+                                getVideoPid(videoList[indexPath.row].dougaId);
+                            } else {
+                                $ui.error("这里长按无效，请在视频列表长按");
+                            }
+                        }
+                    }]
+                }
             },
             layout: $layout.fill,
             events: {
@@ -477,45 +557,8 @@ let showUploaderVideoList = acData => {
                         case 1:
                             const thisVideo = videoList[indexPath.row];
                             const vid = thisVideo.dougaId;
-                            const schemeUrl = `acfun://detail/video/${vid}`;
-                            const webUrl = `https://www.acfun.cn/v/ac${vid}`
                             $cache.set(_cacheKey.lastClickedVid, vid);
-                            $ui.menu({
-                                items: [
-                                    "打开客户端",
-                                    "分享网址",
-                                    "分享打开客户端的链接",
-                                    "二维码分享网址",
-                                    "二维码分享打开客户端的链接",
-                                    "视频解析",
-                                ],
-                                handler: function (title, idx) {
-                                    switch (idx) {
-                                        case 0:
-                                            appScheme.acfunVideo(vid);
-                                            break;
-                                        case 1:
-                                            $share.sheet([webUrl]);
-                                            break;
-                                        case 2:
-                                            $share.sheet([schemeUrl]);
-                                            break;
-                                        case 3:
-                                            $quicklook.open({
-                                                image: $qrcode.encode(webUrl)
-                                            });
-                                            break;
-                                        case 4:
-                                            $quicklook.open({
-                                                image: $qrcode.encode(schemeUrl)
-                                            });
-                                            break;
-                                        case 5:
-                                            getVideoPid(vid);
-                                            break;
-                                    }
-                                }
-                            });
+                            appScheme.acfunVideo(vid);
                             break;
                     }
                 }
@@ -526,16 +569,30 @@ let showUploaderVideoList = acData => {
 let isVideoUrl = url => {
     return str.startsWithList(url, acVideoSiteList);
 };
+let isUploaderUrl = url => {
+    return str.startsWithList(url, acUploaderSiteList);
+}
 let getVidFromUrl = url => {
     var vid = undefined;
     if (isVideoUrl(url)) {
         acVideoSiteList.map(s => {
             if (url.startsWith(s)) {
-                vid = url.replace(s, "");
+                vid = str.remove(url, s);
             }
         });
     }
     return vid;
+};
+let getuidFromUrl = url => {
+    var uid = undefined;
+    if (isVideoUrl(url)) {
+        acUploaderSiteList.map(s => {
+            if (url.startsWith(s)) {
+                uid = str.remove(url, s).remove(url, ".aspx");
+            }
+        });
+    }
+    return uid;
 };
 // init
 let init = () => {
@@ -554,4 +611,6 @@ module.exports = {
     isVideoUrl,
     getVidFromUrl,
     getVideoPid,
+    isUploaderUrl,
+    getuidFromUrl
 };

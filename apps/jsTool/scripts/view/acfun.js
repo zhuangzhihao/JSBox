@@ -107,17 +107,17 @@ let init = () => {
         }
     });
 };
-let getUploaderVideo = () => {
+let getUploaderVideo = (inputUid) => {
     $input.text({
         type: $kbType.number,
         placeholder: "请输入uid",
-        text: $cache.get(acApi._cacheKey.uploaderVideo_lastUid) || "",
+        text: inputUid || $cache.get(acApi._cacheKey.uploaderVideo_lastUid) || "",
         handler: function (uid) {
             if (uid.length > 0) {
                 $input.text({
                     type: $kbType.number,
                     placeholder: "请输入页数,从1开始",
-                    text: $cache.get(acApi._cacheKey.uploaderVideo_lastPage + uid) || "",
+                    text: $cache.get(acApi._cacheKey.uploaderVideo_lastPage + uid) || 1,
                     handler: function (page) {
                         if (uid.length > 0) {
                             acApi.getUploaderVideo(uid, page);
@@ -147,6 +147,30 @@ let qrcodeScan = () => {
                                 disabled: false,
                                 handler: function () {
                                     acApi.getVideoPid(vid);
+                                }
+                            }, {
+                                title: "关闭",
+                                disabled: false,
+                                handler: function () {}
+                            }]
+                        });
+                    } else {
+                        $ui.alert({
+                            title: "不支持该二维码",
+                            message: "链接不包含视频id",
+                        });
+                    }
+                } else if (acApi.isUploaderUrl(string)) {
+                    const uid = acApi.getuidFromUrl(string);
+                    if (uid) {
+                        $ui.alert({
+                            title: "Up个人空间",
+                            message: "是否开始获取该up上传视频",
+                            actions: [{
+                                title: "是",
+                                disabled: false,
+                                handler: function () {
+                                    acApi.getUploaderVideo(uid);
                                 }
                             }, {
                                 title: "关闭",
