@@ -195,41 +195,47 @@ let instagramOfficial = link => {
             handler: function (resp) {
                 var data = resp.data;
                 if (data) {
-                    const _c = data.graphql.shortcode_media.edge_sidecar_to_children;
-                    if (_c) {
-                        const mediaList = _c.edges;
-                        if (mediaList) {
-                            if (mediaList.length > 0) {
-                                const insMediaList = mediaList.map(media => {
-                                    const thisData = media.node;
-                                    return thisData.is_video ?
-                                        new MediaItem("video", thisData.video_url) :
-                                        new MediaItem("image", thisData.display_url);
-                                });
-                                showResultListView(insMediaList);
+                    const gsm = data.graphql.shortcode_media;
+                    if (gsm.is_ad) {
+                        $ui.alert({
+                            title: "拒绝解析",
+                            message: "这是广告",
+                        });
+                    } else {
+                        if (gsm.edge_sidecar_to_children) {
+                            const mediaList = gsm.edge_sidecar_to_children.edges;
+                            if (mediaList) {
+                                if (mediaList.length > 0) {
+                                    const insMediaList = mediaList.map(media => {
+                                        const thisData = media.node;
+                                        return thisData.is_video ?
+                                            new MediaItem("video", thisData.video_url) :
+                                            new MediaItem("image", thisData.display_url);
+                                    });
+                                    showResultListView(insMediaList);
+                                } else {
+                                    $ui.alert({
+                                        title: "解析数据失败",
+                                        message: "媒体列表空白",
+                                    });
+                                }
                             } else {
                                 $ui.alert({
                                     title: "解析数据失败",
-                                    message: "媒体列表空白",
+                                    message: "数据空白",
                                 });
                             }
                         } else {
                             $ui.alert({
                                 title: "解析数据失败",
-                                message: "数据空白",
+                                message: "数据格式错误，未找到媒体列表，所以只显示封面",
                             });
+                            const insMediaList = [
+                                new MediaItem(gsm.is_video ? "video" : "image",
+                                    gsm.display_url)
+                            ];
+                            showResultListView(insMediaList);
                         }
-                    } else {
-                        const gsm = data.graphql.shortcode_media;
-                        $ui.alert({
-                            title: "解析数据失败",
-                            message: "数据格式错误，未找到媒体列表，所以只显示封面",
-                        });
-                        const insMediaList = [
-                            new MediaItem(gsm.is_video ? "video" : "image",
-                                gsm.display_url)
-                        ];
-                        showResultListView(insMediaList);
                     }
                 } else {
                     $ui.alert({
