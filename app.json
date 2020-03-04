@@ -32,13 +32,12 @@
     },
     "io.zhihao.jsbox.jstool": {
         "name": "jsTool",
-        "version": 2,
-        "version_name": "0.0.2",
+        "version": 1,
+        "version_name": "0.0.1",
         "update_time": 0,
-        "update_note": "新增更新功能",
+        "update_note": "第一个有安装包的版本",
         "update_icon": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/jsTool/assets/icon.png",
         "update_url": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/download/jsTool.box",
-        "isApp": true,
-        "appConfig": "https://cdn.jsdelivr.net/gh/zhuangzhihao/jsbox/apps/jsTool/config.json"
+        "isApp": true
     }
 }
