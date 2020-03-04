@@ -1,6 +1,6 @@
 let page = require("./scripts/page_init.js");
-let siteListL10n = ["MO_FISH"];
-let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "BILIBILI", "MUSIC_SEARCH", "ZHIHU_DAILY", "ACFUN", "INSTAGRAM", "免费短信接收"];
+let siteListL10n = ["MO_FISH", "BILIBILI", "ACFUN", "INSTAGRAM", "ZHIHU_DAILY"];
+let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "MUSIC_SEARCH", "免费短信接收"];
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
 let getNavButton = () => {
@@ -10,9 +10,13 @@ let getNavButton = () => {
         symbol: "checkmark.seal", // SF symbols are supported
         handler: () => {
             $ui.menu({
-                items: ["Hello", "World"],
+                items: ["SCAN_QRCODE"].map(x => $l10n(x)),
                 handler: function (title, idx) {
-
+                    switch (idx) {
+                        case 0:
+                            page.scanQrcodeToGo()
+                            break;
+                    }
                 }
             });
         }
@@ -54,7 +58,7 @@ let init = () => {
                 type: "list",
                 props: {
                     data: [{
-                            title: $l10n("NEWS"),
+                            title: $l10n("SITE"),
                             rows: siteList
                         },
                         {
@@ -71,6 +75,18 @@ let init = () => {
                                 switch (indexPath.row) {
                                     case 0:
                                         page.mofish();
+                                        break;
+                                    case 1:
+                                        page.bilibili();
+                                        break;
+                                    case 2:
+                                        page.acfun();
+                                        break;
+                                    case 3:
+                                        page.instagram();
+                                        break;
+                                    case 4:
+                                        page.zhihuDaily();
                                         break;
                                     default:
                                         $ui.error("错误选项");
@@ -91,21 +107,9 @@ let init = () => {
                                         page.image();
                                         break;
                                     case 4:
-                                        page.bilibili();
-                                        break;
-                                    case 5:
                                         page.musicSearch();
                                         break;
-                                    case 6:
-                                        page.zhihuDaily();
-                                        break;
-                                    case 7:
-                                        page.acfun();
-                                        break;
-                                    case 8:
-                                        page.instagram();
-                                        break;
-                                    case 9:
+                                    case 5:
                                         page.freeSms();
                                         break;
                                     default:

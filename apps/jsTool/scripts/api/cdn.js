@@ -1,4 +1,4 @@
-let strUtil = require("./string.js");
+$include("./codePrototype.js");
 let cdnUrl = {
     weserv: "https://images.weserv.nl/?url=",
     github: {
@@ -21,13 +21,13 @@ let getGithubRealRaw = sourceGithubUrl => {
     return sourceGithubUrl.indexOf("https://raw.githubusercontent.com/") > -1 ?
         sourceGithubUrl :
         newUrl.split("/")[2] == "blob" ?
-        strUtil.remove(newUrl, "/blob/") :
-        strUtil.remove(newUrl, "/raw/");
+        newUrl.remove("/blob/") :
+        newUrl.remove("/raw/");
 
 };
 
 let getGithubRaw = sourceGithubUrl => {
-    const list = strUtil.remove(getGithubRealRaw(sourceGithubUrl), "https://raw.githubusercontent.com/").split("/");
+    const list = getGithubRealRaw(sourceGithubUrl).remove("https://raw.githubusercontent.com/").split("/");
     var newUrl = "https://cdn.jsdelivr.net/gh";
     list.forEach(function (item, index, array) {
         newUrl = (index == 2) ? `${newUrl}@${item}` : `${newUrl}/${item}`;

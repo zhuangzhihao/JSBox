@@ -1,5 +1,5 @@
+$include("./codePrototype.js");
 let sys = require("./api/system.js");
-let str = require("./api/string.js");
 
 // 模块
 let mofish = require("./view/mofish.js");
@@ -12,12 +12,13 @@ let biliApi = require("./api/bilibili.js");
 let musicSearch = require("./view/music_search.js");
 let zhihuDaily = require("./view/zhihu_daily.js");
 let acfun = require("./view/acfun.js");
+let acfunApi = require("./api/acfun.js");
 let instagram = require("./view/instagram.js");
 let freeSms = require("./view/free_sms_getter.js");
 
 let gotoUrl = url => {
     const newUrl = $text.URLDecode(url);
-    if (str.checkIfUrl(newUrl)) {
+    if (newUrl.checkIfUrl()) {
         checkMod(newUrl);
     } else {
         $ui.alert({
@@ -29,6 +30,8 @@ let gotoUrl = url => {
 let checkMod = url => {
     if (biliApi.isBiliUrl(url)) {
         modOpen("bilibili", url);
+    } else if (acfunApi.isAcfunUrl(url)) {
+        modOpen("acfun", url);
     } else {
         $ui.error("不支持该网址的分享");
     }
@@ -36,6 +39,9 @@ let checkMod = url => {
 let modOpen = (mod, url) => {
     switch (mod) {
         case "bilibili":
+            bilibili.init(url);
+            break;
+        case "acfun":
             bilibili.init(url);
             break;
         default:
@@ -64,6 +70,20 @@ let contextOpen = query => {
             });
     }
 };
+let scanQrcodeToGo = () => {
+    $qrcode.scan({
+        handler(str) {
+            if (str.checkIfUrl()) {
+                gotoUrl(str);
+            } else {
+                $ui.error("不是链接");
+            }
+        },
+        cancelled() {
+            $ui.error("Cancelled");
+        }
+    });
+};
 module.exports = {
     mofish: mofish.init,
     cdn: cdn.init,
@@ -78,4 +98,5 @@ module.exports = {
     freeSms: freeSms.init,
     contextOpen,
     gotoUrl,
+    scanQrcodeToGo,
 };

@@ -1,3 +1,4 @@
+$include("./codePrototype.js");
 let cheerio = require("cheerio");
 let sys = require("../api/system.js");
 let appScheme = require("../api/app_scheme.js");
@@ -29,7 +30,7 @@ let instaoffline = instLink => {
                         var resultList = [];
                         $("div.items-list").find("a.button").each(function (i, elem) {
                             resultList[i] = {
-                                type: $(this).text().replace("Download ", "").toLowerCase(),
+                                type: $(this).text().remove("Download ").toLowerCase(),
                                 url: $(this).attr("href")
                             };
                         });

@@ -1,5 +1,5 @@
+$include("./codePrototype.js");
 let cheerio = require("cheerio");
-let app = require("./app.js");
 let apiUri = {
     becmd: {
         getList: "https://www.becmd.com/",
@@ -42,10 +42,10 @@ let getBecmdList = () => {
     });
 };
 let getBecmdSmsList = number => {
-    const url = apiUri.becmd.showSms.replace("%s", number.replace("+", ""));
+    const url = apiUri.becmd.showSms.replace("%s", number.remove("+"));
     $console.info(url);
     $http.get({
-        url: apiUri.becmd.showSms.replace("%s", number.replace("+", "")),
+        url: url,
         headers: headers,
         handler: function (resp) {
             const $ = cheerio.load(resp.data);
@@ -53,14 +53,14 @@ let getBecmdSmsList = number => {
             $("body #no-more-tables tbody tr").map(function (index, element) {
                 const smsIndex = $(element).find('td[data-title="序号:"]').text();
                 if (smsIndex > 0) {
-                    const smsNumber = $(element).find('td[data-title="电话号码:"]').text().replace(/\n/g, "").replace(/ /g, "");
+                    const smsNumber = $(element).find('td[data-title="电话号码:"]').text().remove(/\n/g).remove(/ /g);
                     var smsTime = $(element).find('td[data-title="发送时间:"] script').html();
                     var smsContent = $(element).find('td[data-title="短信内容:"]').text();
                     const timeLeft = smsTime.indexOf(`gettime = diff_time("`);
                     smsTime = smsTime.substring(timeLeft + 21, smsTime.indexOf(`");`, timeLeft + 21));
                     if (smsContent.indexOf("******(该号码短信被屏蔽)") < 0) {
                         smsContent = smsContent.substring(smsContent.indexOf("【"));
-                        smsContent = smsContent.replace(/\n/g, "").replace(/ /g, "");
+                        smsContent = smsContent.remove(/\n/g).remove(/ /g);
                         smsList.push({
                             index: smsIndex,
                             number: smsNumber,

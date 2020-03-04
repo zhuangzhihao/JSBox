@@ -1,7 +1,8 @@
+$include("./codePrototype.js");
 let acApi = require("../api/acfun.js");
 let str = require("../api/string.js");
 let isInit = false;
-let init = () => {
+let init = (url) => {
     acApi.init();
     $ui.push({
         props: {
@@ -106,6 +107,9 @@ let init = () => {
             }
         }
     });
+    if (url) {
+        urlCheck(url);
+    }
 };
 let getUploaderVideo = (inputUid) => {
     $input.text({
@@ -132,64 +136,67 @@ let getUploaderVideo = (inputUid) => {
         }
     });
 };
+let urlCheck = url => {
+    if (acApi.isVideoUrl(url)) {
+        const vid = acApi.getVidFromUrl(url);
+        if (vid) {
+            $ui.alert({
+                title: "视频链接",
+                message: "是否开始解析视频",
+                actions: [{
+                    title: "解析视频",
+                    disabled: false,
+                    handler: function () {
+                        acApi.getVideoPid(vid);
+                    }
+                }, {
+                    title: "关闭",
+                    disabled: false,
+                    handler: function () {}
+                }]
+            });
+        } else {
+            $ui.alert({
+                title: "不支持该链接",
+                message: "链接不包含视频id",
+            });
+        }
+    } else if (acApi.isUploaderUrl(url)) {
+        const uid = acApi.getuidFromUrl(url);
+        if (uid) {
+            $ui.alert({
+                title: "Up个人空间",
+                message: "是否开始获取该up上传视频",
+                actions: [{
+                    title: "是",
+                    disabled: false,
+                    handler: function () {
+                        getUploaderVideo(uid);
+                    }
+                }, {
+                    title: "关闭",
+                    disabled: false,
+                    handler: function () {}
+                }]
+            });
+        } else {
+            $ui.alert({
+                title: "不支持该链接",
+                message: "链接不包含个人uid",
+            });
+        }
+    } else {
+        $ui.alert({
+            title: "不支持该链接",
+            message: "只支持视频或个人空间链接",
+        });
+    }
+};
 let qrcodeScan = () => {
     $qrcode.scan({
-        handler(string) {
-            if (str.checkIfUrl(string)) {
-                if (acApi.isVideoUrl(string)) {
-                    const vid = acApi.getVidFromUrl(string);
-                    if (vid) {
-                        $ui.alert({
-                            title: "视频链接",
-                            message: "是否开始解析视频",
-                            actions: [{
-                                title: "解析视频",
-                                disabled: false,
-                                handler: function () {
-                                    acApi.getVideoPid(vid);
-                                }
-                            }, {
-                                title: "关闭",
-                                disabled: false,
-                                handler: function () {}
-                            }]
-                        });
-                    } else {
-                        $ui.alert({
-                            title: "不支持该二维码",
-                            message: "链接不包含视频id",
-                        });
-                    }
-                } else if (acApi.isUploaderUrl(string)) {
-                    const uid = acApi.getuidFromUrl(string);
-                    if (uid) {
-                        $ui.alert({
-                            title: "Up个人空间",
-                            message: "是否开始获取该up上传视频",
-                            actions: [{
-                                title: "是",
-                                disabled: false,
-                                handler: function () {
-                                    acApi.getUploaderVideo(uid);
-                                }
-                            }, {
-                                title: "关闭",
-                                disabled: false,
-                                handler: function () {}
-                            }]
-                        });
-                    } else {
-                        $ui.alert({
-                            title: "不支持该二维码",
-                            message: "链接不包含视频id",
-                        });
-                    }
-                } else {
-                    $ui.alert({
-                        title: "不支持该二维码",
-                        message: "二维码内容只支持视频链接",
-                    });
-                }
+        handler(str) {
+            if (str.checkIfUrl()) {
+                urlCheck(str)
             } else {
                 $ui.alert({
                     title: "不支持该二维码",
@@ -198,7 +205,7 @@ let qrcodeScan = () => {
             }
         },
         cancelled() {
-            $ui.toast("Cancelled")
+            $ui.error("Cancelled");
         }
     });
 };

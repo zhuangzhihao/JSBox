@@ -1,5 +1,5 @@
+$include("./codePrototype.js");
 let sys = require("./system.js");
-let strUtil = require("./string.js");
 let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true",
@@ -75,11 +75,11 @@ let getVidFromUrl = url => {
     var newUrl = url;
     siteList.map(x => {
         if (newUrl.startsWith(x)) {
-            newUrl = strUtil.remove(newUrl, x);
+            newUrl = newUrl.remove(x);
         }
     });
     if (newUrl.indexOf("?")) {
-        newUrl = strUtil.remove(newUrl.split("?")[0], "/");
+        newUrl = newUrl.split("?")[0].remove("/");
     }
     return newUrl;
 };
@@ -556,7 +556,10 @@ let init = () => {
     return checkAccessKey();
 };
 let isVideoUrl = url => {
-    return strUtil.startsWithList(url, ["https://www.bilibili.com/av", "https://www.bilibili.com/video/av", "https://b23.tv/av"])
+    return url.startsWithList(["https://www.bilibili.com/av",
+        "https://www.bilibili.com/video/av",
+        "https://b23.tv/av"
+    ]);
 };
 let isBiliUrl = url => {
     return isVideoUrl(url);

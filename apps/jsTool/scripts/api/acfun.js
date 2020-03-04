@@ -1,5 +1,5 @@
+$include("./codePrototype.js");
 let sys = require("./system.js");
-let str = require("./string.js");
 let appScheme = require("./app_scheme.js");
 let _url = {
     login: "https://id.app.acfun.cn/rest/app/login/signin",
@@ -407,7 +407,7 @@ let signIn = () => {
         }) :
         $ui.error("未登录");
 };
-let getUploaderVideo = (uid, page, count = 20) => {
+let getUploaderVideo = (uid, page = 1, count = 20) => {
     $http.post({
         url: _url.getUploaderVideo,
         header: {
@@ -522,7 +522,7 @@ let showUploaderVideoList = acData => {
                                 $ui.error("这里长按无效，请在视频列表长按");
                             }
                         }
-                    },{
+                    }, {
                         title: "分享打开客户端的链接(二维码)",
                         symbol: "qrcode",
                         handler: (sender, indexPath) => {
@@ -541,6 +541,7 @@ let showUploaderVideoList = acData => {
                         symbol: "square.and.arrow.down",
                         handler: (sender, indexPath) => {
                             if (indexPath.section == 1) {
+                                const vid = videoList[indexPath.row].dougaId;
                                 $cache.set(_cacheKey.lastClickedVid, vid);
                                 getVideoPid(videoList[indexPath.row].dougaId);
                             } else {
@@ -555,8 +556,7 @@ let showUploaderVideoList = acData => {
                 didSelect: function (_sender, indexPath, _data) {
                     switch (indexPath.section) {
                         case 1:
-                            const thisVideo = videoList[indexPath.row];
-                            const vid = thisVideo.dougaId;
+                            const vid = videoList[indexPath.row].dougaId;
                             $cache.set(_cacheKey.lastClickedVid, vid);
                             appScheme.acfunVideo(vid);
                             break;
@@ -567,31 +567,38 @@ let showUploaderVideoList = acData => {
     });
 }
 let isVideoUrl = url => {
-    return str.startsWithList(url, acVideoSiteList);
+    return url.startsWithList(acVideoSiteList);
 };
 let isUploaderUrl = url => {
-    return str.startsWithList(url, acUploaderSiteList);
-}
+    return url.startsWithList(acUploaderSiteList);
+};
+let isAcfunUrl = url => {
+    return isVideoUrl(url) || isUploaderUrl(url);
+};
 let getVidFromUrl = url => {
     var vid = undefined;
     if (isVideoUrl(url)) {
         acVideoSiteList.map(s => {
             if (url.startsWith(s)) {
-                vid = str.remove(url, s);
+                // vid = strUril.remove(url, s);
+                vid = url.remove(s);
             }
         });
     }
+    $console.info(`getVidFromUrl:${vid}`);
     return vid;
 };
 let getuidFromUrl = url => {
     var uid = undefined;
-    if (isVideoUrl(url)) {
+    if (isUploaderUrl(url)) {
         acUploaderSiteList.map(s => {
             if (url.startsWith(s)) {
-                uid = str.remove(url, s).remove(url, ".aspx");
+                // uid = strUril.remove(url, s).remove(url, ".aspx");
+                uid = url.remove(s).remove(".aspx");
             }
         });
     }
+    $console.info(`getuidFromUrl:${uid}`);
     return uid;
 };
 // init
@@ -612,5 +619,6 @@ module.exports = {
     getVidFromUrl,
     getVideoPid,
     isUploaderUrl,
-    getuidFromUrl
+    getuidFromUrl,
+    isAcfunUrl
 };
