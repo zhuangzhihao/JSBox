@@ -5,6 +5,11 @@ let apiUrl = {
     instaoffline_net: "https://instaoffline.net/process/",
 };
 
+let checkInsLink = () => {
+    const url = $clipboard.link;
+    return url.startsWith("https://www.instagram.com/p/") ? url : "";
+};
+
 function MediaItem(type, url) {
     this.type = type;
     this.url = url;
@@ -13,6 +18,7 @@ let init = () => {
     $input.text({
         type: $kbType.url,
         placeholder: "输入instagram链接",
+        text: checkInsLink(),
         handler: function (url) {
             if (url) {
                 instagramOfficial(url);
