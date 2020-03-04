@@ -1,4 +1,5 @@
 let page = require("./scripts/page_init.js");
+let app = require("./scripts/api/app.js");
 let siteListL10n = ["MO_FISH", "BILIBILI", "ACFUN", "INSTAGRAM", "ZHIHU_DAILY"];
 let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "MUSIC_SEARCH", "免费短信接收"];
 let siteList = siteListL10n.map(x => $l10n(x));
@@ -38,6 +39,7 @@ let checkCacheDir = () => {
     });
 };
 let init = () => {
+    // app.faceId();
     var query = $context.query;
     if (query.mod) {
         page.contextOpen(query);

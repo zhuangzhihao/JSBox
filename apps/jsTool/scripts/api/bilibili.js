@@ -1,4 +1,5 @@
 $include("./codePrototype.js");
+$include("./codePrototype.js");
 let sys = require("./system.js");
 let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
@@ -338,7 +339,7 @@ let showDownList = (thisFile, copyStr) => {
                             placeholder: "",
                             text: copyStr,
                             handler: function (text) {
-                                sys.copyToClipboard(copyStr);
+                                copyStr.copy();
                                 $share.sheet([_data]);
                             }
                         });
@@ -402,7 +403,7 @@ let loginBilibili = (loginUrl, bodyStr, headers) => {
                     placeholder: "",
                     text: _userData.access_key,
                     handler: function (text) {
-                        sys.copyToClipboard(text);
+                        text.copy();
                         $ui.toast("已复制！");
                     }
                 });
@@ -517,7 +518,7 @@ let getUserInfo = () => {
                                                     title: "复制",
                                                     disabled: false, // Optional
                                                     handler: function () {
-                                                        sys.copyToClipboard(_g[1]);
+                                                        _g[1].copy();
                                                         $ui.toast("已复制");
                                                     }
                                                 }, {

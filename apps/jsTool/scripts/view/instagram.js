@@ -1,6 +1,5 @@
 $include("./codePrototype.js");
 let cheerio = require("cheerio");
-let sys = require("../api/system.js");
 let appScheme = require("../api/app_scheme.js");
 let apiUrl = {
     instaoffline_net: "https://instaoffline.net/process/",
@@ -121,7 +120,7 @@ let showResultListView = resultList => {
                                     $share.sheet([itemUrl]);
                                     break;
                                 case 3:
-                                    sys.copyToClipboard(itemUrl);
+                                    itemUrl.copy();
                                     break;
                                 case 4:
                                     $ui.menu({

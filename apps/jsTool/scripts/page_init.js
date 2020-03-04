@@ -1,5 +1,4 @@
 $include("./codePrototype.js");
-let sys = require("./api/system.js");
 
 // 模块
 let mofish = require("./view/mofish.js");
@@ -42,7 +41,7 @@ let modOpen = (mod, url) => {
             bilibili.init(url);
             break;
         case "acfun":
-            bilibili.init(url);
+            acfun.init(url);
             break;
         default:
             $ui.error("不支持该功能");

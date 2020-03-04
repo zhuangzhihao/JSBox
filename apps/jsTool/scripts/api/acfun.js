@@ -12,7 +12,7 @@ let _url = {
 let acVideoSiteList = [
     "acfun://detail/upPage/",
     "https://www.acfun.cn/v/ac",
-    "https://m.acfun.cn/v/?ac="
+    "https://m.acfun.cn/v/?"
 ];
 let acUploaderSiteList = [
     "https://www.acfun.cn/u/",
@@ -516,7 +516,7 @@ let showUploaderVideoList = acData => {
                             if (indexPath.section == 1) {
                                 $cache.set(_cacheKey.lastClickedVid, vid);
                                 $quicklook.open({
-                                    image: $qrcode.encode(`https://www.acfun.cn/v/ac${vid}`)
+                                    image: `https://www.acfun.cn/v/ac${vid}`.getQrcode()
                                 });
                             } else {
                                 $ui.error("这里长按无效，请在视频列表长按");
@@ -530,7 +530,7 @@ let showUploaderVideoList = acData => {
                             if (indexPath.section == 1) {
                                 $cache.set(_cacheKey.lastClickedVid, vid);
                                 $quicklook.open({
-                                    image: $qrcode.encode(`acfun://detail/video/${vid}`)
+                                    image: `acfun://detail/video/${vid}`.getQrcode()
                                 });
                             } else {
                                 $ui.error("这里长按无效，请在视频列表长按");
@@ -579,8 +579,15 @@ let getVidFromUrl = url => {
     var vid = undefined;
     if (isVideoUrl(url)) {
         acVideoSiteList.map(s => {
-            if (url.startsWith(s)) {
-                // vid = strUril.remove(url, s);
+            if (s == "https://m.acfun.cn/v/?") {
+                var newUrl = url.remove(s);
+                const paramsList = newUrl.split("&");
+                paramsList.map(p => {
+                    if (p.startsWith("ac=")) {
+                        vid = p.split("=")[1];
+                    }
+                });
+            } else if (url.startsWith(s)) {
                 vid = url.remove(s);
             }
         });

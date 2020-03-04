@@ -25,12 +25,27 @@ let firefoxBrowserOpen = url => {
 let acfunVideo = vid => {
     $app.openURL(`acfun://detail/video/${vid}`);
 };
-
+let safariReadMode = (url, handler) => {
+    $safari.open({
+        url: url,
+        entersReader: true,
+        handler: handler
+    });
+};
+let safariAddReadingItem = (url, title, previewText) => {
+    $safari.addReadingItem({
+        url: url,
+        title: title, // Optional
+        preview: previewText // Optional
+    });
+};
 module.exports = {
     alookBrowserOpen,
     chromeBrowserOpen,
     qqBrowserOpen,
     alookBrowserDownload,
     firefoxBrowserOpen,
-    acfunVideo
+    acfunVideo,
+    safariReadMode,
+    safariAddReadingItem
 };

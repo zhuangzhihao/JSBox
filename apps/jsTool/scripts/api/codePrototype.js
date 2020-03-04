@@ -1,3 +1,4 @@
+// String
 String.prototype.remove = function (keyword) {
     return this.replace(keyword, "");
 };
@@ -20,4 +21,14 @@ String.prototype.checkIfUrl = function () {
     } else {
         return false;
     }
+};
+String.prototype.copy = function () {
+    $clipboard.copy({
+        "text": this,
+        "ttl": 30,
+        "locally": true
+    });
+};
+String.prototype.getQrcode = function () {
+    return $qrcode.encode(this);
 };
