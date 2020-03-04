@@ -1,3 +1,4 @@
+let strUtil = require("./string.js");
 let cdnUrl = {
     weserv: "https://images.weserv.nl/?url=",
     github: {
@@ -19,24 +20,19 @@ let getGithubRealRaw = sourceGithubUrl => {
     const newUrl = sourceGithubUrl.replace("https://github.com/", "https://raw.githubusercontent.com/");
     return sourceGithubUrl.indexOf("https://raw.githubusercontent.com/") > -1 ?
         sourceGithubUrl :
-        (newUrl.split("/")[2] == "blob" ?
-            newUrl.replace("/blob/", "/") :
-            newUrl.replace("/raw/", "/"));
+        newUrl.split("/")[2] == "blob" ?
+        strUtil.remove(newUrl, "/blob/") :
+        strUtil.remove(newUrl, "/raw/");
 
 };
 
 let getGithubRaw = sourceGithubUrl => {
-    const list = getGithubRealRaw(sourceGithubUrl).replace("https://raw.githubusercontent.com/", "").split("/");
-    const newUrl = "https://cdn.jsdelivr.net/gh";
-    for (x in list) {
-        switch (x.toString()) {
-            case "2":
-                newUrl = `${newUrl}@${list[x]}`;
-                break;
-            default:
-                newUrl = `${newUrl}/${list[x]}`;
-        }
-    }
+    const list = strUtil.remove(getGithubRealRaw(sourceGithubUrl), "https://raw.githubusercontent.com/").split("/");
+    var newUrl = "https://cdn.jsdelivr.net/gh";
+    list.forEach(function (item, index, array) {
+        newUrl = (index == 2) ? `${newUrl}@${item}` : `${newUrl}/${item}`;
+    })
+
     return newUrl;
 };
 
