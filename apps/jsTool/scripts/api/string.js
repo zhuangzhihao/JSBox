@@ -12,7 +12,11 @@ let checkIfUrl = str => {
     const linkList = $detector.link(str);
     return linkList.length == 1 && linkList[0] == str;
 }
+let remove = (str, keyword) => {
+    return str.replace(keyword, "");
+}
 module.exports = {
     startsWithList,
-    checkIfUrl
+    checkIfUrl,
+    remove
 };
