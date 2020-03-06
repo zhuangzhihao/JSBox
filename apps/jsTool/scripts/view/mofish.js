@@ -1,3 +1,4 @@
+let appScheme = require("../api/app_scheme.js");
 var catList = [];
 var siteList = [];
 var siteItemList = [];
@@ -13,204 +14,204 @@ var isFirstInit = false;
 
 function init(firstInit = false) {
   isFirstInit = firstInit;
-  $ui.loading("加载中...");
-  getType();
-}
-// 旧版获取站点列表
-function getType() {
-  const siteListCache = getCache(cacheId.siteList);
-  if (isCache && siteListCache) {
-    $ui.loading(false);
-    $console.info("siteList使用缓存数据");
-    checkSiteList(siteListCache);
-  } else {
-    const urlSiteList = "https://www.tophub.fun:8080/GetType";
-    $http.get({
-      url: urlSiteList,
-      handler: function (resp) {
-        const mData = resp.data;
-        $console.info(`siteList: ${mData.Code.toString()}|${mData.Message}`);
-        setCache(cacheId.siteList, mData);
-        $ui.loading(false);
-        checkSiteList(mData);
+  $ui.menu({
+    items: ["最新", "分类"],
+    handler: function (title, idx) {
+      switch (idx) {
+        case 0:
+          getNewest();
+          break;
+        case 1:
+          getAllType();
+          break;
       }
-    });
-  }
-}
-// 处理站点列表数据
-function checkSiteList(siteListData) {
-  if (siteListData.Code == 0) {
-    siteList = siteListData.Data;
-    if (siteList.length == 0) {
-      $ui.error("空白列表");
-      $cache.remove(cacheId.siteList);
-    } else {
-      const itemTitleList = siteList.map(x => x.title);
-      $console.info(itemTitleList);
-      pushSiteList(itemTitleList);
     }
-  } else {
-    $ui.error(siteListData.Message);
-    $cache.remove(cacheId.siteList);
-  }
+  });
 }
-// 渲染站点列表
-function pushSiteList(itemList) {
-  const listView = {
-    props: {
-      id: "listView_index",
-      title: "加载完毕"
-    },
-    views: [{
-      type: "list",
-      props: {
-        data: itemList,
-        id: listViewId
-      },
-      layout: $layout.fill,
-      events: {
-        didSelect: function (sender, indexPath, data) {
-          const mIndex = indexPath.row;
-          const selectSite = siteList[mIndex];
-          getSiteInfo(selectSite.id, selectSite.title);
-        }
-      }
-    }]
-  };
-  isFirstInit ?
-    $ui.render(listView) :
-    $ui.push(listView);
-  //$console.info($ui.get("listView_index"));
-}
-// 按分类获取站点列表
-function getAllType() {
-  const urlAllType = "https://www.tophub.fun:8888/GetAllType";
+let getNewest = () => {
+  $ui.loading(true);
+  const urlAllType = "https://www.tophub.fun:8888/GetRandomInfo?time=0&is_follow=0";
   $http.get({
     url: urlAllType,
-    handler: function (resp) {
-      const mData = resp.data;
-      $console.info("newSiteList使用在线数据");
-      $ui.loading(false);
-      showNewSiteList(mData);
-    }
-  });
-}
-// 处理站点列表数据
-function showNewSiteList(siteCatListData) {
-  if (siteCatListData.Code == 0) {
-    catList = siteCatListData.Data;
-    if (catList.length == 0) {
-      $ui.error("空白列表");
-    } else {
-      var itemTitleList = [];
-      for (x in catList) {
-        $console.info(x);
-        itemTitleList.push();
-      }
-      $console.info(siteCatListData);
-      pushSiteList(itemTitleList);
-    }
-  } else {
-    $ui.error(siteCatListData.Message);
-  }
-}
-// 渲染站点分类列表
-function pushSiteCatList(itemList) {
-  $ui.push({
-    props: {
-      id: "listView_cat",
-      title: "站点分类"
-    },
-    views: [{
-      type: "list",
-      props: {
-        data: itemList,
-        id: listViewId
-      },
-      layout: $layout.fill,
-      events: {
-        didSelect: function (sender, indexPath, data) {
-          const mIndex = indexPath.row;
-          const selectSite = catList[mIndex];
-          getSiteInfo(selectSite.id, selectSite.title);
-        }
-      }
-    }]
-  });
-  //$console.info($ui.get("listView_cat"));
-}
-// 获取站点内容
-function getSiteInfo(siteId, title) {
-  $ui.loading("加载中...");
-  siteItemList = [];
-  const cacheSiteId = cacheId.siteInfo + siteId;
-  const siteInfoCache = getCache(cacheSiteId);
-  if (siteInfoCache && isCache) {
-    $console.info(`${cacheSiteId}:${JSON.stringify(siteInfoCache)}`);
-    $console.info("siteInfo使用缓存数据");
-    $ui.loading(false);
-    checkSiteInfo(siteInfoCache, siteId, title);
-  } else {
-    $http.get({
-      url: `https://www.tophub.fun:8888/GetAllInfoGzip?id=${siteId.toString()}`,
-      handler: function (resp) {
-        const itemListData = resp.data;
-        setCache(cacheSiteId, itemListData);
-        $console.info("siteInfo使用在线数据");
-        $ui.loading(false);
-        checkSiteInfo(itemListData, siteId, title);
-      }
-    });
-  }
-}
-// 处理站点内容数据
-function checkSiteInfo(siteInfoData, siteId, title) {
-  $console.info(siteInfoData);
-  const cacheSiteId = cacheId.siteInfo + siteId;
-  if (siteInfoData.Code == 0) {
-    siteItemList = siteInfoData.Data;
-    if (siteItemList.length == 0) {
-      $ui.error("空白列表");
-      $cache.remove(cacheSiteId);
-    } else {
-      var itemTitleList = [];
-      for (var a = 0; a < siteItemList.length; a++) {
-        const thisItem = siteItemList[a];
-        itemTitleList.push(thisItem.Title);
-      }
-      //$ui.title=sit
-      showSiteItemList(itemTitleList, title);
-    }
-  } else {
-    $ui.error(siteInfoData.Message);
-    $cache.remove(cacheSiteId);
-  }
-}
-// 渲染站点内容列表
-function showSiteItemList(siteItemTitleList, title) {
-  const mPage = {
-    props: {
-      title: title
-    },
-    views: [{
-      type: "list",
-      props: {
-        data: siteItemTitleList,
-        id: listViewId
-      },
-      layout: $layout.fill,
-      events: {
-        didSelect: function (sender, indexPath, data) {
-          $ui.preview({
-            title: title,
-            url: siteItemList[indexPath.row].Url
+  }).then(function (resp) {
+    const data = resp.data;
+    if (data) {
+      if (data.Code == 0) {
+        const postList = data.Data;
+        if (postList.length > 0) {
+          $ui.loading(false);
+          $ui.push({
+            props: {
+              title: "最新"
+            },
+            views: [{
+              type: "list",
+              props: {
+                data: postList.map(c => `[${c.type}]${c.Title}`),
+                menu: {
+                  title: "菜单",
+                  items: [{
+                    title: "使用[简悦 · 阅读器]打开",
+                    symbol: "book.circle",
+                    handler: (sender, indexPath) => {
+                      $clipboard.copy({
+                        "text": postList[indexPath.row].Url,
+                        "ttl": 30,
+                        "locally": true
+                      });
+                      $addin.run("简悦 · 阅读器");
+                    }
+                  }]
+                }
+              },
+              layout: $layout.fill,
+              events: {
+                didSelect: function (sender, indexPath, data) {
+                  const webUrl = postList[indexPath.row].Url;
+                  appScheme.safariReadMode(webUrl.startsWith("//") ? `https:${webUrl}` : webUrl);
+                }
+              }
+            }]
+          });
+        } else {
+          $ui.loading(false);
+          $ui.alert({
+            title: "错误",
+            message: "空白内容",
           });
         }
+      } else {
+        $ui.loading(false);
+        $ui.alert({
+          title: "错误",
+          message: data.Message,
+        });
       }
-    }]
-  };
-  $ui.push(mPage);
+    } else {
+      $ui.loading(false);
+      $ui.alert({
+        title: "错误",
+        message: "空白数据",
+      });
+    }
+  });
+};
+// 按分类获取站点列表
+function getAllType() {
+  $ui.loading(true);
+  $http.get({
+    url: "https://www.tophub.fun:8888/GetAllType",
+  }).then(function (resp) {
+    const siteCatListData = resp.data;
+    if (siteCatListData.Code == 0) {
+      const catDataList = siteCatListData.Data;
+      $ui.loading(false);
+      if (catDataList) {
+        $ui.toast("分类列表");
+        $console.info(Object.keys(catDataList));
+        const listView = {
+          props: {
+            title: "站点分类"
+          },
+          views: [{
+            type: "list",
+            props: {
+              data: Object.keys(catDataList)
+            },
+            layout: $layout.fill,
+            events: {
+              didSelect: function (sender, indexPath, data) {
+                const newSiteList = catDataList[data];
+                if (newSiteList.length > 0) {
+                  // 显示分类内容
+                  $ui.push({
+                    props: {
+                      title: newSiteList[0].type
+                    },
+                    views: [{
+                      type: "list",
+                      props: {
+                        data: newSiteList.map(s => s.name)
+                      },
+                      layout: $layout.fill,
+                      events: {
+                        didSelect: function (sender, indexPath, data) {
+                          showNewSiteData(newSiteList[indexPath.row]);
+                        }
+                      }
+                    }]
+                  });
+                } else {
+                  $ui.error("这个分类没有站点");
+                }
+              }
+            }
+          }]
+        };
+        isFirstInit ?
+          $ui.render(listView) :
+          $ui.push(listView);
+      } else {
+        $ui.loading(false);
+        $ui.error("空白分类列表");
+      }
+    } else {
+      $ui.loading(false);
+      $ui.error(siteCatListData.Message);
+    }
+  });
 }
+// 新版站点内容
+let showNewSiteData = (newSiteInfo) => {
+  $http.get({
+    url: `https://www.tophub.fun:8888/v2/GetAllInfoGzip?page=0&id=${newSiteInfo.id}`
+  }).then(function (resp) {
+    const newSiteData = resp.data;
+    if (newSiteData.Code == 0) {
+      const contentList = newSiteData.Data.data;
+      if (contentList.length > 0) {
+        $ui.push({
+          props: {
+            title: newSiteInfo.name
+          },
+          views: [{
+            type: "list",
+            props: {
+              data: contentList.map(c => c.Title),
+              menu: {
+                title: "菜单",
+                items: [{
+                  title: "使用[简悦 · 阅读器]打开",
+                  symbol: "book.circle",
+                  handler: (sender, indexPath) => {
+                    $clipboard.copy({
+                      "text": contentList[indexPath.row].Url,
+                      "ttl": 30,
+                      "locally": true
+                    });
+                    $addin.run("简悦 · 阅读器");
+                  }
+                }]
+              }
+            },
+            layout: $layout.fill,
+            events: {
+              didSelect: function (sender, indexPath, data) {
+                const webUrl = contentList[indexPath.row].Url;
+                appScheme.safariReadMode(webUrl.startsWith("//") ? `https:${webUrl}` : webUrl);
+              }
+            }
+          }]
+        });
+      } else {
+        $ui.error("空白内容");
+      }
+    } else {
+      $ui.error(newSiteData.Message);
+    }
+  });
+};
+
 // 读取缓存
 function setCache(thisCacheId, cacheContent) {
   if (isCache) {
