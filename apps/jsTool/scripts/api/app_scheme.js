@@ -39,6 +39,15 @@ let safariAddReadingItem = (url, title, previewText) => {
         preview: previewText // Optional
     });
 };
+let avplayerVideo = url => {
+    $app.openURL(`AVPlayer://${$text.URLEncode(url)}`);
+};
+let nplayerVideo = url => {
+    $app.openURL(`nplayer-${url}`);
+};
+let documentsOpen = url => {
+    $app.openURL(`r${url}`);
+};
 module.exports = {
     alookBrowserOpen,
     chromeBrowserOpen,
@@ -47,5 +56,8 @@ module.exports = {
     firefoxBrowserOpen,
     acfunVideo,
     safariReadMode,
-    safariAddReadingItem
+    safariAddReadingItem,
+    avplayerVideo,
+    nplayerVideo,
+    documentsOpen
 };

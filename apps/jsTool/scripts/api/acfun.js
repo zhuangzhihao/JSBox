@@ -1,6 +1,7 @@
 $include("./codePrototype.js");
 let sys = require("./system.js");
 let appScheme = require("./app_scheme.js");
+let urlCheck = require("./urlCheck.js");
 let _url = {
     login: "https://id.app.acfun.cn/rest/app/login/signin",
     getUserInfo: "https://api-new.app.acfun.cn/rest/app/user/personalInfo",
@@ -566,18 +567,9 @@ let showUploaderVideoList = acData => {
         }]
     });
 }
-let isVideoUrl = url => {
-    return url.startsWithList(acVideoSiteList);
-};
-let isUploaderUrl = url => {
-    return url.startsWithList(acUploaderSiteList);
-};
-let isAcfunUrl = url => {
-    return isVideoUrl(url) || isUploaderUrl(url);
-};
 let getVidFromUrl = url => {
     var vid = undefined;
-    if (isVideoUrl(url)) {
+    if (urlCheck.isAcfunVideoUrl(url)) {
         acVideoSiteList.map(s => {
             if (s == "https://m.acfun.cn/v/?") {
                 var newUrl = url.remove(s);
@@ -597,7 +589,7 @@ let getVidFromUrl = url => {
 };
 let getuidFromUrl = url => {
     var uid = undefined;
-    if (isUploaderUrl(url)) {
+    if (urlCheck.isAcfunUploaderUrl(url)) {
         acUploaderSiteList.map(s => {
             if (url.startsWith(s)) {
                 // uid = strUril.remove(url, s).remove(url, ".aspx");
@@ -622,10 +614,7 @@ module.exports = {
     signIn,
     getUploaderVideo,
     _cacheKey,
-    isVideoUrl,
     getVidFromUrl,
     getVideoPid,
-    isUploaderUrl,
-    getuidFromUrl,
-    isAcfunUrl
+    getuidFromUrl
 };

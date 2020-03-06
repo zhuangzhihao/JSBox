@@ -8,10 +8,9 @@ let getNavButton = () => {
     return [{
         title: $l10n("MENU"),
         icon: "067", // Or you can use icon name
-        symbol: "checkmark.seal", // SF symbols are supported
         handler: () => {
             $ui.menu({
-                items: ["SCAN_QRCODE"].map(x => $l10n(x)),
+                items: ["SCAN_QRCODE", "TEST"].map(x => $l10n(x)),
                 handler: function (title, idx) {
                     switch (idx) {
                         case 0:

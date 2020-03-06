@@ -1,6 +1,6 @@
 $include("./codePrototype.js");
 let acApi = require("../api/acfun.js");
-let str = require("../api/string.js");
+let urlCheck = require("../api/urlCheck.js");
 let isInit = false;
 let init = (url) => {
     acApi.init();
@@ -136,8 +136,8 @@ let getUploaderVideo = (inputUid) => {
         }
     });
 };
-let urlCheck = url => {
-    if (acApi.isVideoUrl(url)) {
+let linkCheck = url => {
+    if (urlCheck.isAcfunVideoUrl(url)) {
         const vid = acApi.getVidFromUrl(url);
         if (vid) {
             $ui.alert({
@@ -161,7 +161,7 @@ let urlCheck = url => {
                 message: "链接不包含视频id",
             });
         }
-    } else if (acApi.isUploaderUrl(url)) {
+    } else if (urlCheck.isUploaderUrl(url)) {
         const uid = acApi.getuidFromUrl(url);
         if (uid) {
             $ui.alert({
@@ -196,7 +196,7 @@ let qrcodeScan = () => {
     $qrcode.scan({
         handler(str) {
             if (str.checkIfUrl()) {
-                urlCheck(str)
+                linkCheck(str)
             } else {
                 $ui.alert({
                     title: "不支持该二维码",

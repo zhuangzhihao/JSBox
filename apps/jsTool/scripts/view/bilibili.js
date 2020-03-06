@@ -1,9 +1,10 @@
 let biliApi = require("../api/bilibili.js");
+let urlCheck = require("../api/urlCheck.js");
 let debugVid = "90035938";
 
 let init = (url) => {
     if (url) {
-        if (biliApi.isVideoUrl(url)) {
+        if (urlCheck.isBilibiliVideoUrl(url)) {
             biliApi.getVideoInfo(biliApi.getVidFromUrl(url));
         } else {
             $ui.error("不支持该链接");

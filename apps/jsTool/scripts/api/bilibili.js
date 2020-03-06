@@ -556,15 +556,6 @@ let init = () => {
     loadAccessKey();
     return checkAccessKey();
 };
-let isVideoUrl = url => {
-    return url.startsWithList(["https://www.bilibili.com/av",
-        "https://www.bilibili.com/video/av",
-        "https://b23.tv/av"
-    ]);
-};
-let isBiliUrl = url => {
-    return isVideoUrl(url);
-};
 module.exports = {
     getVideoInfo,
     getAccessKey,
@@ -577,6 +568,4 @@ module.exports = {
     getVideo,
     getVidFromUrl,
     getLiveGiftList,
-    isBiliUrl,
-    isVideoUrl,
 };

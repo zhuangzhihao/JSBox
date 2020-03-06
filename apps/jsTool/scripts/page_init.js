@@ -7,14 +7,12 @@ let kuaidi = require("./view/kuaidi.js");
 let smmsv2 = require("./view/sm_ms_v2.js");
 let image = require("./view/image.js");
 let bilibili = require("./view/bilibili.js");
-let biliApi = require("./api/bilibili.js");
 let musicSearch = require("./view/music_search.js");
 let zhihuDaily = require("./view/zhihu_daily.js");
 let acfun = require("./view/acfun.js");
-let acfunApi = require("./api/acfun.js");
 let instagram = require("./view/instagram.js");
 let freeSms = require("./view/free_sms_getter.js");
-
+let urlCheck = require("./api/urlCheck.js");
 let gotoUrl = url => {
     const newUrl = $text.URLDecode(url);
     if (newUrl.checkIfUrl()) {
@@ -27,9 +25,9 @@ let gotoUrl = url => {
     }
 };
 let checkMod = url => {
-    if (biliApi.isBiliUrl(url)) {
+    if (urlCheck.isBilibiliUrl(url)) {
         modOpen("bilibili", url);
-    } else if (acfunApi.isAcfunUrl(url)) {
+    } else if (urlCheck.isAcfunUrl(url)) {
         modOpen("acfun", url);
     } else {
         $ui.error("不支持该网址的分享");
@@ -42,6 +40,9 @@ let modOpen = (mod, url) => {
             break;
         case "acfun":
             acfun.init(url);
+            break;
+        case "instagram":
+            instagram.init(url);
             break;
         default:
             $ui.error("不支持该功能");
