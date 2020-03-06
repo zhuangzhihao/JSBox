@@ -46,6 +46,20 @@ let init = () => {
                                             storyList[indexPath.row].url;
                                         appScheme.safariReadMode(url);
                                     }
+                                }, {
+                                    title: "使用[简悦 · 阅读器]打开",
+                                    symbol: "book.circle",
+                                    handler: (sender, indexPath) => {
+                                        const url = indexPath.section == 0 ?
+                                            topList[indexPath.row].url :
+                                            storyList[indexPath.row].url;
+                                        $clipboard.copy({
+                                            "text": url,
+                                            "ttl": 30,
+                                            "locally": true
+                                        });
+                                        $addin.run("简悦 · 阅读器");
+                                    }
                                 }, ]
                             },
                             data: [{
