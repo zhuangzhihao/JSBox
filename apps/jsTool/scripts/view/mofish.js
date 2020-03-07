@@ -40,7 +40,7 @@ let getNewest = () => {
         const postList = data.Data;
         if (postList.length > 0) {
           $ui.loading(false);
-          $ui.push({
+          const listView = {
             props: {
               title: "最新"
             },
@@ -72,7 +72,10 @@ let getNewest = () => {
                 }
               }
             }]
-          });
+          };
+          isFirstInit ?
+            $ui.render(listView) :
+            $ui.push(listView);
         } else {
           $ui.loading(false);
           $ui.alert({

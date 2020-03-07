@@ -35,7 +35,7 @@ let init = () => {
                                         const hint = indexPath.section == 0 ?
                                             topList[indexPath.row].hint :
                                             storyList[indexPath.row].hint;
-                                        appScheme.safariReadMode(url);
+                                        appScheme.safariAddReadingItem(url, title, hint);
                                     }
                                 }, {
                                     title: "尝试使用阅读模式打开",
