@@ -1,34 +1,20 @@
 let appScheme = require("../api/app_scheme.js");
-var catList = [];
-var siteList = [];
-var siteItemList = [];
-var siteTitle = "";
-const isCache = false;
-const listViewId = "listView_main";
-const cacheId = {
-  siteList: "SITE_LIST",
-  siteInfo: "SITE_INFO_",
-  lastCacheTime: "LAST_CACHE_TIME"
-};
-var isFirstInit = false;
-
-function init(firstInit = false) {
-  isFirstInit = firstInit;
+let init = firstInit => {
   $ui.menu({
     items: ["最新", "分类"],
     handler: function (title, idx) {
       switch (idx) {
         case 0:
-          getNewest();
+          getNewest(firstInit);
           break;
         case 1:
-          getAllType();
+          getAllType(firstInit);
           break;
       }
     }
   });
-}
-let getNewest = () => {
+};
+let getNewest = (isFirstInit) => {
   $ui.loading(true);
   const urlAllType = "https://www.tophub.fun:8888/GetRandomInfo?time=0&is_follow=0";
   $http.get({
@@ -100,7 +86,7 @@ let getNewest = () => {
   });
 };
 // 按分类获取站点列表
-function getAllType() {
+let getAllType = isFirstInit => {
   $ui.loading(true);
   $http.get({
     url: "https://www.tophub.fun:8888/GetAllType",
@@ -163,7 +149,7 @@ function getAllType() {
       $ui.error(siteCatListData.Message);
     }
   });
-}
+};
 // 新版站点内容
 let showNewSiteData = (newSiteInfo) => {
   $http.get({
@@ -214,35 +200,6 @@ let showNewSiteData = (newSiteInfo) => {
     }
   });
 };
-
-// 读取缓存
-function setCache(thisCacheId, cacheContent) {
-  if (isCache) {
-    $cache.set(thisCacheId, cacheContent);
-    $cache.set(cacheId.lastCacheTime, getNowUnixTime());
-  }
-}
-// 保存缓存
-function getCache(thisCacheId) {
-  if (isCache) {
-    const lastCacheTime = $cache.get(cacheId.lastCacheTime);
-    const mCache = $cache.get(thisCacheId);
-    $console.info(mCache);
-    if (mCache != undefined) {
-      if (
-        lastCacheTime != undefined &&
-        getNowUnixTime() - lastCacheTime < 3600
-      ) {
-        return mCache;
-      }
-    }
-  }
-  return undefined;
-}
-
-function getNowUnixTime() {
-  return Math.floor(Date.now() / 1000);
-}
 
 // 开始初始化
 module.exports = {
