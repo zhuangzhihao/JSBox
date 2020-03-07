@@ -1,6 +1,6 @@
 let page = require("./scripts/page_init.js");
 let app = require("./scripts/api/app.js");
-let siteListL10n = ["MO_FISH", "BILIBILI", "ACFUN", "INSTAGRAM", "ZHIHU_DAILY"];
+let siteListL10n = ["MO_FISH", "ACFUN", "BILIBILI", "INSTAGRAM", "ZHIHU_DAILY"];
 let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "MUSIC_SEARCH", "免费短信接收"];
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
@@ -78,10 +78,10 @@ let init = () => {
                                         page.mofish();
                                         break;
                                     case 1:
-                                        page.bilibili();
+                                        page.acfun();
                                         break;
                                     case 2:
-                                        page.acfun();
+                                        page.bilibili();
                                         break;
                                     case 3:
                                         page.instagram();

@@ -25,6 +25,11 @@ let firefoxBrowserOpen = url => {
 let acfunVideo = vid => {
     $app.openURL(`acfun://detail/video/${vid}`);
 };
+let safariPreview = (url) => {
+    $safari.open({
+        url: url
+    });
+};
 let safariReadMode = (url, handler) => {
     $safari.open({
         url: url,
@@ -59,5 +64,6 @@ module.exports = {
     safariAddReadingItem,
     avplayerVideo,
     nplayerVideo,
-    documentsOpen
+    documentsOpen,
+    safariPreview
 };

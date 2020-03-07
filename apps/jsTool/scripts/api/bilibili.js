@@ -1,6 +1,6 @@
 $include("./codePrototype.js");
-$include("./codePrototype.js");
 let sys = require("./system.js");
+let appScheme = require("./app_scheme.js");
 let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true",
@@ -17,10 +17,15 @@ var _userData = {
     loginData: {},
 };
 let _cacheDir = ".cache/bilibili/";
-let isShareMode = true;
 
 // function
-let getLiveGiftList = () => {
+
+let init = () => {
+    //初始化，加载缓存
+    loadAccessKey();
+    return checkAccessKey();
+};
+let getLiveGiftList = (sendGiftToUid, sendGiftToRoom) => {
     $ui.loading(true);
     const accessKey = checkAccessKey() ? _userData.access_key : undefined;
     if (accessKey) {
@@ -49,10 +54,72 @@ let getLiveGiftList = () => {
                                 events: {
                                     didSelect: function (_sender, indexPath, _data) {
                                         const thisGift = giftList[indexPath.row];
-                                        $ui.alert({
-                                            title: thisGift.gift_name,
-                                            message: `拥有数量:${thisGift.gift_num}个\n到期时间:${thisGift.corner_mark}`,
-                                        });
+                                        if (sendGiftToUid && sendGiftToRoom) {
+                                            if (thisGift.corner_mark == "永久") {
+                                                $ui.alert({
+                                                    title: "警告",
+                                                    message: "这是永久的礼物，你确定要送吗",
+                                                    actions: [{
+                                                        title: "取消",
+                                                        disabled: false,
+                                                        handler: function () {}
+                                                    }, {
+                                                        title: "取消",
+                                                        disabled: false,
+                                                        handler: function () {}
+                                                    }, {
+                                                        title: "确定",
+                                                        disabled: false,
+                                                        handler: function () {
+                                                            $input.text({
+                                                                type: $kbType.number,
+                                                                placeholder: `输入数量，1-${thisGift.gift_num}`,
+                                                                text: "1",
+                                                                handler: function (gift_number) {
+                                                                    if (gift_number > 0 && gift_number <= thisGift.gift_num) {
+                                                                        sendLiveGift(sendGiftToUid, sendGiftToRoom, thisGift.gift_id, thisGift.bag_id, gift_number);
+                                                                    } else {
+                                                                        $ui.alert({
+                                                                            title: "赠送错误",
+                                                                            message: `错误数量,请输入1-${thisGift.gift_num}`,
+                                                                        });
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }, {
+                                                        title: "取消",
+                                                        disabled: false,
+                                                        handler: function () {}
+                                                    }, {
+                                                        title: "取消",
+                                                        disabled: false,
+                                                        handler: function () {}
+                                                    }]
+                                                });
+                                            } else {
+                                                $input.text({
+                                                    type: $kbType.number,
+                                                    placeholder: `输入数量，1-${thisGift.gift_num}`,
+                                                    text: "1",
+                                                    handler: function (gift_number) {
+                                                        if (gift_number > 0 && gift_number <= thisGift.gift_num) {
+                                                            sendLiveGift(sendGiftToUid, sendGiftToRoom, thisGift.gift_id, thisGift.bag_id, gift_number);
+                                                        } else {
+                                                            $ui.alert({
+                                                                title: "赠送错误",
+                                                                message: `错误数量,请输入1-${thisGift.gift_num}`,
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        } else {
+                                            $ui.alert({
+                                                title: thisGift.gift_name,
+                                                message: `拥有数量:${thisGift.gift_num}个\n到期时间:${thisGift.corner_mark}`,
+                                            });
+                                        }
                                     }
                                 }
                             }]
@@ -550,12 +617,202 @@ let getUserInfo = () => {
     }
 };
 
-let init = () => {
-    //初始化，加载缓存
-    isShareMode = false;
-    loadAccessKey();
-    return checkAccessKey();
+function LiveroomInfo(liveroomInfoData) {
+    // https://api.vtbs.moe/v1/detail/:mid
+    this.mid = liveroomInfoData.mid; //Int
+    this.uuid = liveroomInfoData.uuid; //String
+    this.uname = liveroomInfoData.uname; //String
+    this.video = liveroomInfoData.video;
+    this.roomid = liveroomInfoData.roomid;
+    this.sign = liveroomInfoData.sign; //String
+    this.notice = liveroomInfoData.notice; //String
+    this.face = liveroomInfoData.face; //String
+    this.rise = liveroomInfoData.rise; //Int
+    this.topPhoto = liveroomInfoData.topPhoto; //String
+    this.archiveView = liveroomInfoData.archiveView; //Int
+    this.follower = liveroomInfoData.follower; //Int
+    this.liveStatus = liveroomInfoData.liveStatus; //Int
+    this.recordNum = liveroomInfoData.recordNum; //Int
+    this.guardNum = liveroomInfoData.guardNum; //Int
+    this.lastLive = {
+        online: liveroomInfoData.lastLive.online, //Int
+        time: liveroomInfoData.lastLive.time //Int
+    };
+    this.guardChange = liveroomInfoData.guardChange; //Int
+    this.guardType = liveroomInfoData.guardType; //Array[Int]
+    this.areaRank = liveroomInfoData.areaRank; //Int
+    this.online = liveroomInfoData.online; //Int
+    this.title = liveroomInfoData.title; //String
+    this.time = liveroomInfoData.time; //Int
 };
+let getLiveroomInfo = mid => {
+    $ui.loading(true);
+    $http.get({
+        url: `https://api.vtbs.moe/v1/detail/${mid}`
+    }).then(function (resp) {
+        $ui.loading(false);
+        if (resp.error) {
+            $ui.alert({
+                title: `${resp.error.code} error`,
+                message: resp.error.localizedDescription,
+            });
+        } else {
+            if (resp.data) {
+                const liveroomInfo = new LiveroomInfo(resp.data);
+                $ui.alert({
+                    title: "获取成功",
+                    message: liveroomInfo,
+                    actions: [{
+                        title: "打开网页",
+                        disabled: false,
+                        handler: function () {
+                            appScheme.safariPreview(`https://vtbs.moe/detail/${mid}`)
+                        }
+                    }, {
+                        title: "关闭",
+                        disabled: false,
+                        handler: function () {}
+                    }]
+                });
+            } else {
+                $ui.alert({
+                    title: `数据错误`,
+                    message: "空白数据",
+                });
+            }
+
+        }
+    });
+};
+let getFansMedalList = () => {
+    $ui.loading(true);
+    if (_userData.access_key) {
+        const link = `https://api.live.bilibili.com/fans_medal/v2/HighQps/received_medals?access_key=${_userData.access_key}`;
+        $http.get({
+            url: link
+        }).then(function (resp) {
+            var data = resp.data;
+            if (data.code == 0) {
+                $ui.toast(data.message || data.msg || "已拥有的粉丝勋章");
+                const medalData = data.data;
+                const medalList = medalData.list;
+                if (medalList.length > 0) {
+                    var onlineList = [];
+                    var offlineList = [];
+                    medalList.map(m => {
+                        m.live_stream_status == 1 ?
+                            onlineList.push(m) :
+                            offlineList.push(m);
+                    });
+                    medalList.map(m => `[${m.medal_name}]${m.target_name}` + (m.icon_code ? `[${m.icon_text}]` : ""))
+                    $ui.loading(false);
+                    $ui.push({
+                        props: {
+                            title: `数量${medalData.cnt}/${medalData.max}`
+                        },
+                        views: [{
+                            type: "list",
+                            props: {
+                                data: [{
+                                        title: "在播了",
+                                        rows: onlineList.map(m => `[${m.medal_name}]${m.target_name}` + (m.icon_code ? `[${m.icon_text}]` : "") + (m.today_feed == m.day_limit ? `[已满]` : `[还差${m.day_limit - m.today_feed}]`))
+                                    },
+                                    {
+                                        title: "咕咕咕",
+                                        rows: offlineList.map(m => `[${m.medal_name}]${m.target_name}` + (m.icon_code ? `[${m.icon_text}]` : "") + (m.today_feed == m.day_limit ? `[已满]` : `[还差${m.day_limit - m.today_feed}]`))
+                                    }
+                                ],
+                                menu: {
+                                    title: "菜单",
+                                    items: [{
+                                        title: "打开直播间",
+                                        symbol: "play.rectangle",
+                                        handler: (sender, indexPath) => {
+                                            const liveData = indexPath.section == 0 ?
+                                                onlineList[indexPath.row] :
+                                                offlineList[indexPath.row];
+                                            $app.openURL(`https://live.bilibili.com/${liveData.room_id}`);
+                                        }
+                                    }, {
+                                        title: "通过vtbs.moe获取vTuber信息",
+                                        symbol: "play.rectangle",
+                                        handler: (sender, indexPath) => {
+                                            const liveData = indexPath.section == 0 ?
+                                                onlineList[indexPath.row] :
+                                                offlineList[indexPath.row];
+                                            getLiveroomInfo(liveData.target_id);
+                                        }
+                                    }, {
+                                        title: "赠送礼物",
+                                        symbol: "gift",
+                                        handler: (sender, indexPath) => {
+                                            const liveData = indexPath.section == 0 ?
+                                                onlineList[indexPath.row] :
+                                                offlineList[indexPath.row];
+                                            getLiveGiftList(liveData.target_id, liveData.room_id);
+                                        }
+                                    }]
+                                }
+                            },
+                            layout: $layout.fill,
+                            events: {
+                                didSelect: function (sender, indexPath, data) {
+                                    const liveData = indexPath.section == 0 ?
+                                        onlineList[indexPath.row] :
+                                        offlineList[indexPath.row];
+                                    $ui.alert({
+                                        title: `[${liveData.medal_name}]${liveData.target_name}`,
+                                        message: liveData,
+                                    });
+                                }
+                            }
+                        }]
+                    });
+                } else {
+                    $ui.loading(false);
+                    $ui.alert({
+                        title: "没有勋章",
+                        message: `粉丝勋章数量为${medalData.cnt||medalList.length}`,
+                    });
+                }
+            } else {
+                $ui.loading(false);
+                $ui.error(data.message || data.msg || "未知错误");
+            }
+        });
+
+    } else {
+        $ui.loading(false);
+        $ui.alert({
+            title: "错误",
+            message: "未登录",
+        });
+    }
+};
+let sendLiveGift = (user_id, room_id, gift_type, gift_id, gift_number) => {
+    $ui.loading(true);
+    const url = `https://api.live.bilibili.com/gift/v2/live/bag_send?access_key=${_userData.access_key}&bag_id=${gift_id}&biz_id=${room_id}&gift_id=${gift_type}&gift_num=${gift_number}&ruid=${user_id}`;
+    $http.get({
+        url: url
+    }).then(function (resp) {
+        var data = resp.data;
+        if (data.code == 0) {
+            const resultData = data.data;
+            $ui.loading(false);
+            $ui.alert({
+                title: resultData.send_tips,
+                message: `${resultData.uname} ${resultData.gift_action}${resultData.gift_num}个${resultData.gift_name}`,
+            });
+        } else {
+            $ui.loading(false);
+            $ui.alert({
+                title: `Error ${data.code}`,
+                message: data.message || data.msg || "未知错误",
+            });
+        }
+
+    });
+}
 module.exports = {
     getVideoInfo,
     getAccessKey,
@@ -568,4 +825,6 @@ module.exports = {
     getVideo,
     getVidFromUrl,
     getLiveGiftList,
+    getLiveroomInfo,
+    getFansMedalList,
 };

@@ -27,7 +27,7 @@ let init = (url) => {
                         },
                         {
                             title: "直播",
-                            rows: ["获取直播间拥有礼物"]
+                            rows: ["获取直播间拥有礼物", "查看vTuber状态", "查看拥有的粉丝勋章"]
                         }
                     ]
                 },
@@ -131,6 +131,28 @@ let init = (url) => {
                                     case 0:
                                         biliApi.checkAccessKey() ?
                                             biliApi.getLiveGiftList() :
+                                            $ui.error("未登录");
+                                        break;
+                                    case 1:
+                                        $input.text({
+                                            type: $kbType.number,
+                                            placeholder: "用户个人空间数字id,不是直播间id",
+                                            text: "",
+                                            handler: function (mid) {
+                                                if (mid) {
+                                                    biliApi.getLiveroomInfo(mid);
+                                                } else {
+                                                    $ui.alert({
+                                                        title: "错误",
+                                                        message: "请输入id",
+                                                    });
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    case 2:
+                                        biliApi.checkAccessKey() ?
+                                            biliApi.getFansMedalList() :
                                             $ui.error("未登录");
                                         break;
                                     default:
