@@ -26,14 +26,14 @@ let init = () => {
                             switch (row) {
                                 case 0:
                                     weatherApi.checkToken() ?
-                                        weatherApi.getNow() :
+                                        weatherApi.getNow("auto_ip") :
                                         $ui.error("请输入认证key/密钥");
                                     break;
                                 case 1:
                                     if (weatherApi.checkToken()) {
                                         $input.text({
                                             placeholder: "地区id",
-                                            text: "",
+                                            text: weatherApi.getLastLocationId(),
                                             handler: function (text) {
                                                 text.length > 0 ?
                                                     weatherApi.getNow(text) :

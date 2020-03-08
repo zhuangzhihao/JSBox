@@ -1,5 +1,9 @@
 let apiToken = "";
 let cacheKey = "WEATHER_HEWEATHER_APITOKEN";
+let cacheKeyList = {
+    apitoken: "WEATHER_HEWEATHER_APITOKEN",
+    location_id: "WEATHER_HEWEATHER_LOCATION_ID"
+}
 // https://free-api.heweather.net/s6/weather/now?location=auto_ip&key=b3a9d4affb2645f78e01d294d6b92ff5
 let initToken = (token = $cache.get(cacheKey)) => {
     if (token) {
@@ -9,15 +13,17 @@ let initToken = (token = $cache.get(cacheKey)) => {
         return false;
     }
 };
-let getNow = (location = "auto_ip", token = "") => {
-    if (token || apiToken) {
+let getNow = (location = $cache.get(cacheKeyList.location_id) ? $cache.get(cacheKeyList.location_id) : "auto_ip", token = apiToken) => {
+    if (token) {
         $http.get({
             url: `https://free-api.heweather.net/s6/weather/now?location=${location?location:"auto_ip"}&key=${token?token:apiToken}`
         }).then(function (resp) {
             var data = resp.data;
             const weatherData = data.HeWeather6[0];
-            $console.info(weatherData.status);
             if (weatherData.status == "ok") {
+                if (location && location !== "auto_ip") {
+                    $cache.set(cacheKeyList.location_id, location);
+                }
                 const nowData = new NowData(weatherData.now);
                 const basicData = new BasicData(weatherData.basic);
                 const updateTime = weatherData.update.loc;
@@ -131,10 +137,13 @@ let setToken = token => {
     $cache.set(cacheKey, token);
     return token.length > 0 ? apiToken == token : false;
 };
-
+let getLastLocationId = () => {
+    return $cache.get(cacheKeyList.location_id);
+}
 module.exports = {
     initToken,
     getNow,
     checkToken,
-    setToken
+    setToken,
+    getLastLocationId
 };
