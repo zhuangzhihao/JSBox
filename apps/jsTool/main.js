@@ -1,7 +1,6 @@
 let page = require("./scripts/page_init.js");
-let app = require("./scripts/api/app.js");
 let siteListL10n = ["MO_FISH", "ACFUN", "BILIBILI", "INSTAGRAM", "ZHIHU_DAILY"];
-let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "MUSIC_SEARCH", "免费短信接收"];
+let moreListL10n = ["CDN", "KUAIDI", "SM_MS", "IMAGE", "MUSIC_SEARCH", "免费短信接收", "天气查询"];
 let siteList = siteListL10n.map(x => $l10n(x));
 let moreList = moreListL10n.map(x => $l10n(x));
 let getNavButton = () => {
@@ -15,6 +14,8 @@ let getNavButton = () => {
                     switch (idx) {
                         case 0:
                             page.scanQrcodeToGo()
+                            break;
+                        case 1:
                             break;
                     }
                 }
@@ -112,6 +113,9 @@ let init = () => {
                                         break;
                                     case 5:
                                         page.freeSms();
+                                        break;
+                                    case 6:
+                                        page.weather();
                                         break;
                                     default:
                                         $ui.error("错误选项");

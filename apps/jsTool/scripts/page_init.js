@@ -12,7 +12,10 @@ let zhihuDaily = require("./view/zhihu_daily.js");
 let acfun = require("./view/acfun.js");
 let instagram = require("./view/instagram.js");
 let freeSms = require("./view/free_sms_getter.js");
+let weather = require("./view/weather.js");
+
 let urlCheck = require("./api/urlCheck.js");
+
 let gotoUrl = url => {
     const newUrl = $text.URLDecode(url);
     if (newUrl.checkIfUrl()) {
@@ -96,6 +99,7 @@ module.exports = {
     acfun: acfun.init,
     instagram: instagram.init,
     freeSms: freeSms.init,
+    weather: weather.init,
     contextOpen,
     gotoUrl,
     scanQrcodeToGo,
