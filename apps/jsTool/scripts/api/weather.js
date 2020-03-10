@@ -140,6 +140,29 @@ let setToken = token => {
 let getLastLocationId = () => {
     return $cache.get(cacheKeyList.location_id);
 }
+let apiSign = (paramList, token) => {
+    if (paramList == undefined || token == undefined || paramList.length == 0 || token.length == 0) {
+        return undefined;
+    }
+    const sortList = paramList.keys().sort(function (a, b) {
+        return a - b;
+    });
+    $console.info(paramList);
+    $console.info(sortList);
+    var sourceStr = "";
+    for (p in sortList) {
+        sortList += `${p}=${sortList[p]}`;
+        if (p <= sortList.length - 1) {
+            sortList += "&";
+        }
+    }
+    if (sourceStr.endsWith("&")) {
+        sourceStr = sourceStr.substr(0, sourceStr.length - 2);
+    }
+    const result = $text.MD5(sourceStr + token);
+    $console.info(`apiSign:${result}`);
+    return result;
+};
 module.exports = {
     initToken,
     getNow,
