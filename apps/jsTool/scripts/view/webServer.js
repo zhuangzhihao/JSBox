@@ -1,16 +1,39 @@
 let port = 9999,
     dir = "./.output/webServer/";
-let initServer = () => {
-    $http.startServer({
+let init = () => {
+    const server = $server.start({
         port: port, // port number
         path: dir, // script root path
-        handler: function (result) {
-            var url = result.url
-            $console.info(url);
-        }
-    })
-};
-let initView = (dir, port) => {
+        handler: () => {}
+    });
+    server.listen({
+        didStart: server => {
+            $delay(1, () => {
+                $app.openURL(`http://localhost:${port}`);
+            });
+        },
+        didConnect: server => {},
+        didDisconnect: server => {},
+        didStop: server => {},
+        didCompleteBonjourRegistration: server => {},
+        didUpdateNATPortMapping: server => {}
+    });
+    var handler = {};
+    handler.response = request => {
+        var method = request.method;
+        var url = request.url;
+        return {
+            type: "data", // default, data, file, error
+            props: {
+                html: "<html><body style='font-size: 300px'>Hello!</body></html>"
+                // json: {
+                //   "status": 1,
+                //   "values": ["a", "b", "c"]
+                // }
+            }
+        };
+    };
+    server.addHandler(handler);
     $ui.push({
         props: {
             title: ""
@@ -34,16 +57,16 @@ let initView = (dir, port) => {
                 didSelect: function (_sender, indexPath, _data) {
                     const section = indexPath.section;
                     const row = indexPath.row;
-
+                    if (section == 1 && row == 0) {
+                        server.stop();
+                        $ui.toast("已经停止服务器");
+                    }
                 }
             }
         }]
     });
 };
-let init = () => {
-    if ($file.exists(dir)) {
-        if (!$file.isDirectory(path)) {
 
-        }
-    }
+module.exports = {
+    init
 };
