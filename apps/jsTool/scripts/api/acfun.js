@@ -549,6 +549,47 @@ let showUploaderVideoList = acData => {
                                 $ui.error("这里长按无效，请在视频列表长按");
                             }
                         }
+                    }, {
+                        title: "导出网页",
+                        symbol: "square.and.arrow.down",
+                        handler: (sender, indexPath) => {
+                            const dir = "./.output/webServer/";
+                            const fileName = "posts-" + videoList[0].user.id + ".html";
+                            var html = "<html><body><ul>";
+                            for (v in videoList) {
+                                const thisVideo = videoList[v];
+                                var title = thisVideo.title;
+                                if (listClickedVid) {
+                                    if (listClickedVid == thisVideo.dougaId) {
+                                        title = `[上次]` + title
+                                    }
+                                }
+                                html += `<li><a href="acfun://detail/video/${thisVideo.dougaId}">${title}</a></li>`;
+                            }
+                            html += "</ul></body></html>"
+                            if (!$file.exists(dir)) {
+                                $file.mkdir(dir);
+                            }
+                            const saveResult = $file.write({
+                                data: $data({
+                                    string: html
+                                }),
+                                path: dir + fileName
+                            });
+                            $ui.alert({
+                                title: "保存完毕",
+                                message: "保存" + saveResult ? "成功" : "失败",
+                                actions: [{
+                                    title: "启动网页服务器",
+                                    disabled: false,
+                                    handler: function () {
+                                        initWebServer(dir, html);
+                                    }
+                                }, {
+                                    title: "关闭"
+                                }]
+                            });
+                        }
                     }]
                 }
             },
@@ -600,6 +641,68 @@ let getuidFromUrl = url => {
     $console.info(`getuidFromUrl:${uid}`);
     return uid;
 };
+let initWebServer = (dir, htmlStr, port = 9999) => {
+    const server = $server.start({
+        port: port, // port number
+        path: dir, // script root path
+        handler: () => {}
+    });
+    server.listen({
+        didStart: server => {
+            $delay(1, () => {
+                $app.openURL(`http://localhost:${port}`);
+            });
+        },
+        didConnect: server => {},
+        didDisconnect: server => {},
+        didStop: server => {},
+        didCompleteBonjourRegistration: server => {},
+        didUpdateNATPortMapping: server => {}
+    });
+    var handler = {};
+    handler.response = request => {
+        var method = request.method;
+        var url = request.url;
+        return {
+            type: "data", // default, data, file, error
+            props: {
+                html: htmlStr
+            }
+        };
+    };
+    server.addHandler(handler);
+    $ui.push({
+        props: {
+            title: ""
+        },
+        views: [{
+            type: "list",
+            props: {
+                data: [{
+                    title: "信息",
+                    rows: [
+                        `根目录：${dir}`,
+                        `端口：${port}`
+                    ]
+                }, {
+                    title: "菜单",
+                    rows: ["关闭服务器"]
+                }]
+            },
+            layout: $layout.fill,
+            events: {
+                didSelect: function (_sender, indexPath, _data) {
+                    const section = indexPath.section;
+                    const row = indexPath.row;
+                    if (section == 1 && row == 0) {
+                        server.stop();
+                        $ui.toast("已经停止服务器");
+                    }
+                }
+            }
+        }]
+    });
+}
 // init
 let init = () => {
     loadUserToken();
