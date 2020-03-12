@@ -11,22 +11,19 @@ const _menuList = [
     "国外数据",
     "疾病知识"
 ];
-var _headerDataJson = {};
-var _mainTitleDataJson = [];
-var _mainDataJson = [];
-var _timeLineData = [];
-var _timeLineTitleData = [];
-var _rumorData = [];
-var _rumorTitleData = [];
-var _areaStatData = [];
-var _areaStatProData = [];
-var _foreignTitleDataJson = [];
-var _foreignDataJson = [];
-var _wikiData = [];
-var _imgList = {
-    dailyPics: [],
-    imgUrl: ""
-};
+var _mainTitleDataJson = [],
+    _mainDataJson = [],
+    _timeLineData = [],
+    _timeLineTitleData = [],
+    _rumorData = [],
+    _rumorTitleData = [],
+    _areaStatData = [],
+    _areaStatProData = [],
+    _foreignTitleDataJson = [],
+    _foreignDataJson = [],
+    _wikiData = [];
+
+var $ = undefined;
 
 function getNavButton() {
     return [{
@@ -103,29 +100,10 @@ function getData() {
     });
 }
 
-function processAllData(_sourceData) {
-    const doc = $xml.parse({
-        string: _sourceData,
-        mode: "html"
-    });
-    const _element = doc.rootElement;
-    getMainData(_element);
-    getHeaderData(_element);
-    getTimeLine(_element);
-    getRumor(_element);
-    getAreaStat(_element);
-    getForeignData(_element);
-    getWikiData(_element);
-    isLoading = false;
-}
 
 function processAllData2(_sourceData) {
-    const _element = $xml.parse({
-        string: _sourceData,
-        mode: "html"
-    }).rootElement;
-    const $ = cheerio.load(_sourceData);
-    getHeaderData($("script#getStatisticsService").html());
+    $ = cheerio.load(_sourceData);
+    //getHeaderData($("script#getStatisticsService").html());
     getMainData($("script#getListByCountryTypeService1").html());
     getTimeLine($("script#getTimelineService").html());
     getRumor($("script#getIndexRumorList").html());
@@ -136,59 +114,29 @@ function processAllData2(_sourceData) {
 }
 
 // 简单数据
-function getHeaderData(str) {
-    const jsonLeft = "try { window.getStatisticsService = ";
-    const jsonRight = "}catch(e){}";
-    _headerDataJson = JSON.parse(str.replace(jsonLeft, "").replace(jsonRight, ""));
-    _imgList.imgUrl = _headerDataJson.imgUrl;
-    _imgList.dailyPics = _headerDataJson.dailyPics;
-}
-
 function showHeaderData() {
+    const _headerDataJson = JSON.parse($("script#getStatisticsService").html()
+        .replace("try { window.getStatisticsService = ", "").replace("}catch(e){}", ""));
     $console.info(_headerDataJson);
-    var messageText =
-        "确诊 " +
-        _headerDataJson.confirmedCount +
-        " 例(+" +
-        _headerDataJson.confirmedIncr +
-        ")" +
-        "\n疑似 " +
-        _headerDataJson.suspectedCount +
-        " 例(+" +
-        _headerDataJson.suspectedIncr +
-        ")" +
-        "\n死亡 " +
-        _headerDataJson.deadCount +
-        " 例(+" +
-        _headerDataJson.deadIncr +
-        ")" +
-        "\n治愈 " +
-        _headerDataJson.curedCount +
-        " 例(+" +
-        _headerDataJson.curedIncr +
-        ")" +
-        "\n重症 " +
-        _headerDataJson.seriousCount +
-        " 例(+" +
-        _headerDataJson.seriousIncr +
-        ")\n" +
-        _headerDataJson.note2 +
-        "\n" +
-        _headerDataJson.note3 +
-        "\n" +
-        _headerDataJson.remark1 +
-        "\n" +
-        _headerDataJson.remark2 +
-        "\n" +
-        _headerDataJson.remark3 +
-        "\n(" +
-        _headerDataJson.generalRemark +
-        ")";
-    var imageHtml = "";
-    $console.info(_imgList.dailyPics);
-    for (i in _imgList.dailyPics) {
-        imageHtml += "<img src='" + _imgList.dailyPics[i] + "'/>"
-    }
+
+    const addNowStr = (_headerDataJson.currentConfirmedIncr > 0 ? "+" : "") + _headerDataJson.currentConfirmedIncr;
+    const addTotalStr = (_headerDataJson.confirmedIncr > 0 ? "+" : "") + _headerDataJson.confirmedIncr;
+    const addInputStr = (_headerDataJson.suspectedIncr > 0 ? "+" : "") + _headerDataJson.suspectedIncr;
+    const addDeadStr = (_headerDataJson.deadIncr > 0 ? "+" : "") + _headerDataJson.deadIncr;
+    const addCuredStr = (_headerDataJson.curedIncr > 0 ? "+" : "") + _headerDataJson.curedIncr;
+    const addSeriousStr = (_headerDataJson.seriousIncr > 0 ? "+" : "") + _headerDataJson.seriousIncr;
+    const messageText =
+        `现存确诊${_headerDataJson.currentConfirmedCount}(${addNowStr})\n` +
+        `累计确诊${_headerDataJson.confirmedCount}(${addTotalStr})\n` +
+        `境外输入${_headerDataJson.suspectedCount}(${addInputStr})\n` +
+        `死亡${_headerDataJson.deadCount}(${addDeadStr})\n` +
+        `治愈${_headerDataJson.curedCount}(${addCuredStr})\n` +
+        `重症${_headerDataJson.seriousCount}(${addSeriousStr})\n` +
+        `${_headerDataJson.note2}\n${_headerDataJson.note3}\n${_headerDataJson.remark1}\n` +
+        `${_headerDataJson.remark2}\n${_headerDataJson.remark3}\n(${_headerDataJson.generalRemark})`;
+    const ChinaPicList = _headerDataJson.quanguoTrendChart.map(i => i.imgUrl);
+    const HBandFHBPicList = _headerDataJson.hbFeiHbTrendChart.map(i => i.imgUrl);
+    const foreignTrendChartList = _headerDataJson.foreignTrendChart.map(i => i.imgUrl);
     $ui.alert({
         title: _headerDataJson.note1,
         message: messageText,
@@ -196,23 +144,51 @@ function showHeaderData() {
                 title: "分享内容",
                 disabled: false, // Optional
                 handler: function () {
-                    $share.sheet([messageText]);
+                    $share.sheet([_headerDataJson.note1, messageText]);
                 }
             },
             {
                 title: "疫情地图",
                 disabled: false, // Optional
                 handler: function () {
-                    lib.previewWeb("疫情地图", _imgList.imgUrl);
+                    $quicklook.open({
+                        image: _headerDataJson.imgUrl
+                    });
                 }
             },
             {
                 title: "全国疫情形势图",
                 disabled: false, // Optional
                 handler: function () {
-                    $ui.preview({
-                        title: "全国疫情形势图",
-                        html: imageHtml
+                    $quicklook.open({
+                        list: _headerDataJson.dailyPics
+                    });
+                }
+            },
+            {
+                title: "国内疫情趋势表",
+                disabled: false, // Optional
+                handler: function () {
+                    $quicklook.open({
+                        list: ChinaPicList
+                    });
+                }
+            },
+            {
+                title: "湖北/非湖北疫情趋势对比表",
+                disabled: false, // Optional
+                handler: function () {
+                    $quicklook.open({
+                        list: HBandFHBPicList
+                    });
+                }
+            },
+            {
+                title: "国外疫情趋势表",
+                disabled: false, // Optional
+                handler: function () {
+                    $quicklook.open({
+                        list: foreignTrendChartList
                     });
                 }
             },
@@ -237,7 +213,7 @@ function showHeaderData() {
 }
 
 function showHeaderMarqueeData(marqueeDataList) {
-    var marqueeTitleList = [];
+    marqueeTitleList = [];
     for (x in marqueeDataList) {
         marqueeTitleList.push(marqueeDataList[x].marqueeContent);
     }
@@ -283,7 +259,7 @@ function getMainData(str) {
 }
 
 function processMainData(_html) {
-    var proList = [];
+    proList = [];
     const _json = JSON.parse(_html);
     _mainDataJson = _json;
     for (x in _json) {
@@ -319,7 +295,7 @@ function showMainData() {
 function showMainDetailedData(_idx) {
     const _jsonData = _mainDataJson[_idx];
     const updateTime = lib.getUpdateTime(_jsonData.modifyTime);
-    var messageText =
+    messageText =
         "确诊 " +
         _jsonData.confirmedCount.toString() +
         " 例\n疑似 " +
@@ -371,7 +347,7 @@ function getTimeLine(str) {
 }
 
 function processTimeLineData(_html) {
-    var timeLineList = [];
+    timeLineList = [];
     const _json = JSON.parse(_html);
     _timeLineData = _json;
     for (x in _json) {
@@ -458,7 +434,7 @@ function getRumor(str) {
 }
 
 function processRumorData(_html) {
-    var rumorList = [];
+    rumorList = [];
     _rumorData = JSON.parse(_html);
     for (x in _rumorData) {
         rumorList.push(_rumorData[x].title);
@@ -491,7 +467,7 @@ function showRumorDetailedData(_idx) {
     const thisItem = _rumorData[_idx];
     const _title = thisItem.title;
     const _url = lib.getRealUrl(thisItem.sourceUrl);
-    var isNotUrl = false;
+    isNotUrl = false;
     if (_url == "") {
         isNotUrl = true;
     }
@@ -537,7 +513,7 @@ function getAreaStat(str) {
 
 function processAreaStatData(_html) {
     // 省级
-    var _list = [];
+    _list = [];
     _areaStatData = JSON.parse(_html);
     for (x in _areaStatData) {
         const thisPro = _areaStatData[x];
@@ -572,7 +548,7 @@ function showAreaStatData() {
 
 function processAreaStatCityData(_json) {
     // 城市
-    var _list = [];
+    _list = [];
     for (x in _json) {
         const thisCity = _json[x];
         _list.push(thisCity.cityName + " (" + thisCity.confirmedCount + "人)");
@@ -626,7 +602,7 @@ function getForeignData(str) {
 }
 
 function processForeignData(_html) {
-    var list = [];
+    list = [];
     const _json = JSON.parse(_html);
     _foreignDataJson = _json;
     for (x in _json) {
@@ -659,7 +635,7 @@ function showForeignData() {
 function showForeignDetailedData(_idx) {
     const _jsonData = _foreignDataJson[_idx];
     const updateTime = lib.getUpdateTime(_jsonData.modifyTime);
-    var messageText =
+    messageText =
         "确诊 " +
         _jsonData.confirmedCount.toString() +
         " 例\n疑似 " +
@@ -687,7 +663,7 @@ function getWikiData(str) {
 
 function showWikiData() {
     const wikiResult = _wikiData.result;
-    var wikiTitleList = [];
+    wikiTitleList = [];
     for (x in wikiResult) {
         wikiTitleList.push(wikiResult[x].title);
     }
