@@ -1,6 +1,7 @@
 $include("./codePrototype.js");
-let sys = require("./system.js");
-let appScheme = require("./app_scheme.js");
+let sys = require("./system.js"),
+    cheerio = require("cheerio"),
+    appScheme = require("./app_scheme.js");
 let _api = {
     getVideoInfo: "https://api.kaaass.net/biliapi/video/info?jsonerr=true&id=",
     getVideoData: "https://api.kaaass.net/biliapi/video/resolve?jsonerr=true",
@@ -265,6 +266,19 @@ let getVideoInfo = vid => {
                                                     break;
                                                 case 2:
                                                     getVideo(vid, _biliData);
+                                                    break;
+                                                case 3:
+                                                    const partList = _biliData.list;
+                                                    if (partList.length == 1) {
+                                                        getVideoDanmuku(partList[0].cid);
+                                                    } else {
+                                                        $ui.menu({
+                                                            items: partList.map(p => p.part),
+                                                            handler: function (title, idx) {
+                                                                getVideoDanmuku(partList[idx].cid);
+                                                            }
+                                                        });
+                                                    }
                                                     break;
                                                 default:
                                                     $ui.error("不支持");
@@ -812,7 +826,79 @@ let sendLiveGift = (user_id, room_id, gift_type, gift_id, gift_number) => {
         }
 
     });
-}
+};
+let getVideoDanmuku = mid => {
+    $ui.loading(true);
+    const danmukuUrl = `https://comment.bilibili.com/${mid}.xml`;
+    $http.get({
+        url: danmukuUrl
+    }).then(function (resp) {
+        $ui.loading(false);
+        const danmuXmlList = [];
+        const $ = cheerio.load(resp.data, {
+            normalizeWhitespace: true,
+            xmlMode: true
+        });
+        $console.info(resp.data);
+        $console.info($.xml());
+        $("i > d").each(function (i, elem) {
+            danmuXmlList.push($(elem));
+        });
+        const danmuStrList = danmuXmlList.map(d => d.text());
+        /* $ui.menu({
+            items: [],
+            handler: function (title, idx) {
+                var findElement = danmuStrList.findIndex(element => element > 12);
+            }
+        }); */
+        $ui.push({
+            props: {
+                title: "弹幕列表"
+            },
+            views: [{
+                type: "list",
+                props: {
+                    data: [`显示全部(${danmuStrList.length}个)`, "搜索"]
+                },
+                layout: $layout.fill,
+                events: {
+                    didSelect: function (sender, indexPath, data) {
+                        const section = indexPath.section;
+                        const row = indexPath.row;
+                        switch (row) {
+                            case 0:
+                                $ui.push({
+                                    props: {
+                                        title: `${danmuStrList.length}个弹幕`
+                                    },
+                                    views: [{
+                                        type: "list",
+                                        props: {
+                                            data: danmuStrList
+                                        },
+                                        layout: $layout.fill,
+                                        events: {
+                                            didSelect: function (_sender, _indexPath, _data) {
+                                                const _section = _indexPath.section;
+                                                const _row = _indexPath.row;
+                                                $ui.alert({
+                                                    title: _data,
+                                                    message: danmuXmlList[_row].attr("p"),
+                                                });
+                                            }
+                                        }
+                                    }]
+                                });
+                                break;
+                            default:
+                                $ui.error("不支持");
+                        }
+                    }
+                }
+            }]
+        });
+    });
+};
 module.exports = {
     getVideoInfo,
     getAccessKey,
