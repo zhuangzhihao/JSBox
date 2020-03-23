@@ -46,7 +46,7 @@ let getGiftListByExp = (giftData, exp) => {
             const thisGift = giftData[g];
             $console.info(thisGift);
             if (thisGift.corner_mark == "永久") {
-                $console.info("跳过永久礼物");
+                $console.error("跳过永久礼物");
             } else {
                 var giftNum = 0;
                 switch (thisGift.gift_id) {
@@ -58,8 +58,12 @@ let getGiftListByExp = (giftData, exp) => {
                                 giftNum = Math.floor(thisGift.gift_num / 10);
                             }
                             // giftNum = thisGift.gift_num > Math.floor(needExp / 10) ? Math.floor(needExp / 10) : Math.floor(thisGift.gift_num / 10);
-                            giftList.push(new GiftData(thisGift.gift_id, thisGift.bag_id, giftNum));
-                            needExp = needExp - (giftNum * 10);
+                            if (giftNum > 0) {
+                                giftList.push(new GiftData(thisGift.gift_id, thisGift.bag_id, giftNum));
+                                needExp = needExp - (giftNum * 10);
+                            } else {
+                                $console.error("跳过0个的礼物");
+                            }
                         }
                         break;
                     case 1:
@@ -69,11 +73,15 @@ let getGiftListByExp = (giftData, exp) => {
                             giftNum = thisGift.gift_num;
                         }
                         // giftNum = thisGift.gift_num > needExp ? needExp : thisGift.gift_num;
-                        giftList.push(new GiftData(thisGift.gift_id, thisGift.bag_id, giftNum));
-                        needExp = needExp - giftNum;
+                        if (giftNum > 0) {
+                            giftList.push(new GiftData(thisGift.gift_id, thisGift.bag_id, giftNum));
+                            needExp = needExp - giftNum;
+                        } else {
+                            $console.error("跳过0个的礼物");
+                        }
                         break;
                     default:
-                        $console.info("跳过不支持的礼物");
+                        $console.error("跳过不支持的礼物");
                 }
                 $console.info(`needExp:${needExp}`);
             }
