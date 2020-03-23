@@ -17,7 +17,7 @@ let gen_2 = (funId, objId) => {
     keys.map(i => {
         str += `\nthis.${i} = ${objId}.${i};`;
     });
-    str += "};"
+    str += "\n};"
     console.info(str);
 };
-// gen_2("BasicData", "_basicData");
+//gen_2("GiftData", "_giftData");
