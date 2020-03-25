@@ -1,4 +1,5 @@
 let biliApi = require("../api/bilibili.js");
+let biliAvbv = require("../api/bilibili-avbv.js");
 let urlCheck = require("../api/urlCheck.js");
 let debugVid = "90035938";
 
@@ -23,7 +24,7 @@ let init = (url) => {
                         },
                         {
                             title: "视频",
-                            rows: ["获取视频信息"]
+                            rows: ["获取视频信息", "AV&BV互转"]
                         },
                         {
                             title: "直播",
@@ -118,6 +119,85 @@ let init = (url) => {
                                                         break;
                                                     default:
                                                         $ui.error("暂未支持");
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    case 1:
+                                        $ui.menu({
+                                            items: ["AV->BV", "BV->AV"],
+                                            handler: function (_title, menuIdx) {
+                                                switch (menuIdx) {
+                                                    case 0:
+                                                        $input.text({
+                                                            placeholder: "输入AV,不包含开头的av",
+                                                            text: "170001",
+                                                            handler: function (AV) {
+                                                                if (AV) {
+                                                                    const bv = biliAvbv.getBv(AV);
+                                                                    if (bv) {
+                                                                        $input.text({
+                                                                            placeholder: "点击复制，修改文本并不会改变复制的内容",
+                                                                            text: bv,
+                                                                            handler: function (result) {
+                                                                                $clipboard.copy({
+                                                                                    "text": bv,
+                                                                                    "ttl": 30,
+                                                                                    "locally": true
+                                                                                });
+                                                                                $ui.toast("复制完毕");
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        $ui.alert({
+                                                                            title: "错误",
+                                                                            message: "空白结果",
+                                                                        });
+                                                                    }
+                                                                } else {
+                                                                    $ui.alert({
+                                                                        title: "错误",
+                                                                        message: "请输入内容",
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                        break;
+                                                    case 1:
+                                                        $input.text({
+                                                            placeholder: "输入BV",
+                                                            text: "BV17x411w7KC",
+                                                            handler: function (BV) {
+                                                                if (BV) {
+                                                                    const av = biliAvbv.getAv(BV);
+                                                                    if (av) {
+                                                                        $input.text({
+                                                                            placeholder: "点击复制，修改文本并不会改变复制的内容",
+                                                                            text: av,
+                                                                            handler: function (result) {
+                                                                                $clipboard.copy({
+                                                                                    "text": av,
+                                                                                    "ttl": 30,
+                                                                                    "locally": true
+                                                                                });
+                                                                                $ui.toast("复制完毕");
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        $ui.alert({
+                                                                            title: "错误",
+                                                                            message: "空白结果",
+                                                                        });
+                                                                    }
+                                                                } else {
+                                                                    $ui.alert({
+                                                                        title: "错误",
+                                                                        message: "请输入内容",
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                        break;
                                                 }
                                             }
                                         });
