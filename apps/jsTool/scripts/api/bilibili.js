@@ -92,10 +92,15 @@ let getGiftListByExp = (giftData, exp) => {
     }
     return giftList;
 };
-let getLiveGiftList = (liveData, mode = 0) => {
-    const sendGiftToUid = liveData.target_id;
-    const sendGiftToRoom = liveData.room_id;
-    const needExp = liveData.day_limit - liveData.today_feed;
+let getLiveGiftList = (liveData = undefined, mode = 0) => {
+    var sendGiftToUid,
+        sendGiftToRoom,
+        needExp;
+    if (liveData) {
+        sendGiftToUid = liveData.target_id;
+        sendGiftToRoom = liveData.room_id;
+        needExp = liveData.day_limit - liveData.today_feed;
+    }
     $ui.loading(true);
     const accessKey = checkAccessKey() ? _userData.access_key : undefined;
     if (accessKey) {
@@ -112,18 +117,25 @@ let getLiveGiftList = (liveData, mode = 0) => {
                     if (giftList.length) {
                         saveCache("getLiveGiftList", resp.rawData);
                         if (mode == 1) {
-                            $ui.loading(true);
-                            $ui.toast("正在计算所需的礼物");
-                            const giftExpList = getGiftListByExp(giftList, needExp);
-                            if (giftExpList.length > 0) {
-                                $console.info(giftExpList);
-                                $ui.loading(false);
-                                sendLiveGiftList(liveData, giftExpList, 0);
+                            if (liveData) {
+                                $ui.loading(true);
+                                $ui.toast("正在计算所需的礼物");
+                                const giftExpList = getGiftListByExp(giftList, needExp);
+                                if (giftExpList.length > 0) {
+                                    $console.info(giftExpList);
+                                    $ui.loading(false);
+                                    sendLiveGiftList(liveData, giftExpList, 0);
+                                } else {
+                                    $ui.loading(false);
+                                    $ui.alert({
+                                        title: "自动赠送失败",
+                                        message: "计算得出所需的礼物为空白",
+                                    });
+                                }
                             } else {
-                                $ui.loading(false);
                                 $ui.alert({
-                                    title: "自动赠送失败",
-                                    message: "计算得出所需的礼物为空白",
+                                    title: "错误",
+                                    message: "空白liver信息",
                                 });
                             }
                         } else {
@@ -140,7 +152,7 @@ let getLiveGiftList = (liveData, mode = 0) => {
                                     events: {
                                         didSelect: function (_sender, indexPath, _data) {
                                             const thisGift = giftList[indexPath.row];
-                                            if (sendGiftToUid && sendGiftToRoom) {
+                                            if (liveData && sendGiftToUid && sendGiftToRoom) {
                                                 if (thisGift.corner_mark == "永久") {
                                                     $ui.alert({
                                                         title: "警告",
@@ -160,7 +172,7 @@ let getLiveGiftList = (liveData, mode = 0) => {
                                                                 $input.text({
                                                                     type: $kbType.number,
                                                                     placeholder: `输入数量，1-${thisGift.gift_num}`,
-                                                                    text: "1",
+                                                                    text: "",
                                                                     handler: function (gift_number) {
                                                                         if (gift_number > 0 && gift_number <= thisGift.gift_num) {
                                                                             sendLiveGift(sendGiftToUid, sendGiftToRoom, thisGift.gift_id, thisGift.bag_id, gift_number);
@@ -187,7 +199,7 @@ let getLiveGiftList = (liveData, mode = 0) => {
                                                     $input.text({
                                                         type: $kbType.number,
                                                         placeholder: `输入数量，1-${thisGift.gift_num}`,
-                                                        text: "1",
+                                                        text: "",
                                                         handler: function (gift_number) {
                                                             if (gift_number > 0 && gift_number <= thisGift.gift_num) {
                                                                 sendLiveGift(sendGiftToUid, sendGiftToRoom, thisGift.gift_id, thisGift.bag_id, gift_number);
